@@ -1,0 +1,532 @@
+/* Enhanced auth.css with food theme animations and complete dark mode */
+
+/* Base Styles */
+:root {
+  --primary-color: #e11d48;
+  --secondary-color: #f43f5e;
+  --accent-color: #fb7185;
+  --text-color: #1f2937;
+  --text-light: #6b7280;
+  --bg-light: #ffffff;
+  --bg-dark: #111827;
+  --input-bg: #f3f4f6;
+  --input-border: #d1d5db;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --border-radius: 8px;
+  --transition: all 0.3s ease;
+  --login-bg: rgba(255, 255, 255, 0.9);
+  --login-border: rgba(255, 255, 255, 0.2);
+  --input-placeholder: rgba(107, 114, 128, 0.7);
+  --overlay-bg: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.8));
+}
+
+/* Dark Mode Variables */
+.dark-mode {
+  --text-color: #f9fafb;
+  --text-light: #d1d5db;
+  --input-bg: #1f2937;
+  --input-border: #374151;
+  --bg-light: #111827;
+  --bg-dark: #0f172a;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  --login-bg: rgba(17, 24, 39, 0.9);
+  --login-border: rgba(255, 255, 255, 0.1);
+  --input-placeholder: rgba(209, 213, 219, 0.7);
+  --overlay-bg: linear-gradient(to bottom, rgba(17, 24, 39, 0.7), rgba(17, 24, 39, 0.9));
+}
+
+/* Typography */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: var(--text-color);
+  background-color: var(--bg-light);
+}
+
+/* Authentication Page Layout */
+.auth-page {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--bg-light);
+  overflow: hidden;
+}
+
+/* Animated Food Background */
+.food-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.floating-food {
+  position: absolute;
+  top: -50px;
+  animation: floatUpDown linear infinite;
+  z-index: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transform-origin: center;
+}
+
+@keyframes floatUpDown {
+  0% {
+    transform: translateY(105vh) rotate(0deg) scale(1);
+  }
+  100% {
+    transform: translateY(-50px) rotate(360deg) scale(0.8);
+  }
+}
+
+/* Background and Overlay */
+.auth-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  background: linear-gradient(135deg, rgba(255, 126, 95, 0.1), rgba(225, 29, 72, 0.2));
+}
+
+.auth-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px);
+  background: var(--overlay-bg);
+}
+
+/* Login Container */
+.login-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem;
+  background-color: var(--login-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  animation: fadeIn 0.5s ease-out;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--login-border);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Brand Logo */
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.login-brand h2 {
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 0;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo-animation {
+  animation: pulse 2s infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Login Header */
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.login-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-light);
+  margin: 0;
+}
+
+/* Form */
+.login-form {
+  animation: slideUp 0.5s 0.2s both;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.input-field-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  overflow: hidden;
+}
+
+.input-field-container:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.2);
+}
+
+.input-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  color: var(--text-light);
+}
+
+.input-field {
+  flex-grow: 1;
+  padding: 0.75rem;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+.input-field::placeholder {
+  color: var(--input-placeholder);
+}
+
+.input-field.with-icon {
+  padding-left: 0;
+}
+
+.password-toggle {
+  background: transparent;
+  border: none;
+  padding: 0 0.75rem;
+  cursor: pointer;
+  color: var(--text-light);
+  transition: var(--transition);
+}
+
+.password-toggle:hover {
+  color: var(--primary-color);
+}
+
+/* Error Message */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 1.5rem;
+  background-color: rgba(239, 68, 68, 0.1);
+  border-radius: var(--border-radius);
+  color: var(--error-color);
+  animation: shake 0.4s linear;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+/* Remember Me and Forgot Password */
+.remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.custom-checkbox {
+  position: relative;
+  width: 18px;
+  height: 18px;
+}
+
+.custom-checkbox input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.forgot-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* Login Button */
+.login-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(225, 29, 72, 0.3);
+}
+
+.login-button:hover {
+  background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(225, 29, 72, 0.4);
+}
+
+.login-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(225, 29, 72, 0.3);
+}
+
+.login-button:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.login-button:hover:before {
+  left: 100%;
+}
+
+.login-button.loading {
+  background: var(--text-light);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Signup Link */
+.signup-link {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+.signup-button {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.signup-button:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .login-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* Food-specific animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Add a subtle bounce to form fields on focus */
+.input-field-container:focus-within {
+  animation: bounce 0.3s ease;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* Dark mode specific additions for input fields */
+.dark-mode .input-field {
+  color: var(--text-color);
+}
+
+.dark-mode .input-field::placeholder {
+  color: var(--input-placeholder);
+}
+
+/* Fix for icons in dark mode */
+.dark-mode .input-icon svg,
+.dark-mode .password-toggle svg {
+  color: var(--text-light);
+}
+
+/* Ensure the checkbox background is correct in dark mode */
+.dark-mode .checkmark {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+}
+
+/* Adjust the glow effect on input focus for dark mode */
+.dark-mode .input-field-container:focus-within {
+  box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.3);
+}
+
+/* Make sure error messages are visible in dark mode */
+.dark-mode .error-message {
+  background-color: rgba(239, 68, 68, 0.2);
+}

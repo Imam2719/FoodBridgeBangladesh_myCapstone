@@ -1,0 +1,566 @@
+/* Base styles */
+:root {
+  --primary-color: #e11d48;
+  --primary-hover: #be123c;
+  --text-light: #f9fafb;
+  --text-dark: #1f2937;
+  --bg-light: #ffffff;
+  --bg-dark: #111827;
+  --input-bg-light: #f3f4f6;
+  --input-bg-dark: #1f2937;
+  --border-light: #e5e7eb;
+  --border-dark: #374151;
+  --error-color: #ef4444;
+  --success-color: #10b981;
+  --shadow-light: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-dark: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Auth page layout */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  color: var(--text-dark);
+  overflow: hidden;
+}
+
+.auth-page.dark-mode {
+  color: var(--text-light);
+  background-color: var(--bg-dark);
+}
+
+/* Food icon background styles */
+.food-icon-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  background-color: var(--bg-light);
+}
+
+.dark-mode .food-icon-background {
+  background-color: var(--bg-dark);
+}
+
+.food-icon {
+  position: absolute;
+  opacity: 0.6;
+  z-index: 0;
+}
+
+.food-icon.floating {
+  animation: float linear infinite;
+  animation-fill-mode: both;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(var(--random-x, 100px), var(--random-y, -100px)) rotate(var(--random-rotate, 360deg)) scale(var(--random-scale, 0.7));
+    opacity: 0;
+  }
+}
+
+.auth-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.light-overlay {
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.95) 70%);
+}
+
+.dark-overlay {
+  background: radial-gradient(circle at center, rgba(17, 24, 39, 0.4) 0%, rgba(17, 24, 39, 0.95) 70%);
+}
+
+/* Login container */
+.login-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  background-color: var(--bg-light);
+  box-shadow: var(--shadow-light);
+  animation: fadeIn 0.5s ease-out;
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .login-container {
+  background-color: rgba(17, 24, 39, 0.85);
+  box-shadow: var(--shadow-dark);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Brand styling */
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.login-brand h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+/* Header styling */
+.login-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.login-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, var(--primary-color), #f43f5e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.login-subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.dark-mode .login-subtitle {
+  color: #9ca3af;
+}
+
+/* Error message */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--error-color);
+  margin-bottom: 1.5rem;
+  border-left: 3px solid var(--error-color);
+}
+
+/* Form elements */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.input-field-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dark-mode .input-icon {
+  color: #9ca3af;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--input-bg-light);
+  border: 1px solid var(--border-light);
+  transition: all 0.2s ease;
+}
+
+.input-field.with-icon {
+  padding-left: 2.5rem;
+}
+
+.dark-mode .input-field {
+  background-color: var(--input-bg-dark);
+  border-color: var(--border-dark);
+  color: var(--text-light);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.2);
+}
+
+.password-toggle {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dark-mode .password-toggle {
+  color: #9ca3af;
+}
+
+.password-toggle:focus {
+  outline: none;
+}
+
+/* Remember me & forgot password */
+.remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.custom-checkbox {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+}
+
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 18px;
+  width: 18px;
+  background-color: var(--input-bg-light);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.dark-mode .checkmark {
+  background-color: var(--input-bg-dark);
+  border-color: var(--border-dark);
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.custom-checkbox .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.forgot-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.forgot-link:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+/* Login button */
+.login-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-button:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.15);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.login-button:after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(45deg);
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+
+.login-button:hover:after {
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+.login-button.loading {
+  cursor: not-allowed;
+  background-color: var(--primary-hover);
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Divider */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.dark-mode .auth-divider {
+  color: #9ca3af;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--border-light);
+}
+
+.dark-mode .auth-divider::before,
+.dark-mode .auth-divider::after {
+  background-color: var(--border-dark);
+}
+
+.auth-divider span {
+  padding: 0 1rem;
+}
+
+/* Signup link */
+.signup-link {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.dark-mode .signup-link {
+  color: #9ca3af;
+}
+
+.signup-button {
+  color: var(--primary-color);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.signup-button:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+/* Add unique random animations for each food icon */
+.food-icon:nth-of-type(1) { --random-x: 120px; --random-y: -100px; --random-rotate: 360deg; --random-scale: 0.8; }
+.food-icon:nth-of-type(2) { --random-x: -150px; --random-y: -120px; --random-rotate: -180deg; --random-scale: 0.7; }
+.food-icon:nth-of-type(3) { --random-x: 80px; --random-y: -200px; --random-rotate: 90deg; --random-scale: 0.9; }
+.food-icon:nth-of-type(4) { --random-x: -100px; --random-y: -150px; --random-rotate: -90deg; --random-scale: 0.85; }
+.food-icon:nth-of-type(5) { --random-x: 200px; --random-y: -80px; --random-rotate: 270deg; --random-scale: 0.75; }
+.food-icon:nth-of-type(6) { --random-x: -120px; --random-y: -200px; --random-rotate: -270deg; --random-scale: 0.65; }
+.food-icon:nth-of-type(7) { --random-x: 150px; --random-y: -180px; --random-rotate: 180deg; --random-scale: 0.8; }
+.food-icon:nth-of-type(8) { --random-x: -80px; --random-y: -100px; --random-rotate: -45deg; --random-scale: 0.9; }
+.food-icon:nth-of-type(9) { --random-x: 100px; --random-y: -220px; --random-rotate: 45deg; --random-scale: 0.7; }
+.food-icon:nth-of-type(10) { --random-x: -200px; --random-y: -120px; --random-rotate: -135deg; --random-scale: 0.85; }
+.food-icon:nth-of-type(11) { --random-x: 180px; --random-y: -90px; --random-rotate: 135deg; --random-scale: 0.9; }
+.food-icon:nth-of-type(12) { --random-x: -150px; --random-y: -180px; --random-rotate: -225deg; --random-scale: 0.75; }
+.food-icon:nth-of-type(13) { --random-x: 120px; --random-y: -200px; --random-rotate: 225deg; --random-scale: 0.8; }
+.food-icon:nth-of-type(14) { --random-x: -100px; --random-y: -80px; --random-rotate: -315deg; --random-scale: 0.7; }
+.food-icon:nth-of-type(15) { --random-x: 200px; --random-y: -150px; --random-rotate: 315deg; --random-scale: 0.85; }
+.food-icon:nth-of-type(16) { --random-x: -180px; --random-y: -200px; --random-rotate: -360deg; --random-scale: 0.8; }
+.food-icon:nth-of-type(17) { --random-x: 150px; --random-y: -120px; --random-rotate: 120deg; --random-scale: 0.75; }
+.food-icon:nth-of-type(18) { --random-x: -120px; --random-y: -90px; --random-rotate: -120deg; --random-scale: 0.9; }
+.food-icon:nth-of-type(19) { --random-x: 100px; --random-y: -180px; --random-rotate: 240deg; --random-scale: 0.7; }
+.food-icon:nth-of-type(20) { --random-x: -200px; --random-y: -150px; --random-rotate: -240deg; --random-scale: 0.85; }
+.food-icon:nth-of-type(21) { --random-x: 180px; --random-y: -200px; --random-rotate: 300deg; --random-scale: 0.8; }
+.food-icon:nth-of-type(22) { --random-x: -150px; --random-y: -80px; --random-rotate: -300deg; --random-scale: 0.75; }
+.food-icon:nth-of-type(23) { --random-x: 120px; --random-y: -150px; --random-rotate: 60deg; --random-scale: 0.9; }
+.food-icon:nth-of-type(24) { --random-x: -100px; --random-y: -200px; --random-rotate: -60deg; --random-scale: 0.7; }
+.food-icon:nth-of-type(25) { --random-x: 200px; --random-y: -120px; --random-rotate: 150deg; --random-scale: 0.85; }
+.food-icon:nth-of-type(26) { --random-x: -180px; --random-y: -90px; --random-rotate: -150deg; --random-scale: 0.8; }
+.food-icon:nth-of-type(27) { --random-x: 150px; --random-y: -180px; --random-rotate: 210deg; --random-scale: 0.75; }
+.food-icon:nth-of-type(28) { --random-x: -120px; --random-y: -150px; --random-rotate: -210deg; --random-scale: 0.9; }
+.food-icon:nth-of-type(29) { --random-x: 100px; --random-y: -90px; --random-rotate: 330deg; --random-scale: 0.7; }
+.food-icon:nth-of-type(30) { --random-x: -200px; --random-y: -180px; --random-rotate: -330deg; --random-scale: 0.85; }
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .login-container {
+    max-width: 90%;
+    padding: 2rem;
+  }
+  
+  .login-title {
+    font-size: 1.5rem;
+  }
+  
+  .login-subtitle {
+    font-size: 0.875rem;
+  }
+}
+
+/* Glass effect for modern browsers */
+@supports (backdrop-filter: blur(10px)) {
+  .login-container {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .dark-mode .login-container {
+    background-color: rgba(17, 24, 39, 0.7);
+  }
+}
+
+/* Additional animations for form elements */
+.input-field, .login-button, .custom-checkbox {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-field:focus {
+  transform: translateY(-2px);
+}
+
+.login-button:focus {
+  animation: pulse 1.5s;
+  outline: none;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(225, 29, 72, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0);
+  }
+}

@@ -1,0 +1,422 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Heart, Users, Utensils, ArrowRight, MapPin,
+  Clock, ShieldCheck, Share2, Gift, Info,
+  ArrowDown, Sparkles, CheckCircle2, Star, Award,
+  HeartHandshake, Restaurant, ShoppingBag, Store,
+  Home, Building, Calendar, AlertCircle, Trash2
+} from 'lucide-react';
+
+const HomePage = () => {
+  const navigate = useNavigate();
+  const [isVisible, setIsVisible] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  
+  // Core stats of the platform
+  const stats = [
+    { icon: Utensils, number: '10K+', label: 'Meals Shared', description: 'Nutritious meals delivered to those in need' },
+    { icon: Users, number: '500+', label: 'Active Donors', description: 'Committed partners fighting hunger' },
+    { icon: Heart, number: '1000+', label: 'Lives Impacted', description: 'Communities strengthened through food sharing' },
+    { icon: MapPin, number: '50+', label: 'Communities', description: 'Districts served across Bangladesh' }
+  ];
+
+  // Core features of the platform
+  const features = [
+    {
+      icon: HeartHandshake,
+      title: 'Seamless Connection',
+      description: 'We connect food donors directly with those in need, eliminating barriers and reducing waste'
+    },
+    {
+      icon: Clock,
+      title: 'Real-time Updates',
+      description: 'Track donations and requests instantly with our modern notification system'
+    },
+    {
+      icon: ShieldCheck,
+      title: 'Verified Recipients',
+      description: 'We ensure donations reach genuine individuals and organizations in need'
+    },
+    {
+      icon: Sparkles,
+      title: 'Impact Dashboard',
+      description: 'Visualize your contribution to food security and community welfare'
+    }
+  ];
+
+  // Who should donate
+  const donorTypes = [
+    {
+      icon: Restaurant,
+      title: 'Restaurants',
+      description: 'Share surplus food at the end of the day instead of discarding it',
+      color: 'bg-orange-100 text-orange-600',
+      action: 'Create Restaurant Account'
+    },
+    {
+      icon: Store,
+      title: 'Grocery Stores',
+      description: 'Donate products approaching expiry date but still perfectly safe to eat',
+      color: 'bg-green-100 text-green-600',
+      action: 'Register as Grocery Store'
+    },
+    {
+      icon: Building,
+      title: 'Corporations',
+      description: 'Redistribute excess food from corporate events and cafeterias',
+      color: 'bg-blue-100 text-blue-600',
+      action: 'Corporate Registration'
+    }
+  ];
+
+  // Who needs food
+  const recipientTypes = [
+    {
+      icon: Home,
+      title: 'Families in Need',
+      description: 'Support families facing temporary hardship or long-term food insecurity',
+      color: 'bg-purple-100 text-purple-600',
+      action: 'Request Food Support'
+    },
+    {
+      icon: Users,
+      title: 'Community Centers',
+      description: 'Help community organizations that provide meals to vulnerable populations',
+      color: 'bg-red-100 text-red-600',
+      action: 'Register Community Center'
+    },
+    {
+      icon: AlertCircle,
+      title: 'Emergency Relief',
+      description: 'Support disaster response with immediate food distribution',
+      color: 'bg-amber-100 text-amber-600',
+      action: 'Emergency Food Request'
+    }
+  ];
+
+  // Project aims
+  const projectAims = [
+    {
+      icon: Trash2,
+      title: 'Reduce Food Waste',
+      description: 'Nearly one-third of all food produced globally is wasted. We aim to decrease food waste in Bangladesh by connecting surplus food with those who need it most.'
+    },
+    {
+      icon: Users,
+      title: 'Combat Hunger',
+      description: 'Despite food surplus in many areas, millions of Bangladeshis face food insecurity. Our platform creates an efficient redistribution system.'
+    },
+    {
+      icon: Heart,
+      title: 'Build Community',
+      description: 'By connecting donors and recipients, we foster community bonds and promote a culture of sharing and mutual support.'
+    },
+    {
+      icon: Award,
+      title: 'Environmental Impact',
+      description: 'Reducing food waste helps lower greenhouse gas emissions associated with decomposing food in landfills and unnecessary food production.'
+    },
+    {
+      icon: Calendar,
+      title: 'Immediate Action',
+      description: 'Our real-time platform ensures food can be redistributed quickly before it spoils, making the entire process more efficient.'
+    },
+    {
+      icon: Info,
+      title: 'Raise Awareness',
+      description: 'We educate the public about food waste and food insecurity while providing a practical solution to address both issues simultaneously.'
+    }
+  ];
+
+  useEffect(() => {
+    setIsVisible(true);
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      {/* Hero Section */}
+      <section className="relative min-h-screen bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 dark:from-emerald-800 dark:via-teal-700 dark:to-cyan-800 text-white overflow-hidden flex items-center">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 bg-emerald-900/20 dark:bg-emerald-900/40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-900/30 to-emerald-900/50 dark:from-transparent dark:via-emerald-900/50 dark:to-emerald-900/70" />
+          {/* Animated Dots Background */}
+          <div className="absolute inset-0 flex flex-wrap justify-center items-center opacity-20">
+            {[...Array(6)].map((_, row) => (
+              [...Array(6)].map((_, col) => (
+                <div
+                  key={`${row}-${col}`}
+                  className={`w-4 h-4 m-8 rounded-full bg-white/10 transition-all duration-700 ease-in-out ${
+                    scrollY > 100 ? 'scale-150 opacity-0' : 'scale-100 opacity-100'
+                  }`}
+                  style={{
+                    transform: `translate(${Math.sin((row + col) * 0.5 + scrollY * 0.002) * 20}px, ${Math.cos((row + col) * 0.5 + scrollY * 0.002) * 20}px)`
+                  }}
+                />
+              ))
+            ))}
+          </div>
+        </div>
+        <div className="relative max-w-7xl mx-auto px-6 py-32">
+          <div className={`text-center transform transition-all duration-1000 ${
+            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+          }`}>
+            <div className="inline-flex items-center bg-white/10 backdrop-blur-lg rounded-full px-6 py-2 mb-8">
+              <Star className="w-5 h-5 mr-2 text-yellow-300" />
+              <span className="text-sm font-medium">Fighting food waste & hunger in Bangladesh</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              Connect Food Surplus
+              <br />
+              With Those Who Need It
+            </h1>
+            <p className="text-lg md:text-xl mb-12 max-w-3xl mx-auto font-light text-teal-50">
+              FoodBridge is a digital platform that connects food businesses with surplus food to individuals 
+              and organizations that need it, reducing waste and fighting hunger across Bangladesh.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
+              <button
+                onClick={() => navigate('/login')}
+                className="group bg-white dark:bg-white text-emerald-600 dark:text-emerald-700 px-8 py-4 rounded-xl font-medium hover:bg-emerald-50 transition-all transform hover:scale-105 flex items-center justify-center shadow-lg"
+              >
+                 Donate Food
+                <ArrowRight className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                className="group bg-emerald-700/30 backdrop-blur-lg border-2 border-white/20 text-white px-8 py-4 rounded-xl font-medium hover:bg-emerald-700/40 transition-all transform hover:scale-105 flex items-center justify-center"
+              >
+                Request Food
+                <ArrowRight className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-8">
+          <ArrowDown className="w-6 h-6 animate-bounce text-white/70" />
+        </div>
+      </section>
+
+      {/* Impact Stats */}
+      <section className="py-24 bg-white dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Impact</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Together with our community, we're making a real difference in Bangladesh
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div
+                key={stat.label}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 border border-emerald-100 dark:border-emerald-900"
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl">
+                  <stat.icon className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">{stat.number}</h3>
+                <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">{stat.label}</p>
+                <p className="text-gray-600 dark:text-gray-400">{stat.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-24 bg-gray-50 dark:bg-gray-800">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">How FoodBridge Works</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              A simple and efficient process connecting surplus food with those who need it
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <div
+                key={feature.title}
+                className="bg-white dark:bg-gray-700 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group"
+              >
+                <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-emerald-100 dark:bg-emerald-800 rounded-xl group-hover:bg-emerald-200 dark:group-hover:bg-emerald-700 transition-colors">
+                  <feature.icon className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Project Aims */}
+      <section className="py-24 bg-white dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Mission & Goals</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              FoodBridge aims to solve critical problems through innovative food redistribution
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {projectAims.map((aim) => (
+              <div
+                key={aim.title}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 h-full"
+              >
+                <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl">
+                  <aim.icon className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                  {aim.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {aim.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Who Should Donate Section */}
+      <section className="py-24 bg-gray-50 dark:bg-gray-800">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Who Should Donate Food?</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              If you have surplus food that would otherwise go to waste, you can make a difference
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {donorTypes.map((type) => (
+              <div
+                key={type.title}
+                className="bg-white dark:bg-gray-700 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group border border-gray-100 dark:border-gray-600 h-full flex flex-col"
+              >
+                <div className={`inline-flex items-center justify-center w-16 h-16 mb-6 rounded-xl ${type.color} dark:bg-opacity-20`}>
+                  <type.icon className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                  {type.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6 flex-grow">
+                  {type.description}
+                </p>
+                <div className="mt-auto">
+                  <button 
+                    onClick={() => navigate('/signup')}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
+                  >
+                    {type.action}
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Who Needs Food Section */}
+      <section className="py-24 bg-white dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Who We Help</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              FoodBridge assists various groups experiencing food insecurity
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {recipientTypes.map((type) => (
+              <div
+                key={type.title}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group border border-gray-100 dark:border-gray-700 h-full flex flex-col"
+              >
+                <div className={`inline-flex items-center justify-center w-16 h-16 mb-6 rounded-xl ${type.color} dark:bg-opacity-20`}>
+                  <type.icon className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                  {type.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6 flex-grow">
+                  {type.description}
+                </p>
+                <div className="mt-auto">
+                  <button 
+                    onClick={() => navigate('/signup')}
+                    className="w-full bg-white dark:bg-gray-700 text-emerald-600 dark:text-emerald-400 font-medium py-3 px-4 rounded-lg border-2 border-emerald-100 dark:border-emerald-800 hover:border-emerald-200 dark:hover:border-emerald-700 transition-colors flex items-center justify-center"
+                  >
+                    {type.action}
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-24 bg-gray-50 dark:bg-gray-800">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-3xl p-12 text-center">
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                Join The Movement Against Food Waste
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-12">
+                Whether you're a business with surplus food or an individual wanting to make 
+                a difference, FoodBridge provides the connection to ensure food reaches those who need it most.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-6">
+                <button
+                  onClick={() => navigate('/signup')}
+                  className="group bg-emerald-600 text-white px-8 py-4 rounded-xl font-medium hover:bg-emerald-700 transition-all transform hover:scale-105 inline-flex items-center justify-center shadow-lg"
+                >
+                  Join FoodBridge Today
+                  <ArrowRight className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
+                </button>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="group bg-white dark:bg-gray-700 text-emerald-600 dark:text-emerald-400 px-8 py-4 rounded-xl font-medium hover:bg-emerald-50 dark:hover:bg-gray-600 transition-all transform hover:scale-105 inline-flex items-center justify-center border-2 border-emerald-100 dark:border-emerald-800"
+                >
+                  Login to Your Account
+                  <ArrowRight className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-6">
+                <div className="flex items-center text-gray-600 dark:text-gray-300">
+                  <CheckCircle2 className="w-5 h-5 mr-2 text-emerald-600 dark:text-emerald-400" />
+                  <span>Quick Registration</span>
+                </div>
+                <div className="flex items-center text-gray-600 dark:text-gray-300">
+                  <CheckCircle2 className="w-5 h-5 mr-2 text-emerald-600 dark:text-emerald-400" />
+                  <span>Secure Platform</span>
+                </div>
+                <div className="flex items-center text-gray-600 dark:text-gray-300">
+                  <CheckCircle2 className="w-5 h-5 mr-2 text-emerald-600 dark:text-emerald-400" />
+                  <span>Real-time Updates</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default HomePage;
