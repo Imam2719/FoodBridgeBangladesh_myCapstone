@@ -8,20 +8,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import javax.sql.DataSource;
+import org.springframework.beans.factory.annotation.Value;
 import java.util.HashMap;
 import java.util.Map;
 import java.time.Instant;
-import java.sql.Connection;
 
 @SpringBootApplication
 public class FoodBridgeBangladeshApplication {
-
+	
 	public static void main(String[] args) {
 		SpringApplication.run(FoodBridgeBangladeshApplication.class, args);
 	}
-
+	
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
@@ -44,31 +42,33 @@ public class FoodBridgeBangladeshApplication {
 @RestController
 class HealthController {
 	
-	@Autowired(required = false)
-	private DataSource dataSource;
+	@Value("${spring.application.name:FoodBridge Bangladesh Backend}")
+	private String applicationName;
+	
+	@Value("${server.port:8080}")
+	private String serverPort;
 	
 	@GetMapping("/health")
 	public ResponseEntity<Map<String, String>> health() {
 		Map<String, String> status = new HashMap<>();
 		status.put("status", "UP");
-		status.put("service", "FoodBridge Bangladesh Backend");
+		status.put("service", applicationName);
 		status.put("timestamp", Instant.now().toString());
-		
-		// Test database connection
-		if (dataSource != null) {
-			try {
-				Connection connection = dataSource.getConnection();
-				status.put("database", "CONNECTED");
-				status.put("databaseUrl", connection.getMetaData().getURL());
-				connection.close();
-			} catch (Exception e) {
-				status.put("database", "FAILED");
-				status.put("databaseError", e.getMessage());
-			}
-		} else {
-			status.put("database", "NO_DATASOURCE");
-		}
+		status.put("port", serverPort);
+		status.put("message", "Application is running successfully");
 		
 		return ResponseEntity.ok(status);
+	}
+	
+	@GetMapping("/")
+	public ResponseEntity<Map<String, String>> root() {
+		Map<String, String> response = new HashMap<>();
+		response.put("message", "Welcome to FoodBridge Bangladesh API");
+		response.put("status", "Active");
+		response.put("timestamp", Instant.now().toString());
+		response.put("healthCheck", "/health");
+		response.put("apiBase", "/api");
+		
+		return ResponseEntity.ok(response);
 	}
 }
