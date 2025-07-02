@@ -60,10 +60,14 @@ class HealthController {
 		return ResponseEntity.ok(status);
 	}
 	
-	@GetMapping("/")
-	public ResponseEntity<Map<String, String>> root() {
+	// REMOVED THE CONFLICTING @GetMapping("/") METHOD
+	// This was conflicting with navigationControllelr#home() 
+	// Let navigationController handle the root "/" path
+	
+	@GetMapping("/api/status")
+	public ResponseEntity<Map<String, String>> apiStatus() {
 		Map<String, String> response = new HashMap<>();
-		response.put("message", "Welcome to FoodBridge Bangladesh API");
+		response.put("message", "FoodBridge Bangladesh API is running");
 		response.put("status", "Active");
 		response.put("timestamp", Instant.now().toString());
 		response.put("healthCheck", "/health");
