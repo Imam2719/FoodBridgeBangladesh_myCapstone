@@ -13,8 +13,8 @@ import {
 import '../style/auth.css';
 import { useTheme } from '../contexts/ThemeContext';
 
-// API base URL
-const API_URL = 'http://localhost:8080/api';
+import { API_BASE_URL } from '../config/api';
+const API_URL = API_BASE_URL;
 
 // Food items for the dynamic background
 const FOOD_ITEMS = [
