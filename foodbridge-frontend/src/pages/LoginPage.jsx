@@ -13,8 +13,9 @@ import {
 import '../style/auth.css';
 import { useTheme } from '../contexts/ThemeContext';
 
-// API base URL
-const API_URL = 'http://localhost:8080/api';
+const API_URL = process.env.NODE_ENV === 'production' 
+    ? 'https://viewlive.onrender.com/api' 
+    : 'http://localhost:8080/api';
 
 // Food items for the dynamic background
 const FOOD_ITEMS = [
