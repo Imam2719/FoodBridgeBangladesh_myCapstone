@@ -16,7 +16,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {
+    "http://localhost:3000", 
+    "https://foodbridge-frontend.onrender.com"
+})
 @RequiredArgsConstructor
 @Slf4j
 public class SignupController {
