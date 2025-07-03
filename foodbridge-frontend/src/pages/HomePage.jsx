@@ -11,6 +11,9 @@ import {
   Zap, Crown, Package, LogIn
 } from 'lucide-react';
 import '../style/HomePage.css';
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+    ? 'https://viewlive.onrender.com/api' 
+    : 'http://localhost:8080/api';
 
 const HomePage = () => {
 
@@ -32,7 +35,7 @@ const HomePage = () => {
     const fetchStatistics = async () => {
     try {
       setStatsLoading(true);
-      const response = await fetch('http://localhost:8080/api/statistics/homepage');
+      const response = await fetch(`${API_BASE_URL}/statistics/homepage`);
       const data = await response.json();
       
       if (response.ok) {
@@ -348,7 +351,7 @@ const handleFileAttachment = (event) => {
         formData.append('attachment', attachedFiles[0].file);
       }
 
-      const response = await fetch('http://localhost:8080/api/messages/submit', {
+     const response = await fetch(`${API_BASE_URL}/messages/submit`, {
         method: 'POST',
         body: formData,
       });

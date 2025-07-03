@@ -16,10 +16,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 @Slf4j
 public class SignupController {
+
+     private static final Logger log = Logger.getLogger(SignupController.class.getName());
+
 
     private final UserService userService;
 

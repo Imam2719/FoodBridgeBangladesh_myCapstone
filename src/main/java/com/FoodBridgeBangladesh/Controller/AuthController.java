@@ -12,7 +12,8 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com"}, allowCredentials = true)
+
 public class AuthController {
 
     private static final Logger logger = Logger.getLogger(AuthController.class.getName());

@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger; 
 
 @RestController
 @RequestMapping("/api/receiver/profile")
@@ -21,6 +22,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class ReceiverProfileController {
+
+    private static final Logger log = Logger.getLogger(ReceiverProfileController.class.getName());
+
 
     private final ReceiverProfileService receiverProfileService;
 
