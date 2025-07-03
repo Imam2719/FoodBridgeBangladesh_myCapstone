@@ -14,8 +14,8 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        // Allow requests from the React app
-        config.addAllowedOrigin("http://localhost:3000");
+       config.addAllowedOrigin("http://localhost:3000");
+config.addAllowedOrigin("https://foodbridge-frontend.onrender.com");
 
         // Allow all headers
         config.addAllowedHeader("*");
