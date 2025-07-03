@@ -11,8 +11,9 @@ import {
 import '../style/Signup.css';
 import { useTheme } from '../contexts/ThemeContext';
 
-// API URL constant
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+    ? 'https://viewlive.onrender.com/api' 
+    : 'http://localhost:8080/api';
 
 const SignupPage = () => {
 
