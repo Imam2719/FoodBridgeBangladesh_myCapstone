@@ -13,12 +13,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger; 
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
 public class SignupController {
+
+     private static final Logger log = Logger.getLogger(SignupController.class.getName());
+
 
     private final UserService userService;
 
