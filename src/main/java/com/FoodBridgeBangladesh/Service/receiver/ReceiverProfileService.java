@@ -12,11 +12,14 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.logging.Logger; 
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ReceiverProfileService {
+    private static final Logger log = Logger.getLogger(ReceiverProfileService.class.getName());
+
 
     private final UserRepository userRepository;
 
