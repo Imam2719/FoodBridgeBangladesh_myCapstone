@@ -15,6 +15,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/donor")
@@ -22,6 +23,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class DonorProfileController {
+
+    private static final Logger log = Logger.getLogger(DonorProfileController.class.getName());
+
 
     private final UserRepository userRepository;
 
