@@ -24,9 +24,6 @@ import java.util.logging.Logger;
 @Slf4j
 public class DonorProfileController {
 
-    private static final Logger log = Logger.getLogger(DonorProfileController.class.getName());
-
-
     private final UserRepository userRepository;
 
     @GetMapping("/profile/{donorId}")

@@ -14,8 +14,6 @@ import java.util.logging.Logger;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-    private static final Logger log = Logger.getLogger(GlobalExceptionHandler.class.getName());
-
 
     /**
      * Handle file size exceeded exception

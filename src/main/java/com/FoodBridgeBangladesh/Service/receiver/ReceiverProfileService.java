@@ -18,8 +18,6 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 @Slf4j
 public class ReceiverProfileService {
-    private static final Logger log = Logger.getLogger(ReceiverProfileService.class.getName());
-
 
     private final UserRepository userRepository;
 

@@ -23,9 +23,6 @@ import java.util.logging.Logger;
 @Slf4j
 public class ReceiverProfileController {
 
-    private static final Logger log = Logger.getLogger(ReceiverProfileController.class.getName());
-
-
     private final ReceiverProfileService receiverProfileService;
 
     /**

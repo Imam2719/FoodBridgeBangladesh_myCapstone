@@ -3,7 +3,8 @@ package com.FoodBridgeBangladesh.Controller;
 import com.FoodBridgeBangladesh.Model.User;
 import com.FoodBridgeBangladesh.Service.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,19 +14,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger; 
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@Slf4j
 public class SignupController {
 
-     private static final Logger log = Logger.getLogger(SignupController.class.getName());
-
+    private static final Logger log = LoggerFactory.getLogger(SignupController.class);
 
     private final UserService userService;
-
     /**
      * Check if email already exists in the database
      */
