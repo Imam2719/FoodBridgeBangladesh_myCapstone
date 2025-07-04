@@ -116,7 +116,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
     setMessagesLoading(true);
     try {
-      const response = await fetch(`http://localhost:8080/api/merchant/messages/${merchantId}/sent`);
+      const response = await fetch(`https://viewlive.onrender.com/api/merchant/messages/${merchantId}/sent`);
 
       if (response.ok) {
         const data = await response.json();
@@ -137,7 +137,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
     setMessagesLoading(true);
     try {
-      const response = await fetch(`http://localhost:8080/api/merchant/messages/${merchantId}/received`);
+      const response = await fetch(`https://viewlive.onrender.com/api/merchant/messages/${merchantId}/received`);
 
       if (response.ok) {
         const data = await response.json();
@@ -157,7 +157,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
     if (!merchantId) return;
 
     try {
-      const response = await fetch(`http://localhost:8080/api/merchant/messages/${merchantId}/stats`);
+      const response = await fetch(`https://viewlive.onrender.com/api/merchant/messages/${merchantId}/stats`);
 
       if (response.ok) {
         const stats = await response.json();
@@ -180,7 +180,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
       formData.append('merchantEmail', merchantEmail);
       formData.append('replyContent', replyContent);
 
-      const response = await fetch(`http://localhost:8080/api/merchant/messages/reply/${selectedMessage.id}`, {
+      const response = await fetch(`https://viewlive.onrender.com/api/merchant/messages/reply/${selectedMessage.id}`, {
         method: 'POST',
         body: formData
       });
@@ -294,7 +294,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
       console.log(`Deleting sale ID: ${saleId} for merchant ID: ${merchantId}`);
 
       const response = await fetch(
-        `http://localhost:8080/api/merchant/sales/${saleId}?merchantId=${merchantId}`,
+        `https://viewlive.onrender.com/api/merchant/sales/${saleId}?merchantId=${merchantId}`,
         {
           method: 'DELETE',
           headers: {
@@ -388,7 +388,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
       console.log(`Fetching overview stats for merchant ID: ${merchantId}`);
 
       // Fetch sales data for revenue and items sold
-      const salesResponse = await fetch(`http://localhost:8080/api/merchant/sales/merchant/${merchantId}`);
+      const salesResponse = await fetch(`https://viewlive.onrender.com/api/merchant/sales/merchant/${merchantId}`);
       let totalItemsSold = 0;
       let totalRevenue = 0;
 
@@ -443,7 +443,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
     try {
       console.log(`Fetching sales history for merchant ID: ${merchantId}`);
-      const response = await fetch(`http://localhost:8080/api/merchant/sales/merchant/${merchantId}/detailed`);
+      const response = await fetch(`https://viewlive.onrender.com/api/merchant/sales/merchant/${merchantId}/detailed`);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -484,7 +484,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
       try {
         console.log(`Attempting to fetch profile with merchantId: ${merchantId}`);
-        const response = await fetch(`http://localhost:8080/api/merchant/profile?merchantId=${merchantId}`);
+        const response = await fetch(`https://viewlive.onrender.com/api/merchant/profile?merchantId=${merchantId}`);
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -586,7 +586,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
         console.log(`Fetching food items with merchantId: ${merchantId}`);
 
-        const response = await fetch(`http://localhost:8080/api/merchant/food-items?merchantId=${merchantId}`);
+        const response = await fetch(`https://viewlive.onrender.com/api/merchant/food-items?merchantId=${merchantId}`);
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -646,7 +646,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
           statusValue = 'Active';
       }
 
-      const url = `http://localhost:8080/api/merchant/donate/merchant/${merchantId}/status/${statusValue}`;
+      const url = `https://viewlive.onrender.com/api/merchant/donate/merchant/${merchantId}/status/${statusValue}`;
 
       console.log("Fetching from URL:", url); // Debug log to verify URL
 
@@ -719,7 +719,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
         throw new Error('Merchant ID is missing or invalid');
       }
 
-      const url = `http://localhost:8080/api/merchant/donations/${donation.id}/requests?merchantId=${merchantId}`;
+      const url = `https://viewlive.onrender.com/api/merchant/donations/${donation.id}/requests?merchantId=${merchantId}`;
       console.log("Request URL:", url);
 
       const response = await fetch(url, {
@@ -779,7 +779,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
     try {
       setRequestsLoading(true);
       const response = await fetch(
-        `http://localhost:8080/api/merchant/requests/${requestId}/status?merchantId=${merchantId}`,
+        `https://viewlive.onrender.com/api/merchant/requests/${requestId}/status?merchantId=${merchantId}`,
         {
           method: 'PUT',
           headers: {
@@ -797,7 +797,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
       }
       if (selectedDonationForRequests) {
         const refreshResponse = await fetch(
-          `http://localhost:8080/api/merchant/donations/${selectedDonationForRequests.id}/requests?merchantId=${merchantId}`,
+          `https://viewlive.onrender.com/api/merchant/donations/${selectedDonationForRequests.id}/requests?merchantId=${merchantId}`,
           { credentials: 'include' }
         );
 
@@ -933,7 +933,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
       if (currentItem.id) {
 
-        url = `http://localhost:8080/api/merchant/food-items/${currentItem.id}?merchantId=${merchantId}`;
+        url = `https://viewlive.onrender.com/api/merchant/food-items/${currentItem.id}?merchantId=${merchantId}`;
         console.log(`PUT request to: ${url}`);
 
         response = await fetch(url, {
@@ -941,7 +941,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
           body: formData
         });
       } else {
-        url = `http://localhost:8080/api/merchant/food-items?merchantId=${merchantId}`;
+        url = `https://viewlive.onrender.com/api/merchant/food-items?merchantId=${merchantId}`;
         console.log(`POST request to: ${url}`);
 
         response = await fetch(url, {
@@ -981,7 +981,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
       setImageFile(null);
       console.log("Refreshing full food items list");
       try {
-        const refreshResponse = await fetch(`http://localhost:8080/api/merchant/food-items?merchantId=${merchantId}`);
+        const refreshResponse = await fetch(`https://viewlive.onrender.com/api/merchant/food-items?merchantId=${merchantId}`);
 
         if (refreshResponse.ok) {
           const refreshData = await refreshResponse.json();
@@ -1009,7 +1009,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
   const handleMarkAsCompleted = async (donationId) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/merchant/donate/${donationId}/status?merchantId=${merchantId}`,
+        `https://viewlive.onrender.com/api/merchant/donate/${donationId}/status?merchantId=${merchantId}`,
         {
           method: 'PUT',
           headers: {
@@ -1036,7 +1036,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       try {
-        const response = await fetch(`http://localhost:8080/api/merchant/food-items/${id}`, {
+        const response = await fetch(`https://viewlive.onrender.com/api/merchant/food-items/${id}`, {
           method: 'DELETE'
         });
 
@@ -1051,7 +1051,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   const togglePause = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/merchant/food-items/${id}/toggle-pause`, {
+      const response = await fetch(`https://viewlive.onrender.com/api/merchant/food-items/${id}/toggle-pause`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -1163,7 +1163,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
       console.log("Sending donation payload:", donationPayload);
 
-      const response = await fetch('http://localhost:8080/api/merchant/donate/create', {
+      const response = await fetch('https://viewlive.onrender.com/api/merchant/donate/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -1383,7 +1383,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/merchant/donate/${donationToDelete}?merchantId=${merchantId}`,
+        `https://viewlive.onrender.com/api/merchant/donate/${donationToDelete}?merchantId=${merchantId}`,
         {
           method: 'DELETE',
           headers: {
@@ -1420,7 +1420,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
   const handleSaveDonationEdit = async (editedDonation) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/merchant/donate/${editedDonation.id}?merchantId=${merchantId}`,
+        `https://viewlive.onrender.com/api/merchant/donate/${editedDonation.id}?merchantId=${merchantId}`,
         {
           method: 'PUT',
           headers: {
@@ -1491,7 +1491,7 @@ const handleFees = async () => {
     
     // ✅ ENHANCED: Include selected month in the request
     const response = await fetch(
-      `http://localhost:8080/api/merchant/fees/calculate?merchantId=${merchantId}&selectedMonth=${selectedPaymentMonth}`
+      `https://viewlive.onrender.com/api/merchant/fees/calculate?merchantId=${merchantId}&selectedMonth=${selectedPaymentMonth}`
     );
 
     if (!response.ok) {
@@ -1530,7 +1530,7 @@ const handleFees = async () => {
 
 const fetchPaymentHistory = async () => {
   try {
-    const response = await fetch(`http://localhost:8080/api/merchant/fees/payment-history?merchantId=${merchantId}`);
+    const response = await fetch(`https://viewlive.onrender.com/api/merchant/fees/payment-history?merchantId=${merchantId}`);
     if (response.ok) {
       const history = await response.json();
       // ✅ FIXED: Extract the paymentHistory array from the response
@@ -1559,7 +1559,7 @@ const handlePaymentSubmit = async (e) => {
 
     console.log('Sending payment data:', paymentData);
 
-    const response = await fetch('http://localhost:8080/api/merchant/fees/process-payment', {
+    const response = await fetch('https://viewlive.onrender.com/api/merchant/fees/process-payment', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -2208,7 +2208,7 @@ Best regards,
           formData.append('attachment', attachment);
         }
 
-        const response = await fetch('http://localhost:8080/api/merchant/messages/send', {
+        const response = await fetch('https://viewlive.onrender.com/api/merchant/messages/send', {
           method: 'POST',
           body: formData
         });
@@ -2492,7 +2492,7 @@ Best regards,
     if (messageTab === 'received' && !message.read) {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/merchant/messages/${merchantId}/messages/${message.id}/mark-read`,
+          `https://viewlive.onrender.com/api/merchant/messages/${merchantId}/messages/${message.id}/mark-read`,
           {
             method: 'PUT',
           }
@@ -2523,7 +2523,7 @@ Best regards,
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/merchant/messages/${merchantId}/messages/${messageId}/ignore`,
+        `https://viewlive.onrender.com/api/merchant/messages/${merchantId}/messages/${messageId}/ignore`,
         {
           method: 'PUT',
         }
@@ -2554,7 +2554,7 @@ Best regards,
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/merchant/messages/${merchantId}/sent/${messageId}`,
+        `https://viewlive.onrender.com/api/merchant/messages/${merchantId}/sent/${messageId}`,
         {
           method: 'DELETE',
         }
@@ -2638,7 +2638,7 @@ Best regards,
       for (let pair of formData.entries()) {
         console.log(pair[0] + ': ' + pair[1]);
       }
-      const response = await fetch(`http://localhost:8080/api/merchant/profile/update?merchantId=${merchantId}`, {
+      const response = await fetch(`https://viewlive.onrender.com/api/merchant/profile/update?merchantId=${merchantId}`, {
         method: 'PUT',
         body: formData
       });
@@ -2747,7 +2747,7 @@ Best regards,
       console.log(`Fetching food items with remaining quantity for merchantId: ${merchantId}`);
 
       // First get all food items
-      const response = await fetch(`http://localhost:8080/api/merchant/food-items?merchantId=${merchantId}`);
+      const response = await fetch(`https://viewlive.onrender.com/api/merchant/food-items?merchantId=${merchantId}`);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch food items: ${response.status}`);
@@ -2760,7 +2760,7 @@ Best regards,
         foodItemsData.map(async (item) => {
           try {
             // This endpoint should now include both sold AND donated quantities
-            const remainingResponse = await fetch(`http://localhost:8080/api/merchant/food-items/${item.id}/with-remaining`);
+            const remainingResponse = await fetch(`https://viewlive.onrender.com/api/merchant/food-items/${item.id}/with-remaining`);
 
             if (remainingResponse.ok) {
               const remainingData = await remainingResponse.json();
