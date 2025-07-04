@@ -18,10 +18,9 @@ import {
 
 import '../style/ReciverDashBoard.css';
 
-// Use your actual deployment URLs
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-    ? 'https://viewlive.onrender.com/api' 
-    : 'http://localhost:8080/api';
+    ? 'https://viewlive.onrender.com' 
+    : 'http://localhost:8080';
 
 const ReceiverDashboard = () => {
   const { darkMode } = useTheme();
@@ -332,10 +331,10 @@ const ReceiverDashboard = () => {
 
   // Modify the existing fetchAcceptedRequestNotifications function to use the new endpoint
   const fetchAcceptedRequestNotifications = async () => {
-    try {
+ try {
     const response = await axios.get(
-  `${API_BASE_URL}/api/receiver/notifications/accepted?receiverId=${currentUser.id}`
-);
+      `${API_BASE_URL}/api/receiver/notifications/accepted?receiverId=${currentUser.id}`
+    );
 
       if (response.data && response.data.length > 0) {
         // Store notifications in state
@@ -374,10 +373,10 @@ const ReceiverDashboard = () => {
   };
 
   const fetchRequestNotifications = async () => {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}/api/receiver/notifications/requests?receiverId=${currentUser.id}`
-      );
+     try {
+    const response = await axios.get(
+      `${API_BASE_URL}/api/receiver/notifications/requests?receiverId=${currentUser.id}`
+    );
 
       if (response.data && response.data.length > 0) {
         // Store notifications in state
@@ -425,11 +424,11 @@ const ReceiverDashboard = () => {
 
   // Fetch saved donation IDs from backend
   const fetchSavedDonationIds = async () => {
-    try {
-      setIsLoadingSavedItems(true);
-      const response = await axios.get(
-        `${API_BASE_URL}/api/receiver/saved-donations/ids?userId=${currentUser.id}`
-      );
+   try {
+    setIsLoadingSavedItems(true);
+    const response = await axios.get(
+      `${API_BASE_URL}/api/receiver/saved-donations/ids?userId=${currentUser.id}`
+    );
 
       if (response.data.success) {
         setSavedFoods(response.data.savedDonationIds);
@@ -742,9 +741,9 @@ const response = await axios.get(
       if (!currentUser.id) return;
 
       try {
-        setIsLoading(true);
-        const response = await axios.get(`${API_BASE_URL}/api/receiver/profile/${currentUser.id}`);
-
+       setIsLoading(true);
+    const response = await axios.get(`${API_BASE_URL}/api/receiver/profile/${currentUser.id}`);
+  
         if (response.data.success) {
           setUserProfile(response.data.data);
           setProfileFormData(response.data.data);
@@ -802,18 +801,18 @@ const response = await axios.get(
     };
   }, [isEditingProfile]);
 
-  const fetchAvailableFoodDonations = async () => {
-    try {
-      setIsLoading(true);
-      console.log('Sending request to:', `${API_BASE_URL}/api/receiver/food/available`);
+const fetchAvailableFoodDonations = async () => {
+  try {
+    setIsLoading(true);
+    console.log('Sending request to:', `${API_BASE_URL}/api/receiver/food/available`);
 
-      const response = await axios.get(`${API_BASE_URL}/api/receiver/food/available`, {
-        params: {
-          category: selectedCategory !== 'All' ? selectedCategory : null,
-          page: pagination.currentPage,
-          size: 10
-        }
-      });
+    const response = await axios.get(`${API_BASE_URL}/api/receiver/food/available`, {
+      params: {
+        category: selectedCategory !== 'All' ? selectedCategory : null,
+        page: pagination.currentPage,
+        size: 10
+      }
+    });
 
       console.log('API Response Status:', response.status);
       console.log('Full API Response:', response.data);
@@ -977,7 +976,7 @@ const response = await axios.get(
     }, 10);
   };
 
- const submitPickupRequest = async () => {
+const submitPickupRequest = async () => {
   try {
     setIsSubmitting(true);
     
@@ -1655,10 +1654,9 @@ const handleFoodRequestSubmit = async (e) => {
       const isSaved = savedFoods.includes(id);
 
       if (isSaved) {
-        // Remove from saved
         const response = await axios.delete(
-          `${API_BASE_URL}/api/receiver/saved-donations/${id}?userId=${currentUser.id}`
-        );
+        `${API_BASE_URL}/api/receiver/saved-donations/${id}?userId=${currentUser.id}`
+      );
 
         if (response.data.success) {
           setSavedFoods(savedFoods.filter(itemId => itemId !== id));
@@ -1667,11 +1665,9 @@ const handleFoodRequestSubmit = async (e) => {
           showSaveNotification(response.data.message || 'Failed to remove saved item', 'error');
         }
       } else {
-        // Add to saved
-        const response = await axios.post(
-          `${API_BASE_URL}/api/receiver/saved-donations/${id}?userId=${currentUser.id}`
-        );
-
+       const response = await axios.post(
+        `${API_BASE_URL}/api/receiver/saved-donations/${id}?userId=${currentUser.id}`
+      );
         if (response.data.success) {
           setSavedFoods([...savedFoods, id]);
           showSaveNotification('Food saved to your collection!', 'success');
