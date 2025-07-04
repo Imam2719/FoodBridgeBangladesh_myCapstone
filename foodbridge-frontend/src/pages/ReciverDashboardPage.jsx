@@ -18,9 +18,9 @@ import {
 
 import '../style/ReciverDashBoard.css';
 
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-    ? 'https://viewlive.onrender.com' 
-    : 'http://localhost:8080';
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? 'https://viewlive.onrender.com'
+  : 'http://localhost:8080';
 
 const ReceiverDashboard = () => {
   const { darkMode } = useTheme();
@@ -331,10 +331,10 @@ const ReceiverDashboard = () => {
 
   // Modify the existing fetchAcceptedRequestNotifications function to use the new endpoint
   const fetchAcceptedRequestNotifications = async () => {
- try {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/receiver/notifications/accepted?receiverId=${currentUser.id}`
-    );
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/receiver/notifications/accepted?receiverId=${currentUser.id}`
+      );
 
       if (response.data && response.data.length > 0) {
         // Store notifications in state
@@ -373,10 +373,10 @@ const ReceiverDashboard = () => {
   };
 
   const fetchRequestNotifications = async () => {
-     try {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/receiver/notifications/requests?receiverId=${currentUser.id}`
-    );
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/receiver/notifications/requests?receiverId=${currentUser.id}`
+      );
 
       if (response.data && response.data.length > 0) {
         // Store notifications in state
@@ -424,11 +424,11 @@ const ReceiverDashboard = () => {
 
   // Fetch saved donation IDs from backend
   const fetchSavedDonationIds = async () => {
-   try {
-    setIsLoadingSavedItems(true);
-    const response = await axios.get(
-      `${API_BASE_URL}/api/receiver/saved-donations/ids?userId=${currentUser.id}`
-    );
+    try {
+      setIsLoadingSavedItems(true);
+      const response = await axios.get(
+        `${API_BASE_URL}/api/receiver/saved-donations/ids?userId=${currentUser.id}`
+      );
 
       if (response.data.success) {
         setSavedFoods(response.data.savedDonationIds);
@@ -607,10 +607,10 @@ const ReceiverDashboard = () => {
     try {
       setIsLoading(true);
 
-   // Use correct endpoint from NeedFoodRequestController
-const response = await axios.get(
-  `${API_BASE_URL}/api/receiver/food/active-requests?receiverId=${currentUser.id}`
-);
+      // Use correct endpoint from NeedFoodRequestController
+      const response = await axios.get(
+        `${API_BASE_URL}/api/receiver/food/active-requests?receiverId=${currentUser.id}`
+      );
 
       if (response.data) {
         // Filter for accepted requests
@@ -741,9 +741,9 @@ const response = await axios.get(
       if (!currentUser.id) return;
 
       try {
-       setIsLoading(true);
-    const response = await axios.get(`${API_BASE_URL}/api/receiver/profile/${currentUser.id}`);
-  
+        setIsLoading(true);
+        const response = await axios.get(`${API_BASE_URL}/api/receiver/profile/${currentUser.id}`);
+
         if (response.data.success) {
           setUserProfile(response.data.data);
           setProfileFormData(response.data.data);
@@ -801,18 +801,18 @@ const response = await axios.get(
     };
   }, [isEditingProfile]);
 
-const fetchAvailableFoodDonations = async () => {
-  try {
-    setIsLoading(true);
-    console.log('Sending request to:', `${API_BASE_URL}/api/receiver/food/available`);
+  const fetchAvailableFoodDonations = async () => {
+    try {
+      setIsLoading(true);
+      console.log('Sending request to:', `${API_BASE_URL}/api/receiver/food/available`);
 
-    const response = await axios.get(`${API_BASE_URL}/api/receiver/food/available`, {
-      params: {
-        category: selectedCategory !== 'All' ? selectedCategory : null,
-        page: pagination.currentPage,
-        size: 10
-      }
-    });
+      const response = await axios.get(`${API_BASE_URL}/api/receiver/food/available`, {
+        params: {
+          category: selectedCategory !== 'All' ? selectedCategory : null,
+          page: pagination.currentPage,
+          size: 10
+        }
+      });
 
       console.log('API Response Status:', response.status);
       console.log('Full API Response:', response.data);
@@ -976,35 +976,35 @@ const fetchAvailableFoodDonations = async () => {
     }, 10);
   };
 
-const submitPickupRequest = async () => {
-  try {
-    setIsSubmitting(true);
-    
-    const response = await axios.post(
-      `${API_BASE_URL}/api/receiver/food/pickup/${selectedPickupFood.id}`,
-      null,
-      {
-        params: {
-          receiverId: currentUser.id,
-          quantity: requestedMealCount,
-          pickupMethod: pickupMethod,
-          ...(requestNote && { note: requestNote })
-        }
-      }
-    );
+  const submitPickupRequest = async () => {
+    try {
+      setIsSubmitting(true);
 
-    if (response.data.success) {
-      showSuccessNotification(`Request submitted! Queue position: #${response.data.queuePosition}`);
-      closePickupRequestModal();
-      fetchAvailableFoodDonations(); // Refresh the list
+      const response = await axios.post(
+        `${API_BASE_URL}/api/receiver/food/pickup/${selectedPickupFood.id}`,
+        null,
+        {
+          params: {
+            receiverId: currentUser.id,
+            quantity: requestedMealCount,
+            pickupMethod: pickupMethod,
+            ...(requestNote && { note: requestNote })
+          }
+        }
+      );
+
+      if (response.data.success) {
+        showSuccessNotification(`Request submitted! Queue position: #${response.data.queuePosition}`);
+        closePickupRequestModal();
+        fetchAvailableFoodDonations(); // Refresh the list
+      }
+    } catch (error) {
+      console.error('Error submitting pickup request:', error);
+      showErrorNotification(error.response?.data?.message || 'Failed to submit pickup request');
+    } finally {
+      setIsSubmitting(false);
     }
-  } catch (error) {
-    console.error('Error submitting pickup request:', error);
-    showErrorNotification(error.response?.data?.message || 'Failed to submit pickup request');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   // Add this function to close the pickup request modal
   const closePickupRequestModal = () => {
@@ -1566,97 +1566,93 @@ const submitPickupRequest = async () => {
     closeModal('emergency');
   };
 
-const handleFoodRequestSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+  const handleFoodRequestSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  try {
-    const formDataObj = new FormData();
-    
-    // Required fields as per NeedFoodRequestController
-    formDataObj.append('userId', currentUser.id);
-    formDataObj.append('priority', formData.priority);
-    formDataObj.append('peopleCount', formData.peopleCount);
-    formDataObj.append('timeNeeded', formData.timeNeeded);
-    formDataObj.append('location', formData.location);
-    formDataObj.append('deliveryPreference', formData.deliveryPreference);
+    try {
+      const formDataObj = new FormData();
 
-    // Handle arrays properly - append each item separately
-    if (formData.foodTypes && formData.foodTypes.length > 0) {
-      formData.foodTypes.forEach(type => {
-        formDataObj.append('foodTypes', type);
-      });
-    } else {
-      formDataObj.append('foodTypes', 'any'); // Default value
-    }
+      // Required fields as per NeedFoodRequestController
+      formDataObj.append('userId', currentUser.id);
+      formDataObj.append('priority', formData.priority);
+      formDataObj.append('peopleCount', formData.peopleCount);
+      formDataObj.append('timeNeeded', formData.timeNeeded);
+      formDataObj.append('location', formData.location);
+      formDataObj.append('deliveryPreference', formData.deliveryPreference);
 
-    if (formData.recipients && formData.recipients.length > 0) {
-      formData.recipients.forEach(recipient => {
-        formDataObj.append('recipients', recipient);
-      });
-    } else {
-      formDataObj.append('recipients', 'donors'); // Default value
-    }
-
-    // Optional fields
-    if (formData.specificDate) formDataObj.append('specificDate', formData.specificDate);
-    if (formData.specificTime) formDataObj.append('specificTime', formData.specificTime);
-    if (formData.notes) formDataObj.append('notes', formData.notes);
-    if (formData.image) formDataObj.append('image', formData.image);
-
-    const response = await axios.post(
-      `${API_BASE_URL}/api/receiver/food/request`,
-      formDataObj,
-      {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      // Handle arrays properly - append each item separately
+      if (formData.foodTypes && formData.foodTypes.length > 0) {
+        formData.foodTypes.forEach(type => {
+          formDataObj.append('foodTypes', type);
+        });
+      } else {
+        formDataObj.append('foodTypes', 'any'); // Default value
       }
-    );
 
-    if (response.data.success) {
-      showSuccessNotification();
-      closeModal('food');
-      // Reset form
-      setFormData({
-        priority: 'medium',
-        foodTypes: [],
-        recipients: ['donors'],
-        peopleCount: 1,
-        timeNeeded: 'today',
-        specificDate: '',
-        specificTime: '',
-        location: '',
-        deliveryPreference: 'pickup',
-        notes: '',
-        image: null
-      });
+      if (formData.recipients && formData.recipients.length > 0) {
+        formData.recipients.forEach(recipient => {
+          formDataObj.append('recipients', recipient);
+        });
+      } else {
+        formDataObj.append('recipients', 'donors'); // Default value
+      }
+
+      if (formData.specificDate) formDataObj.append('specificDate', formData.specificDate);
+      if (formData.specificTime) formDataObj.append('specificTime', formData.specificTime);
+      if (formData.notes) formDataObj.append('notes', formData.notes);
+      if (formData.image) formDataObj.append('image', formData.image);
+
+      const response = await axios.post(
+        `${API_BASE_URL}/api/receiver/food/request`,
+        formDataObj,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        }
+      );
+
+      if (response.data.success) {
+        showSuccessNotification();
+        closeModal('food');
+
+        setFormData({
+          priority: 'medium',
+          foodTypes: [],
+          recipients: ['donors'],
+          peopleCount: 1,
+          timeNeeded: 'today',
+          specificDate: '',
+          specificTime: '',
+          location: '',
+          deliveryPreference: 'pickup',
+          notes: '',
+          image: null
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting food request:', error);
+      showErrorNotification(error.response?.data?.message || 'Failed to submit request');
+    } finally {
+      setIsSubmitting(false);
     }
-  } catch (error) {
-    console.error('Error submitting food request:', error);
-    showErrorNotification(error.response?.data?.message || 'Failed to submit request');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   const handleSwitchToDonorDashboard = () => {
     handleOpenOverviewModal();
   };
 
-  // Toggle favorite status
   const toggleFavorite = (id) => {
-    // In a real app, this would call an API to update the favorite status
     console.log(`Toggling favorite status for food item ${id}`);
   };
 
-  // Toggle save food - now connected to backend
   const toggleSaveFood = async (id) => {
     try {
       const isSaved = savedFoods.includes(id);
 
       if (isSaved) {
         const response = await axios.delete(
-        `${API_BASE_URL}/api/receiver/saved-donations/${id}?userId=${currentUser.id}`
-      );
+          `${API_BASE_URL}/api/receiver/saved-donations/${id}?userId=${currentUser.id}`
+        );
 
         if (response.data.success) {
           setSavedFoods(savedFoods.filter(itemId => itemId !== id));
@@ -1665,9 +1661,9 @@ const handleFoodRequestSubmit = async (e) => {
           showSaveNotification(response.data.message || 'Failed to remove saved item', 'error');
         }
       } else {
-       const response = await axios.post(
-        `${API_BASE_URL}/api/receiver/saved-donations/${id}?userId=${currentUser.id}`
-      );
+        const response = await axios.post(
+          `${API_BASE_URL}/api/receiver/saved-donations/${id}?userId=${currentUser.id}`
+        );
         if (response.data.success) {
           setSavedFoods([...savedFoods, id]);
           showSaveNotification('Food saved to your collection!', 'success');
