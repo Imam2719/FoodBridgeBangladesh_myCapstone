@@ -13,7 +13,10 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/admin/merchants")
-@CrossOrigin(origins = "*")
+@CrossOrigin(
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        allowCredentials = "true"
+)
 public class MerchantEmailController {
 
     private static final Logger logger = Logger.getLogger(MerchantEmailController.class.getName());

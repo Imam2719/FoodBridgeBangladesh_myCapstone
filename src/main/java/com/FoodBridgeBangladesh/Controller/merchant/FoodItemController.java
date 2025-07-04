@@ -28,7 +28,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/merchant/food-items")
-@CrossOrigin(origins = "*")
+@CrossOrigin(
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        allowCredentials = "true"
+)
 public class FoodItemController {
 
     private final Logger logger = LoggerFactory.getLogger(FoodItemController.class);

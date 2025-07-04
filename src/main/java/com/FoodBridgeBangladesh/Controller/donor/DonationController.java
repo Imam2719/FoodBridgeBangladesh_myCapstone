@@ -23,7 +23,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/donor/donations")
-@CrossOrigin(origins = "*")
+@CrossOrigin(
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        allowCredentials = "true"
+)
 public class DonationController {
 
     private final Logger logger = LoggerFactory.getLogger(DonationController.class);

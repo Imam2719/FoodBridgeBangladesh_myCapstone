@@ -14,7 +14,10 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/merchant/fees")
-@CrossOrigin(origins = "*")
+@CrossOrigin(
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        allowCredentials = "true"
+)
 public class PaymentFeeController {
 
     private static final Logger logger = Logger.getLogger(PaymentFeeController.class.getName());

@@ -10,7 +10,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/donor")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        allowCredentials = "true"
+)
 @RequiredArgsConstructor
 @Slf4j
 public class DonorController {

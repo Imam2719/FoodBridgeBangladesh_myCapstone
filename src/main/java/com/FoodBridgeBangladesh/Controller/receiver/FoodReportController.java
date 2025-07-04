@@ -22,7 +22,12 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/receiver/food-reports")
 @Validated
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        allowCredentials = "true",
+        maxAge = 3600
+)
+
 public class FoodReportController {
 
     private static final Logger log = LoggerFactory.getLogger(FoodReportController.class);

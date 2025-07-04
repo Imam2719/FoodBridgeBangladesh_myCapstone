@@ -16,7 +16,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/donor/notifications")
-@CrossOrigin(origins = "*")
+@CrossOrigin(
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        allowCredentials = "true"
+)
 public class DonorNoticationController {
 
     @Autowired
