@@ -1127,7 +1127,7 @@ const DonorDashboard = () => {
     }
 
     // Send the update request to the API
-    const apiUrl = `${API_BASE_URL || 'http://localhost:8080'}/api/donor/donations/${formToUse.donationId}`;
+    const apiUrl = `${API_BASE_URL || 'https://foodbridge-frontend.onrender.com'}/api/donor/donations/${formToUse.donationId}`;
     console.log('Updating donation at:', apiUrl);
     console.log('🚀 FINAL FORM DATA TO BE SENT:');
     for (let [key, value] of formData.entries()) {
@@ -2731,7 +2731,7 @@ const DonorDashboard = () => {
     }
 
     // Ensure API base URL is used for the request
-    const apiUrl = `${API_BASE_URL || 'http://localhost:8080'}/api/donor/donations`;
+    const apiUrl = `${API_BASE_URL || 'https://foodbridge-frontend.onrender.com'}/api/donor/donations`;
     console.log('Submitting donation to:', apiUrl);
 
     // Send the data to the API
@@ -3134,7 +3134,7 @@ const DonorDashboard = () => {
     setDonationStep(3);
 
     try {
-      const response = await fetch(`http://localhost:8080/api/donor/food-items/${food.id}`);
+      const response = await fetch(`https://foodbridge-frontend.onrender.com/api/donor/food-items/${food.id}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch food item details');

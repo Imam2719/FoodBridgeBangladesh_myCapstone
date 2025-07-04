@@ -16,7 +16,7 @@ import '../style/auth.css';
 import { useTheme } from '../contexts/ThemeContext';
 
 // API base URL
-const API_URL = 'http://localhost:8080/api';
+const API_URL = 'https://foodbridge-frontend.onrender.com/api';
 
 const ResetPasswordPage = () => {
   const { darkMode } = useTheme();
