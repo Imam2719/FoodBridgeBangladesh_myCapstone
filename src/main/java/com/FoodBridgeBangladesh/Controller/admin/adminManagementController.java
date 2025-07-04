@@ -16,7 +16,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/management")
-@CrossOrigin(origins = "*")
+@CrossOrigin(
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        allowCredentials = "true"
+)
 public class adminManagementController {
 
     @Autowired
@@ -227,6 +230,36 @@ public class adminManagementController {
             return new ResponseEntity<>(response, HttpStatus.CREATED);
 
         } catch (IllegalArgumentException e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+    /**
+     * Create default admin - FOR TESTING ONLY
+     */
+    @PostMapping("/create-default")
+    public ResponseEntity<?> createDefaultAdmin() {
+        try {
+            adminManagementDto adminDto = new adminManagementDto();
+            adminDto.setFirstName("System");
+            adminDto.setLastName("Admin");
+            adminDto.setEmail("admin@foodbridge.com");
+            adminDto.setPhoneNumber("+8801712345678");
+            adminDto.setPassword("Admin123!");
+            adminDto.setRole("system_admin");
+
+            adminManagementDto.AdminResponse createdAdmin = adminService.createAdmin(adminDto);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Default admin created successfully");
+            response.put("admin", createdAdmin);
+
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+        } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", e.getMessage());
