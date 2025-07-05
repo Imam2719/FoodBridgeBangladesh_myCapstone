@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/donor/food-items")
 @CrossOrigin(
-        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com"},
         allowCredentials = "true"
 )
 public class DonationFoodSelectionController {
@@ -82,48 +82,31 @@ public class DonationFoodSelectionController {
     @GetMapping("/all")
     public ResponseEntity<List<FoodItemDTO>> getAllFoodItems() {
         try {
-            logger.info("Attempting to fetch all food items");
-
             List<FoodItemDTO> allItems = new ArrayList<>();
 
-            try {
-                List<FoodItemDTO> restaurantItems = donationFoodItemService.getFoodItemsByCategory(FoodItem.FoodCategory.RESTAURANT);
-                if (restaurantItems != null) {
-                    allItems.addAll(restaurantItems);
+            // ✅ Fetch ALL three categories
+            for (FoodItem.FoodCategory category : FoodItem.FoodCategory.values()) {
+                try {
+                    List<FoodItemDTO> categoryItems = donationFoodItemService.getFoodItemsByCategory(category);
+                    if (categoryItems != null) {
+                        allItems.addAll(categoryItems);
+                    }
+                } catch (Exception e) {
+                    logger.warn("Error fetching {} items: {}", category, e.getMessage());
                 }
-                logger.info("Restaurant items count: {}", restaurantItems != null ? restaurantItems.size() : 0);
-            } catch (Exception e) {
-                logger.warn("Error fetching restaurant items: {}", e.getMessage());
             }
 
-            try {
-                List<FoodItemDTO> groceryItems = donationFoodItemService.getFoodItemsByCategory(FoodItem.FoodCategory.GROCERY);
-                if (groceryItems != null) {
-                    allItems.addAll(groceryItems);
-                }
-                logger.info("Grocery items count: {}", groceryItems != null ? groceryItems.size() : 0);
-            } catch (Exception e) {
-                logger.warn("Error fetching grocery items: {}", e.getMessage());
-            }
-
-            // Additional filtering to ensure only available items are shown
+            // Filter by remaining quantity
             allItems = allItems.stream()
                     .filter(item -> item.getRemainingQuantity() != null && item.getRemainingQuantity() > 0)
                     .collect(Collectors.toList());
 
-            logger.info("Total available food items: {}", allItems.size());
-
-            // Always return 200 OK with a valid JSON array (even if empty)
             return ResponseEntity.ok(allItems);
-
         } catch (Exception e) {
             logger.error("Error fetching all food items: {}", e.getMessage(), e);
-
-            // Return empty list instead of error response to prevent JSON parsing issues
             return ResponseEntity.ok(new ArrayList<>());
         }
     }
-
     /**
      * Get all available food items for donation
      * FIXED: Proper empty handling

@@ -8,9 +8,11 @@ import {
 
 import '../style/MerchantDashboardPage.css';
 const MerchantDashboard = () => {
-  // ==========================================
-  // STATE DECLARATIONS
-  // ==========================================
+
+  const BASE_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080'
+    : 'https://viewlive.onrender.com';
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [foodItems, setFoodItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,12 +44,12 @@ const MerchantDashboard = () => {
   const [salesLoading, setSalesLoading] = useState(false);
   const [salesError, setSalesError] = useState('');
 
-const [selectedPaymentMonth, setSelectedPaymentMonth] = useState(() => {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-});
-const [mobilePaymentMethod, setMobilePaymentMethod] = useState('bkash');
-const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [selectedPaymentMonth, setSelectedPaymentMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
+  const [mobilePaymentMethod, setMobilePaymentMethod] = useState('bkash');
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   const [currentItem, setCurrentItem] = useState({
     id: null,
@@ -116,7 +118,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
     setMessagesLoading(true);
     try {
-      const response = await fetch(`https://viewlive.onrender.com/api/merchant/messages/${merchantId}/sent`);
+      const response = await fetch(`${BASE_URL}/api/merchant/messages/${merchantId}/sent`);
 
       if (response.ok) {
         const data = await response.json();
@@ -137,7 +139,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
     setMessagesLoading(true);
     try {
-      const response = await fetch(`https://viewlive.onrender.com/api/merchant/messages/${merchantId}/received`);
+      const response = await fetch(`${BASE_URL}/api/merchant/messages/${merchantId}/received`);
 
       if (response.ok) {
         const data = await response.json();
@@ -157,7 +159,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
     if (!merchantId) return;
 
     try {
-      const response = await fetch(`https://viewlive.onrender.com/api/merchant/messages/${merchantId}/stats`);
+      const response = await fetch(`${BASE_URL}/api/merchant/messages/${merchantId}/stats`);
 
       if (response.ok) {
         const stats = await response.json();
@@ -180,7 +182,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
       formData.append('merchantEmail', merchantEmail);
       formData.append('replyContent', replyContent);
 
-      const response = await fetch(`https://viewlive.onrender.com/api/merchant/messages/reply/${selectedMessage.id}`, {
+      const response = await fetch(`${BASE_URL}/api/merchant/messages/reply/${selectedMessage.id}`, {
         method: 'POST',
         body: formData
       });
@@ -294,7 +296,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
       console.log(`Deleting sale ID: ${saleId} for merchant ID: ${merchantId}`);
 
       const response = await fetch(
-        `https://viewlive.onrender.com/api/merchant/sales/${saleId}?merchantId=${merchantId}`,
+        `${BASE_URL}/api/merchant/sales/${saleId}?merchantId=${merchantId}`,
         {
           method: 'DELETE',
           headers: {
@@ -388,7 +390,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
       console.log(`Fetching overview stats for merchant ID: ${merchantId}`);
 
       // Fetch sales data for revenue and items sold
-      const salesResponse = await fetch(`https://viewlive.onrender.com/api/merchant/sales/merchant/${merchantId}`);
+      const salesResponse = await fetch(`${BASE_URL}/api/merchant/sales/merchant/${merchantId}`);
       let totalItemsSold = 0;
       let totalRevenue = 0;
 
@@ -443,7 +445,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
     try {
       console.log(`Fetching sales history for merchant ID: ${merchantId}`);
-      const response = await fetch(`https://viewlive.onrender.com/api/merchant/sales/merchant/${merchantId}/detailed`);
+      const response = await fetch(`${BASE_URL}/api/merchant/sales/merchant/${merchantId}/detailed`);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -484,7 +486,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
       try {
         console.log(`Attempting to fetch profile with merchantId: ${merchantId}`);
-        const response = await fetch(`https://viewlive.onrender.com/api/merchant/profile?merchantId=${merchantId}`);
+        const response = await fetch(`${BASE_URL}/api/merchant/profile?merchantId=${merchantId}`);
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -586,7 +588,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
         console.log(`Fetching food items with merchantId: ${merchantId}`);
 
-        const response = await fetch(`https://viewlive.onrender.com/api/merchant/food-items?merchantId=${merchantId}`);
+        const response = await fetch(`${BASE_URL}/api/merchant/food-items?merchantId=${merchantId}`);
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -646,7 +648,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
           statusValue = 'Active';
       }
 
-      const url = `https://viewlive.onrender.com/api/merchant/donate/merchant/${merchantId}/status/${statusValue}`;
+      const url = `${BASE_URL}/api/merchant/donate/merchant/${merchantId}/status/${statusValue}`;
 
       console.log("Fetching from URL:", url); // Debug log to verify URL
 
@@ -719,7 +721,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
         throw new Error('Merchant ID is missing or invalid');
       }
 
-      const url = `https://viewlive.onrender.com/api/merchant/donations/${donation.id}/requests?merchantId=${merchantId}`;
+      const url = `${BASE_URL}/api/merchant/donations/${donation.id}/requests?merchantId=${merchantId}`;
       console.log("Request URL:", url);
 
       const response = await fetch(url, {
@@ -779,7 +781,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
     try {
       setRequestsLoading(true);
       const response = await fetch(
-        `https://viewlive.onrender.com/api/merchant/requests/${requestId}/status?merchantId=${merchantId}`,
+        `${BASE_URL}/api/merchant/requests/${requestId}/status?merchantId=${merchantId}`,
         {
           method: 'PUT',
           headers: {
@@ -797,7 +799,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
       }
       if (selectedDonationForRequests) {
         const refreshResponse = await fetch(
-          `https://viewlive.onrender.com/api/merchant/donations/${selectedDonationForRequests.id}/requests?merchantId=${merchantId}`,
+          `${BASE_URL}/api/merchant/donations/${selectedDonationForRequests.id}/requests?merchantId=${merchantId}`,
           { credentials: 'include' }
         );
 
@@ -859,24 +861,37 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
     });
   };
 
-  const handleDietaryChange = (option) => {
+  const handleDietaryChange = (option, context = 'donation') => {
+    if (context === 'foodItem') {
+      let updatedDietaryInfo = [...(currentItem.dietaryInfo || [])];
+      const isSelected = updatedDietaryInfo.includes(option);
 
-    let updatedDietaryInfo = [...(donationData.dietaryInfo || [])];
+      if (isSelected) {
+        updatedDietaryInfo = updatedDietaryInfo.filter(item => item !== option);
+      } else {
+        updatedDietaryInfo.push(option);
+      }
 
-    const isSelected = updatedDietaryInfo.includes(option);
-
-    if (isSelected) {
-
-      updatedDietaryInfo = updatedDietaryInfo.filter(item => item !== option);
+      setCurrentItem({
+        ...currentItem,
+        dietaryInfo: updatedDietaryInfo
+      });
     } else {
+      // Handle donation context (existing functionality)
+      let updatedDietaryInfo = [...(donationData.dietaryInfo || [])];
+      const isSelected = updatedDietaryInfo.includes(option);
 
-      updatedDietaryInfo.push(option);
+      if (isSelected) {
+        updatedDietaryInfo = updatedDietaryInfo.filter(item => item !== option);
+      } else {
+        updatedDietaryInfo.push(option);
+      }
+
+      setDonationData({
+        ...donationData,
+        dietaryInfo: updatedDietaryInfo
+      });
     }
-
-    setDonationData({
-      ...donationData,
-      dietaryInfo: updatedDietaryInfo
-    });
   };
 
   const handleSubmit = async (e) => {
@@ -933,7 +948,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
       if (currentItem.id) {
 
-        url = `https://viewlive.onrender.com/api/merchant/food-items/${currentItem.id}?merchantId=${merchantId}`;
+        url = `${BASE_URL}/api/merchant/food-items/${currentItem.id}?merchantId=${merchantId}`;
         console.log(`PUT request to: ${url}`);
 
         response = await fetch(url, {
@@ -941,7 +956,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
           body: formData
         });
       } else {
-        url = `https://viewlive.onrender.com/api/merchant/food-items?merchantId=${merchantId}`;
+        url = `${BASE_URL}/api/merchant/food-items?merchantId=${merchantId}`;
         console.log(`POST request to: ${url}`);
 
         response = await fetch(url, {
@@ -981,7 +996,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
       setImageFile(null);
       console.log("Refreshing full food items list");
       try {
-        const refreshResponse = await fetch(`https://viewlive.onrender.com/api/merchant/food-items?merchantId=${merchantId}`);
+        const refreshResponse = await fetch(`${BASE_URL}/api/merchant/food-items?merchantId=${merchantId}`);
 
         if (refreshResponse.ok) {
           const refreshData = await refreshResponse.json();
@@ -1009,7 +1024,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
   const handleMarkAsCompleted = async (donationId) => {
     try {
       const response = await fetch(
-        `https://viewlive.onrender.com/api/merchant/donate/${donationId}/status?merchantId=${merchantId}`,
+        `${BASE_URL}/api/merchant/donate/${donationId}/status?merchantId=${merchantId}`,
         {
           method: 'PUT',
           headers: {
@@ -1036,7 +1051,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       try {
-        const response = await fetch(`https://viewlive.onrender.com/api/merchant/food-items/${id}`, {
+        const response = await fetch(`${BASE_URL}/api/merchant/food-items/${id}`, {
           method: 'DELETE'
         });
 
@@ -1051,7 +1066,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   const togglePause = async (id) => {
     try {
-      const response = await fetch(`https://viewlive.onrender.com/api/merchant/food-items/${id}/toggle-pause`, {
+      const response = await fetch(`${BASE_URL}/api/merchant/food-items/${id}/toggle-pause`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -1163,7 +1178,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
       console.log("Sending donation payload:", donationPayload);
 
-      const response = await fetch('https://viewlive.onrender.com/api/merchant/donate/create', {
+      const response = await fetch(`${BASE_URL}/api/merchant/donate/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -1383,7 +1398,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
 
     try {
       const response = await fetch(
-        `https://viewlive.onrender.com/api/merchant/donate/${donationToDelete}?merchantId=${merchantId}`,
+        `${BASE_URL}/api/merchant/donate/${donationToDelete}?merchantId=${merchantId}`,
         {
           method: 'DELETE',
           headers: {
@@ -1420,7 +1435,7 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
   const handleSaveDonationEdit = async (editedDonation) => {
     try {
       const response = await fetch(
-        `https://viewlive.onrender.com/api/merchant/donate/${editedDonation.id}?merchantId=${merchantId}`,
+        `${BASE_URL}/api/merchant/donate/${editedDonation.id}?merchantId=${merchantId}`,
         {
           method: 'PUT',
           headers: {
@@ -1472,164 +1487,164 @@ const [paymentProcessing, setPaymentProcessing] = useState(false);
   // ==========================================
   // NEW PAY FEES HANDLER FUNCTIONS
   // ==========================================
-const handleFees = async () => {
-  setFeesOpen(true);
-  setOrderHistoryOpen(false);
-  setMessagesOpen(false);
-  setProfileOpen(false);
+  const handleFees = async () => {
+    setFeesOpen(true);
+    setOrderHistoryOpen(false);
+    setMessagesOpen(false);
+    setProfileOpen(false);
 
-  if (!merchantId) {
-    console.error('No merchant ID available for fee fetch');
-    alert('Invalid merchant ID. Please login again.');
-    return;
-  }
-
-  setFeesLoading(true);
-
-  try {
-    console.log(`Fetching fees with merchantId: ${merchantId} for month: ${selectedPaymentMonth}`);
-    
-    // ✅ ENHANCED: Include selected month in the request
-    const response = await fetch(
-      `https://viewlive.onrender.com/api/merchant/fees/calculate?merchantId=${merchantId}&selectedMonth=${selectedPaymentMonth}`
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('API Error:', errorData);
-      alert(`Error: ${errorData.message || 'Failed to load fee information'}`);
+    if (!merchantId) {
+      console.error('No merchant ID available for fee fetch');
+      alert('Invalid merchant ID. Please login again.');
       return;
     }
 
-    const feeData = await response.json();
-    console.log('Fee data received:', feeData);
-    
-    // ✅ NEW: Handle different response scenarios
-    if (!feeData.success && feeData.message) {
-      // Future month or other validation error
-      setFeeData({
-        ...feeData,
-        currentBalance: 0,
-        paymentHistory: []
-      });
-    } else {
-      // Valid response
-      setFeeData(feeData);
+    setFeesLoading(true);
+
+    try {
+      console.log(`Fetching fees with merchantId: ${merchantId} for month: ${selectedPaymentMonth}`);
+
+      // ✅ ENHANCED: Include selected month in the request
+      const response = await fetch(
+        `${BASE_URL}/api/merchant/fees/calculate?merchantId=${merchantId}&selectedMonth=${selectedPaymentMonth}`
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        alert(`Error: ${errorData.message || 'Failed to load fee information'}`);
+        return;
+      }
+
+      const feeData = await response.json();
+      console.log('Fee data received:', feeData);
+
+      // ✅ NEW: Handle different response scenarios
+      if (!feeData.success && feeData.message) {
+        // Future month or other validation error
+        setFeeData({
+          ...feeData,
+          currentBalance: 0,
+          paymentHistory: []
+        });
+      } else {
+        // Valid response
+        setFeeData(feeData);
+      }
+
+      // Fetch payment history
+      await fetchPaymentHistory();
+
+    } catch (error) {
+      console.error('Error fetching fee data:', error);
+      alert('Failed to load fee information');
+    } finally {
+      setFeesLoading(false);
     }
+  };
 
-    // Fetch payment history
-    await fetchPaymentHistory();
-
-  } catch (error) {
-    console.error('Error fetching fee data:', error);
-    alert('Failed to load fee information');
-  } finally {
-    setFeesLoading(false);
-  }
-};
-
-const fetchPaymentHistory = async () => {
-  try {
-    const response = await fetch(`https://viewlive.onrender.com/api/merchant/fees/payment-history?merchantId=${merchantId}`);
-    if (response.ok) {
-      const history = await response.json();
-      // ✅ FIXED: Extract the paymentHistory array from the response
-      setFeeData(prev => ({ ...prev, paymentHistory: history.paymentHistory || [] }));
+  const fetchPaymentHistory = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/merchant/fees/payment-history?merchantId=${merchantId}`);
+      if (response.ok) {
+        const history = await response.json();
+        // ✅ FIXED: Extract the paymentHistory array from the response
+        setFeeData(prev => ({ ...prev, paymentHistory: history.paymentHistory || [] }));
+      }
+    } catch (error) {
+      console.error('Error fetching payment history:', error);
+      // ✅ Set empty array on error
+      setFeeData(prev => ({ ...prev, paymentHistory: [] }));
     }
-  } catch (error) {
-    console.error('Error fetching payment history:', error);
-    // ✅ Set empty array on error
-    setFeeData(prev => ({ ...prev, paymentHistory: [] }));
-  }
-};
+  };
 
-const handlePaymentSubmit = async (e) => {
-  e.preventDefault();
-  setPaymentProcessing(true);
+  const handlePaymentSubmit = async (e) => {
+    e.preventDefault();
+    setPaymentProcessing(true);
 
-  try {
-    const paymentData = {
-      merchantId: String(merchantId), // ✅ Convert to string
-      amount: feeData.currentBalance,
-      paymentMethod: mobilePaymentMethod,
-      paymentMonth: selectedPaymentMonth,
-      feeType: feeData.feeType,
-      totalRevenue: overviewStats.totalRevenue
-    };
+    try {
+      const paymentData = {
+        merchantId: String(merchantId), // ✅ Convert to string
+        amount: feeData.currentBalance,
+        paymentMethod: mobilePaymentMethod,
+        paymentMonth: selectedPaymentMonth,
+        feeType: feeData.feeType,
+        totalRevenue: overviewStats.totalRevenue
+      };
 
-    console.log('Sending payment data:', paymentData);
+      console.log('Sending payment data:', paymentData);
 
-    const response = await fetch('https://viewlive.onrender.com/api/merchant/fees/process-payment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(paymentData)
-    });
-
-    const result = await response.json();
-    console.log('Payment response:', result);
-
-    if (response.ok && result.success) {
-      // ✅ ENHANCED: Show detailed success message
-      const successMessage = result.message || 
-        `Your ${getMonthName(selectedPaymentMonth)} payment has been completed successfully!`;
-      
-      alert(successMessage);
-      
-      // Update fee data to reflect payment
-      setFeeData({
-        ...feeData,
-        currentBalance: 0,
-        alreadyPaid: true,
-        canPay: false,
-        message: `Payment for ${getMonthName(selectedPaymentMonth)} has been completed successfully.`,
-        paymentHistory: [result.paymentRecord, ...feeData.paymentHistory]
+      const response = await fetch(`${BASE_URL}/api/merchant/fees/process-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(paymentData)
       });
 
-      // Reset form and close modal
-      setPaymentAmount(0);
-      setFeesOpen(false);
-      
-      // Show additional success info
-      console.log('Transaction ID:', result.transactionId);
-      console.log('Payment Date:', result.paymentDate);
-      
-    } else {
-      const errorMessage = result.message || 'Payment processing failed';
-      alert(`Payment failed: ${errorMessage}`);
-      console.error('Payment failed:', result);
-    }
-  } catch (error) {
-    console.error('Error processing payment:', error);
-    alert('Payment processing failed. Please try again.');
-  } finally {
-    setPaymentProcessing(false);
-  }
-};
+      const result = await response.json();
+      console.log('Payment response:', result);
 
-const getMonthName = (monthString) => {
-  try {
-    const [year, month] = monthString.split('-');
-    const date = new Date(year, month - 1);
-    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  } catch (error) {
-    return monthString;
-  }
-};
+      if (response.ok && result.success) {
+        // ✅ ENHANCED: Show detailed success message
+        const successMessage = result.message ||
+          `Your ${getMonthName(selectedPaymentMonth)} payment has been completed successfully!`;
+
+        alert(successMessage);
+
+        // Update fee data to reflect payment
+        setFeeData({
+          ...feeData,
+          currentBalance: 0,
+          alreadyPaid: true,
+          canPay: false,
+          message: `Payment for ${getMonthName(selectedPaymentMonth)} has been completed successfully.`,
+          paymentHistory: [result.paymentRecord, ...feeData.paymentHistory]
+        });
+
+        // Reset form and close modal
+        setPaymentAmount(0);
+        setFeesOpen(false);
+
+        // Show additional success info
+        console.log('Transaction ID:', result.transactionId);
+        console.log('Payment Date:', result.paymentDate);
+
+      } else {
+        const errorMessage = result.message || 'Payment processing failed';
+        alert(`Payment failed: ${errorMessage}`);
+        console.error('Payment failed:', result);
+      }
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      alert('Payment processing failed. Please try again.');
+    } finally {
+      setPaymentProcessing(false);
+    }
+  };
+
+  const getMonthName = (monthString) => {
+    try {
+      const [year, month] = monthString.split('-');
+      const date = new Date(year, month - 1);
+      return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    } catch (error) {
+      return monthString;
+    }
+  };
 
   const formatCurrency = (amount) => {
     return `৳${parseFloat(amount).toFixed(2)}`;
   };
 
   const handleMonthChange = (newMonth) => {
-  setSelectedPaymentMonth(newMonth);
-  
-  // ✅ NEW: Auto-refresh fee data when month changes
-  if (feesOpen) {
-    handleFees();
-  }
-};
+    setSelectedPaymentMonth(newMonth);
+
+    // ✅ NEW: Auto-refresh fee data when month changes
+    if (feesOpen) {
+      handleFees();
+    }
+  };
   // ==========================================
   // POPUP HANDLERS
   // ==========================================
@@ -2208,7 +2223,7 @@ Best regards,
           formData.append('attachment', attachment);
         }
 
-        const response = await fetch('https://viewlive.onrender.com/api/merchant/messages/send', {
+        const response = await fetch(`${BASE_URL}/api/merchant/messages/send`, {
           method: 'POST',
           body: formData
         });
@@ -2492,7 +2507,7 @@ Best regards,
     if (messageTab === 'received' && !message.read) {
       try {
         const response = await fetch(
-          `https://viewlive.onrender.com/api/merchant/messages/${merchantId}/messages/${message.id}/mark-read`,
+          `${BASE_URL}/api/merchant/messages/${merchantId}/messages/${message.id}/mark-read`,
           {
             method: 'PUT',
           }
@@ -2523,7 +2538,7 @@ Best regards,
 
     try {
       const response = await fetch(
-        `https://viewlive.onrender.com/api/merchant/messages/${merchantId}/messages/${messageId}/ignore`,
+        `${BASE_URL}/api/merchant/messages/${merchantId}/messages/${messageId}/ignore`,
         {
           method: 'PUT',
         }
@@ -2554,7 +2569,7 @@ Best regards,
 
     try {
       const response = await fetch(
-        `https://viewlive.onrender.com/api/merchant/messages/${merchantId}/sent/${messageId}`,
+        `${BASE_URL}/api/merchant/messages/${merchantId}/sent/${messageId}`,
         {
           method: 'DELETE',
         }
@@ -2638,7 +2653,7 @@ Best regards,
       for (let pair of formData.entries()) {
         console.log(pair[0] + ': ' + pair[1]);
       }
-      const response = await fetch(`https://viewlive.onrender.com/api/merchant/profile/update?merchantId=${merchantId}`, {
+      const response = await fetch(`${BASE_URL}/api/merchant/profile/update?merchantId=${merchantId}`, {
         method: 'PUT',
         body: formData
       });
@@ -2747,7 +2762,7 @@ Best regards,
       console.log(`Fetching food items with remaining quantity for merchantId: ${merchantId}`);
 
       // First get all food items
-      const response = await fetch(`https://viewlive.onrender.com/api/merchant/food-items?merchantId=${merchantId}`);
+      const response = await fetch(`${BASE_URL}/api/merchant/food-items?merchantId=${merchantId}`);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch food items: ${response.status}`);
@@ -2760,7 +2775,7 @@ Best regards,
         foodItemsData.map(async (item) => {
           try {
             // This endpoint should now include both sold AND donated quantities
-            const remainingResponse = await fetch(`https://viewlive.onrender.com/api/merchant/food-items/${item.id}/with-remaining`);
+            const remainingResponse = await fetch(`${BASE_URL}/api/merchant/food-items/${item.id}/with-remaining`);
 
             if (remainingResponse.ok) {
               const remainingData = await remainingResponse.json();
@@ -3118,7 +3133,6 @@ Best regards,
     const handleDietaryChange = (option) => {
       let updatedDietaryInfo = [...(editedDonation.dietaryInfo || [])];
 
-      // If string, convert to array
       if (typeof updatedDietaryInfo === 'string') {
         updatedDietaryInfo = updatedDietaryInfo.split(', ');
       }
@@ -3343,235 +3357,235 @@ Best regards,
     );
   };
 
-const EnhancedFeesPopup = () => {
-  if (!feesOpen) return null;
+  const EnhancedFeesPopup = () => {
+    if (!feesOpen) return null;
 
-  return (
-    <div className="popup-overlay">
-      <div className="popup-content fees-popup enhanced-fees dark:bg-gray-900 dark:border dark:border-gray-700">
-        <div className="popup-header dark:bg-green-700 bg-gradient-to-r from-green-600 to-green-400">
-          <h2 className="text-white">Platform Fees - Mobile Banking Payment</h2>
-          <button className="close-button text-white hover:text-neutral-100" onClick={() => setFeesOpen(false)}>
-            <X size={24} />
-          </button>
-        </div>
+    return (
+      <div className="popup-overlay">
+        <div className="popup-content fees-popup enhanced-fees dark:bg-gray-900 dark:border dark:border-gray-700">
+          <div className="popup-header dark:bg-green-700 bg-gradient-to-r from-green-600 to-green-400">
+            <h2 className="text-white">Platform Fees - Mobile Banking Payment</h2>
+            <button className="close-button text-white hover:text-neutral-100" onClick={() => setFeesOpen(false)}>
+              <X size={24} />
+            </button>
+          </div>
 
-        <div className="popup-body dark:bg-gray-900">
-          {feesLoading ? (
-            <div className="loading-spinner-container">
-              <div className="loading-spinner"></div>
-              <p className="dark:text-gray-300">Loading fee information...</p>
-            </div>
-          ) : (
-            <>
-              {/* ✅ NEW: Message display for different scenarios */}
-              {feeData.message && (
-                <div className={`fee-message ${!feeData.canPay && feeData.alreadyPaid ? 'success' : 
-                  !feeData.success ? 'warning' : 'info'}`}>
-                  <div className="message-content">
-                    {!feeData.success ? (
-                      <div className="warning-icon">⚠️</div>
-                    ) : feeData.alreadyPaid ? (
-                      <div className="success-icon">✅</div>
-                    ) : (
-                      <div className="info-icon">ℹ️</div>
-                    )}
-                    <p>{feeData.message}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Fee Summary Card */}
-              <div className="fees-summary enhanced-summary">
-                <div className="fee-balance-card bg-gradient-to-br from-green-500 to-green-600">
-                  <div className="fee-type-badge">
-                    <span className="fee-type-label">
-                      {feeData.feeType === 'contractual' ? 'Fixed Amount' : 'Percentage Based'}
-                    </span>
-                  </div>
-                  <h3 className="text-white opacity-90">
-                    {feeData.alreadyPaid ? 'Payment Completed' : 'Fee Due'}
-                  </h3>
-                  <div className="balance-amount text-white">
-                    ৳{(feeData.currentBalance || 0).toFixed(2)}
-                  </div>
-                  
-                  {feeData.feeType === 'percentage' && feeData.monthlyRevenue && (
-                    <div className="calculation-details text-white opacity-80">
-                      <small>
-                        {feeData.feeAmount}% of ৳{feeData.monthlyRevenue.toFixed(2)} monthly revenue
-                      </small>
-                    </div>
-                  )}
-                  
-                  <div className="due-info text-white opacity-80">
-                    For: {getMonthName(selectedPaymentMonth)}
-                  </div>
-                </div>
+          <div className="popup-body dark:bg-gray-900">
+            {feesLoading ? (
+              <div className="loading-spinner-container">
+                <div className="loading-spinner"></div>
+                <p className="dark:text-gray-300">Loading fee information...</p>
               </div>
-
-              {/* ✅ CONDITIONAL: Only show payment section if can pay */}
-              {feeData.canPay && feeData.success && !feeData.alreadyPaid && (
-                <div className="payment-section enhanced-payment dark:bg-gray-800 dark:border dark:border-gray-700">
-                  <h3 className="dark:text-white">Make Payment - Mobile Banking</h3>
-                  
-                  <form onSubmit={handlePaymentSubmit} className="payment-form enhanced-form">
-                    {/* Month Selection */}
-                    <div className="form-group">
-                      <label htmlFor="paymentMonth" className="dark:text-gray-300">Payment Month</label>
-                      <select
-                        id="paymentMonth"
-                        value={selectedPaymentMonth}
-                        onChange={(e) => handleMonthChange(e.target.value)}
-                        className="form-select dark:bg-gray-900 dark:text-gray-200 dark:border-gray-700"
-                      >
-                        {Array.from({ length: 12 }, (_, i) => {
-                          const date = new Date();
-                          date.setMonth(date.getMonth() - 6 + i);
-                          const value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                          const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                          return (
-                            <option key={value} value={value}>{label}</option>
-                          );
-                        })}
-                      </select>
-                    </div>
-
-                    {/* Payment Amount Display */}
-                    <div className="form-group">
-                      <label className="dark:text-gray-300">Payment Amount</label>
-                      <div className="amount-display dark:bg-gray-900 dark:border-gray-700">
-                        <span className="currency-symbol">৳</span>
-                        <span className="amount-value">{(feeData.currentBalance || 0).toFixed(2)}</span>
-                        <small className="amount-note">
-                          {feeData.feeType === 'contractual' ? 'Fixed monthly fee' : `${feeData.feeAmount}% of revenue`}
-                        </small>
-                      </div>
-                    </div>
-
-                    {/* Mobile Banking Methods */}
-                    <div className="form-group">
-                      <label className="dark:text-gray-300">Select Mobile Banking</label>
-                      <div className="mobile-banking-methods">
-                        <label className={`banking-method bkash ${mobilePaymentMethod === 'bkash' ? 'selected' : ''}`}>
-                          <input
-                            type="radio"
-                            name="mobilePaymentMethod"
-                            value="bkash"
-                            checked={mobilePaymentMethod === 'bkash'}
-                            onChange={() => setMobilePaymentMethod('bkash')}
-                          />
-                          <div className="banking-logo bkash-logo">
-                            <span>bKash</span>
-                          </div>
-                          <span className="banking-name">bKash</span>
-                        </label>
-
-                        <label className={`banking-method nagad ${mobilePaymentMethod === 'nagad' ? 'selected' : ''}`}>
-                          <input
-                            type="radio"
-                            name="mobilePaymentMethod"
-                            value="nagad"
-                            checked={mobilePaymentMethod === 'nagad'}
-                            onChange={() => setMobilePaymentMethod('nagad')}
-                          />
-                          <div className="banking-logo nagad-logo">
-                            <span>Nagad</span>
-                          </div>
-                          <span className="banking-name">Nagad</span>
-                        </label>
-
-                        <label className={`banking-method rocket ${mobilePaymentMethod === 'rocket' ? 'selected' : ''}`}>
-                          <input
-                            type="radio"
-                            name="mobilePaymentMethod"
-                            value="rocket"
-                            checked={mobilePaymentMethod === 'rocket'}
-                            onChange={() => setMobilePaymentMethod('rocket')}
-                          />
-                          <div className="banking-logo rocket-logo">
-                            <span>Rocket</span>
-                          </div>
-                          <span className="banking-name">Rocket</span>
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Payment Instructions */}
-                    <div className="payment-instructions dark:bg-gray-900 dark:border-gray-700">
-                      <h4>Payment Instructions:</h4>
-                      <ol>
-                        <li>Select your preferred mobile banking service</li>
-                        <li>Click "Pay Now" to proceed</li>
-                        <li>You will be redirected to {mobilePaymentMethod.toUpperCase()} payment gateway</li>
-                        <li>Complete payment using your mobile banking app</li>
-                      </ol>
-                    </div>
-
-                    <button 
-                      type="submit" 
-                      className="pay-now-btn enhanced-pay-btn dark:bg-green-600 dark:hover:bg-green-700" 
-                      disabled={!feeData.currentBalance || paymentProcessing}
-                    >
-                      {paymentProcessing ? (
-                        <>
-                          <div className="payment-spinner"></div>
-                          <span>Processing...</span>
-                        </>
+            ) : (
+              <>
+                {/* ✅ NEW: Message display for different scenarios */}
+                {feeData.message && (
+                  <div className={`fee-message ${!feeData.canPay && feeData.alreadyPaid ? 'success' :
+                    !feeData.success ? 'warning' : 'info'}`}>
+                    <div className="message-content">
+                      {!feeData.success ? (
+                        <div className="warning-icon">⚠️</div>
+                      ) : feeData.alreadyPaid ? (
+                        <div className="success-icon">✅</div>
                       ) : (
-                        <>
-                          <div className="payment-icon">
-                            {mobilePaymentMethod === 'bkash' && <span>📱</span>}
-                            {mobilePaymentMethod === 'nagad' && <span>💳</span>}
-                            {mobilePaymentMethod === 'rocket' && <span>🚀</span>}
-                          </div>
-                          <span>Pay ৳{(feeData.currentBalance || 0).toFixed(2)} with {mobilePaymentMethod.toUpperCase()}</span>
-                        </>
+                        <div className="info-icon">ℹ️</div>
                       )}
-                    </button>
-                  </form>
-                </div>
-              )}
-
-              {/* Enhanced Payment History */}
-              <div className="payment-history enhanced-history dark:bg-gray-800 dark:border dark:border-gray-700">
-                <h3 className="dark:text-gray-100">Payment History</h3>
-                {feeData.paymentHistory && feeData.paymentHistory.length === 0 ? (
-                  <div className="empty-history dark:text-gray-400">No payment history available</div>
-                ) : (
-                  <div className="payment-history-list">
-                    {feeData.paymentHistory && feeData.paymentHistory.map(payment => (
-                      <div key={payment.id} className="payment-record dark:border-gray-700">
-                        <div className="payment-info">
-                          <div className="payment-amount">৳{(payment.amount || 0).toFixed(2)}</div>
-                          <div className="payment-month">{getMonthName(payment.paymentMonth)}</div>
-                          <div className="payment-date">
-                            {payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString('en-GB') : 'N/A'}
-                          </div>
-                          <div className="payment-day">
-                            {payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString('en-US', { weekday: 'long' }) : ''}
-                          </div>
-                        </div>
-                        <div className="payment-method-badge">
-                          <span className={`method-label ${payment.paymentMethod}`}>
-                            {(payment.paymentMethod || 'unknown').toUpperCase()}
-                          </span>
-                        </div>
-                        <div className={`payment-status ${(payment.status || 'unknown').toLowerCase()}`}>
-                          {payment.status === 'COMPLETED' ? 'PAID' : 'UNPAID'}
-                        </div>
-                      </div>
-                    ))}
+                      <p>{feeData.message}</p>
+                    </div>
                   </div>
                 )}
-              </div>
-            </>
-          )}
+
+                {/* Fee Summary Card */}
+                <div className="fees-summary enhanced-summary">
+                  <div className="fee-balance-card bg-gradient-to-br from-green-500 to-green-600">
+                    <div className="fee-type-badge">
+                      <span className="fee-type-label">
+                        {feeData.feeType === 'contractual' ? 'Fixed Amount' : 'Percentage Based'}
+                      </span>
+                    </div>
+                    <h3 className="text-white opacity-90">
+                      {feeData.alreadyPaid ? 'Payment Completed' : 'Fee Due'}
+                    </h3>
+                    <div className="balance-amount text-white">
+                      ৳{(feeData.currentBalance || 0).toFixed(2)}
+                    </div>
+
+                    {feeData.feeType === 'percentage' && feeData.monthlyRevenue && (
+                      <div className="calculation-details text-white opacity-80">
+                        <small>
+                          {feeData.feeAmount}% of ৳{feeData.monthlyRevenue.toFixed(2)} monthly revenue
+                        </small>
+                      </div>
+                    )}
+
+                    <div className="due-info text-white opacity-80">
+                      For: {getMonthName(selectedPaymentMonth)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* ✅ CONDITIONAL: Only show payment section if can pay */}
+                {feeData.canPay && feeData.success && !feeData.alreadyPaid && (
+                  <div className="payment-section enhanced-payment dark:bg-gray-800 dark:border dark:border-gray-700">
+                    <h3 className="dark:text-white">Make Payment - Mobile Banking</h3>
+
+                    <form onSubmit={handlePaymentSubmit} className="payment-form enhanced-form">
+                      {/* Month Selection */}
+                      <div className="form-group">
+                        <label htmlFor="paymentMonth" className="dark:text-gray-300">Payment Month</label>
+                        <select
+                          id="paymentMonth"
+                          value={selectedPaymentMonth}
+                          onChange={(e) => handleMonthChange(e.target.value)}
+                          className="form-select dark:bg-gray-900 dark:text-gray-200 dark:border-gray-700"
+                        >
+                          {Array.from({ length: 12 }, (_, i) => {
+                            const date = new Date();
+                            date.setMonth(date.getMonth() - 6 + i);
+                            const value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                            const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                            return (
+                              <option key={value} value={value}>{label}</option>
+                            );
+                          })}
+                        </select>
+                      </div>
+
+                      {/* Payment Amount Display */}
+                      <div className="form-group">
+                        <label className="dark:text-gray-300">Payment Amount</label>
+                        <div className="amount-display dark:bg-gray-900 dark:border-gray-700">
+                          <span className="currency-symbol">৳</span>
+                          <span className="amount-value">{(feeData.currentBalance || 0).toFixed(2)}</span>
+                          <small className="amount-note">
+                            {feeData.feeType === 'contractual' ? 'Fixed monthly fee' : `${feeData.feeAmount}% of revenue`}
+                          </small>
+                        </div>
+                      </div>
+
+                      {/* Mobile Banking Methods */}
+                      <div className="form-group">
+                        <label className="dark:text-gray-300">Select Mobile Banking</label>
+                        <div className="mobile-banking-methods">
+                          <label className={`banking-method bkash ${mobilePaymentMethod === 'bkash' ? 'selected' : ''}`}>
+                            <input
+                              type="radio"
+                              name="mobilePaymentMethod"
+                              value="bkash"
+                              checked={mobilePaymentMethod === 'bkash'}
+                              onChange={() => setMobilePaymentMethod('bkash')}
+                            />
+                            <div className="banking-logo bkash-logo">
+                              <span>bKash</span>
+                            </div>
+                            <span className="banking-name">bKash</span>
+                          </label>
+
+                          <label className={`banking-method nagad ${mobilePaymentMethod === 'nagad' ? 'selected' : ''}`}>
+                            <input
+                              type="radio"
+                              name="mobilePaymentMethod"
+                              value="nagad"
+                              checked={mobilePaymentMethod === 'nagad'}
+                              onChange={() => setMobilePaymentMethod('nagad')}
+                            />
+                            <div className="banking-logo nagad-logo">
+                              <span>Nagad</span>
+                            </div>
+                            <span className="banking-name">Nagad</span>
+                          </label>
+
+                          <label className={`banking-method rocket ${mobilePaymentMethod === 'rocket' ? 'selected' : ''}`}>
+                            <input
+                              type="radio"
+                              name="mobilePaymentMethod"
+                              value="rocket"
+                              checked={mobilePaymentMethod === 'rocket'}
+                              onChange={() => setMobilePaymentMethod('rocket')}
+                            />
+                            <div className="banking-logo rocket-logo">
+                              <span>Rocket</span>
+                            </div>
+                            <span className="banking-name">Rocket</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Payment Instructions */}
+                      <div className="payment-instructions dark:bg-gray-900 dark:border-gray-700">
+                        <h4>Payment Instructions:</h4>
+                        <ol>
+                          <li>Select your preferred mobile banking service</li>
+                          <li>Click "Pay Now" to proceed</li>
+                          <li>You will be redirected to {mobilePaymentMethod.toUpperCase()} payment gateway</li>
+                          <li>Complete payment using your mobile banking app</li>
+                        </ol>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="pay-now-btn enhanced-pay-btn dark:bg-green-600 dark:hover:bg-green-700"
+                        disabled={!feeData.currentBalance || paymentProcessing}
+                      >
+                        {paymentProcessing ? (
+                          <>
+                            <div className="payment-spinner"></div>
+                            <span>Processing...</span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="payment-icon">
+                              {mobilePaymentMethod === 'bkash' && <span>📱</span>}
+                              {mobilePaymentMethod === 'nagad' && <span>💳</span>}
+                              {mobilePaymentMethod === 'rocket' && <span>🚀</span>}
+                            </div>
+                            <span>Pay ৳{(feeData.currentBalance || 0).toFixed(2)} with {mobilePaymentMethod.toUpperCase()}</span>
+                          </>
+                        )}
+                      </button>
+                    </form>
+                  </div>
+                )}
+
+                {/* Enhanced Payment History */}
+                <div className="payment-history enhanced-history dark:bg-gray-800 dark:border dark:border-gray-700">
+                  <h3 className="dark:text-gray-100">Payment History</h3>
+                  {feeData.paymentHistory && feeData.paymentHistory.length === 0 ? (
+                    <div className="empty-history dark:text-gray-400">No payment history available</div>
+                  ) : (
+                    <div className="payment-history-list">
+                      {feeData.paymentHistory && feeData.paymentHistory.map(payment => (
+                        <div key={payment.id} className="payment-record dark:border-gray-700">
+                          <div className="payment-info">
+                            <div className="payment-amount">৳{(payment.amount || 0).toFixed(2)}</div>
+                            <div className="payment-month">{getMonthName(payment.paymentMonth)}</div>
+                            <div className="payment-date">
+                              {payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString('en-GB') : 'N/A'}
+                            </div>
+                            <div className="payment-day">
+                              {payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString('en-US', { weekday: 'long' }) : ''}
+                            </div>
+                          </div>
+                          <div className="payment-method-badge">
+                            <span className={`method-label ${payment.paymentMethod}`}>
+                              {(payment.paymentMethod || 'unknown').toUpperCase()}
+                            </span>
+                          </div>
+                          <div className={`payment-status ${(payment.status || 'unknown').toLowerCase()}`}>
+                            {payment.status === 'COMPLETED' ? 'PAID' : 'UNPAID'}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
   return (
     <div className="merchant-dashboard dark:bg-gray-900 dark:text-gray-100">
@@ -3579,230 +3593,230 @@ const EnhancedFeesPopup = () => {
       <main className="dashboard-main" style={{ paddingTop: '64px' }}>
         <div className="dashboard-content">
 
-{/* ========== COMPACT PREMIUM HEADER WITH PROMINENT MERCHANT INFO ========== */}
-<div className="compact-premium-header">
-  <div className="merchant-info-section">
-    <div className="merchant-avatar">
-      <img 
-        src={userProfile.avatar || 'https://randomuser.me/api/portraits/men/41.jpg'} 
-        alt="Profile" 
-        className="merchant-image"
-      />
-      <div className="status-indicator"></div>
-    </div>
-    <div className="merchant-details">
-      <h1 className="merchant-name">
-        Welcome back, <span className="name-highlight">{userProfile.name || 'Merchant'}</span>
-      </h1>
-      <p className="current-date">
-        {new Date().toLocaleDateString('en-US', { 
-          weekday: 'long', 
-          month: 'long', 
-          day: 'numeric',
-          year: 'numeric'
-        })}
-      </p>
-    </div>
-  </div>
-
-  {/* ========== COMPACT ACTION BUTTONS ========== */}
-  <div className="compact-actions-layout">
-    
-    {/* Main Action Buttons */}
-    <div className="compact-main-actions">
-      <button className="compact-action-btn fees-btn" onClick={handleFees}>
-        <div className="compact-btn-icon">
-          <Wallet size={18} />
-        </div>
-        <div className="compact-btn-text">
-          <span className="btn-title">Pay Fees</span>
-          <span className="btn-subtitle">Manage</span>
-        </div>
-      </button>
-
-      <button className="compact-action-btn donations-btn" onClick={() => setDonationsOpen(true)}>
-        <div className="compact-btn-icon">
-          <Heart size={18} />
-        </div>
-        <div className="compact-btn-text">
-          <span className="btn-title">My Donations</span>
-          <span className="btn-subtitle">Track</span>
-        </div>
-      </button>
-
-      <button className="compact-action-btn sales-btn" onClick={handleSalesHistory}>
-        <div className="compact-btn-icon">
-          <History size={18} />
-        </div>
-        <div className="compact-btn-text">
-          <span className="btn-title">Sales History</span>
-          <span className="btn-subtitle">Reports</span>
-        </div>
-      </button>
-
-      <button className="compact-action-btn messages-btn" onClick={handleMessages}>
-        <div className="compact-btn-icon">
-          <MessageSquare size={18} />
-          {messageStats.unreadMessages > 0 && (
-            <div className="compact-notification-badge">
-              {messageStats.unreadMessages > 99 ? '99+' : messageStats.unreadMessages}
+          {/* ========== COMPACT PREMIUM HEADER WITH PROMINENT MERCHANT INFO ========== */}
+          <div className="compact-premium-header">
+            <div className="merchant-info-section">
+              <div className="merchant-avatar">
+                <img
+                  src={userProfile.avatar || 'https://randomuser.me/api/portraits/men/41.jpg'}
+                  alt="Profile"
+                  className="merchant-image"
+                />
+                <div className="status-indicator"></div>
+              </div>
+              <div className="merchant-details">
+                <h1 className="merchant-name">
+                  Welcome back, <span className="name-highlight">{userProfile.name || 'Merchant'}</span>
+                </h1>
+                <p className="current-date">
+                  {new Date().toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </p>
+              </div>
             </div>
-          )}
-        </div>
-        <div className="compact-btn-text">
-          <span className="btn-title">Messages</span>
-          <span className="btn-subtitle">Communications</span>
-        </div>
-      </button>
 
-      <button className="compact-action-btn profile-btn" onClick={handleProfileUpdate}>
-        <div className="compact-btn-icon">
-          <Settings size={18} />
-        </div>
-        <div className="compact-btn-text">
-          <span className="btn-title">Profile</span>
-          <span className="btn-subtitle">Settings</span>
-        </div>
-      </button>
-    </div>
+            {/* ========== COMPACT ACTION BUTTONS ========== */}
+            <div className="compact-actions-layout">
 
-    {/* Special Actions */}
-    <div className="compact-special-actions">
-      <button className="compact-create-btn" onClick={() => handleOpenModal()}>
-        <div className="create-btn-icon">
-          <Plus size={20} />
-        </div>
-        <div className="create-btn-text">
-          <span className="create-title">Create Listing</span>
-          <span className="create-subtitle">Add new item</span>
-        </div>
-        <div className="create-arrow">
-          <ArrowRight size={16} />
-        </div>
-      </button>
+              {/* Main Action Buttons */}
+              <div className="compact-main-actions">
+                <button className="compact-action-btn fees-btn" onClick={handleFees}>
+                  <div className="compact-btn-icon">
+                    <Wallet size={18} />
+                  </div>
+                  <div className="compact-btn-text">
+                    <span className="btn-title">Pay Fees</span>
+                    <span className="btn-subtitle">Manage</span>
+                  </div>
+                </button>
 
-      <button className="compact-logout-btn" onClick={handleLogout}>
-        <LogOut size={16} />
-        <span>Logout</span>
-      </button>
-    </div>
-  </div>
-</div>
+                <button className="compact-action-btn donations-btn" onClick={() => setDonationsOpen(true)}>
+                  <div className="compact-btn-icon">
+                    <Heart size={18} />
+                  </div>
+                  <div className="compact-btn-text">
+                    <span className="btn-title">My Donations</span>
+                    <span className="btn-subtitle">Track</span>
+                  </div>
+                </button>
 
-{/* ========== COMPACT BUSINESS OVERVIEW SECTION ========== */}
-<div className={`compact-overview-container ${statsVisible ? 'expanded' : 'collapsed'}`}>
-  <div className="compact-overview-header">
-    <div className="overview-title-section">
-      <div className="overview-icon">
-        <Activity size={20} />
-      </div>
-      <div className="overview-title-content">
-        {statsVisible ? (
-          <>
-            <h3 className="overview-title">Business Overview</h3>
-            <p className="overview-subtitle">Real-time insights into your performance</p>
-          </>
-        ) : (
-          <>
-            <h3 className="overview-title">{userProfile.name || 'Merchant'} Overview</h3>
-            <p className="overview-subtitle">Click expand to view business insights</p>
-          </>
-        )}
-      </div>
-    </div>
-    <button className="compact-toggle-btn" onClick={toggleStats}>
-      <span className="toggle-text">{statsVisible ? 'Collapse' : 'Expand'}</span>
-      <div className="toggle-icon">
-        {statsVisible ? <ChevronDown size={16} /> : <ArrowRight size={16} />}
-      </div>
-    </button>
-  </div>
+                <button className="compact-action-btn sales-btn" onClick={handleSalesHistory}>
+                  <div className="compact-btn-icon">
+                    <History size={18} />
+                  </div>
+                  <div className="compact-btn-text">
+                    <span className="btn-title">Sales History</span>
+                    <span className="btn-subtitle">Reports</span>
+                  </div>
+                </button>
 
-  {statsVisible && (
-    <div className="compact-stats-grid">
-      {/* Items Sold Card */}
-      <div className="compact-stat-card items-sold-card">
-        <div className="compact-stat-header">
-          <div className="compact-stat-icon">
-            <Package size={20} />
+                <button className="compact-action-btn messages-btn" onClick={handleMessages}>
+                  <div className="compact-btn-icon">
+                    <MessageSquare size={18} />
+                    {messageStats.unreadMessages > 0 && (
+                      <div className="compact-notification-badge">
+                        {messageStats.unreadMessages > 99 ? '99+' : messageStats.unreadMessages}
+                      </div>
+                    )}
+                  </div>
+                  <div className="compact-btn-text">
+                    <span className="btn-title">Messages</span>
+                    <span className="btn-subtitle">Communications</span>
+                  </div>
+                </button>
+
+                <button className="compact-action-btn profile-btn" onClick={handleProfileUpdate}>
+                  <div className="compact-btn-icon">
+                    <Settings size={18} />
+                  </div>
+                  <div className="compact-btn-text">
+                    <span className="btn-title">Profile</span>
+                    <span className="btn-subtitle">Settings</span>
+                  </div>
+                </button>
+              </div>
+
+              {/* Special Actions */}
+              <div className="compact-special-actions">
+                <button className="compact-create-btn" onClick={() => handleOpenModal()}>
+                  <div className="create-btn-icon">
+                    <Plus size={20} />
+                  </div>
+                  <div className="create-btn-text">
+                    <span className="create-title">Create Listing</span>
+                    <span className="create-subtitle">Add new item</span>
+                  </div>
+                  <div className="create-arrow">
+                    <ArrowRight size={16} />
+                  </div>
+                </button>
+
+                <button className="compact-logout-btn" onClick={handleLogout}>
+                  <LogOut size={16} />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="compact-trend positive">+12%</div>
-        </div>
-        <div className="compact-stat-content">
-          {overviewStats.loading ? (
-            <div className="compact-loading">
-              <div className="loading-pulse"></div>
-              <span>Loading...</span>
-            </div>
-          ) : (
-            <>
-              <h4 className="compact-stat-number">{getTotalItemsSold().toLocaleString()}</h4>
-              <p className="compact-stat-label">Total Items Sold</p>
-              <span className="compact-stat-sublabel">Lifetime performance</span>
-            </>
-          )}
-        </div>
-        <div className="compact-progress">
-          <div className="compact-progress-fill" style={{width: '75%'}}></div>
-        </div>
-      </div>
 
-      {/* Active Listings Card */}
-      <div className="compact-stat-card active-listings-card">
-        <div className="compact-stat-header">
-          <div className="compact-stat-icon">
-            <Tag size={20} />
-          </div>
-          <div className="compact-trend neutral">0%</div>
-        </div>
-        <div className="compact-stat-content">
-          {overviewStats.loading ? (
-            <div className="compact-loading">
-              <div className="loading-pulse"></div>
-              <span>Loading...</span>
+          {/* ========== COMPACT BUSINESS OVERVIEW SECTION ========== */}
+          <div className={`compact-overview-container ${statsVisible ? 'expanded' : 'collapsed'}`}>
+            <div className="compact-overview-header">
+              <div className="overview-title-section">
+                <div className="overview-icon">
+                  <Activity size={20} />
+                </div>
+                <div className="overview-title-content">
+                  {statsVisible ? (
+                    <>
+                      <h3 className="overview-title">Business Overview</h3>
+                      <p className="overview-subtitle">Real-time insights into your performance</p>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="overview-title">{userProfile.name || 'Merchant'} Overview</h3>
+                      <p className="overview-subtitle">Click expand to view business insights</p>
+                    </>
+                  )}
+                </div>
+              </div>
+              <button className="compact-toggle-btn" onClick={toggleStats}>
+                <span className="toggle-text">{statsVisible ? 'Collapse' : 'Expand'}</span>
+                <div className="toggle-icon">
+                  {statsVisible ? <ChevronDown size={16} /> : <ArrowRight size={16} />}
+                </div>
+              </button>
             </div>
-          ) : (
-            <>
-              <h4 className="compact-stat-number">{getActiveListings()}</h4>
-              <p className="compact-stat-label">Active Listings</p>
-              <span className="compact-stat-sublabel">Available items</span>
-            </>
-          )}
-        </div>
-        <div className="compact-progress">
-          <div className="compact-progress-fill" style={{width: '60%'}}></div>
-        </div>
-      </div>
 
-      {/* Total Revenue Card */}
-      <div className="compact-stat-card revenue-card">
-        <div className="compact-stat-header">
-          <div className="compact-stat-icon">
-            <DollarSign size={20} />
+            {statsVisible && (
+              <div className="compact-stats-grid">
+                {/* Items Sold Card */}
+                <div className="compact-stat-card items-sold-card">
+                  <div className="compact-stat-header">
+                    <div className="compact-stat-icon">
+                      <Package size={20} />
+                    </div>
+                    <div className="compact-trend positive">+12%</div>
+                  </div>
+                  <div className="compact-stat-content">
+                    {overviewStats.loading ? (
+                      <div className="compact-loading">
+                        <div className="loading-pulse"></div>
+                        <span>Loading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <h4 className="compact-stat-number">{getTotalItemsSold().toLocaleString()}</h4>
+                        <p className="compact-stat-label">Total Items Sold</p>
+                        <span className="compact-stat-sublabel">Lifetime performance</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="compact-progress">
+                    <div className="compact-progress-fill" style={{ width: '75%' }}></div>
+                  </div>
+                </div>
+
+                {/* Active Listings Card */}
+                <div className="compact-stat-card active-listings-card">
+                  <div className="compact-stat-header">
+                    <div className="compact-stat-icon">
+                      <Tag size={20} />
+                    </div>
+                    <div className="compact-trend neutral">0%</div>
+                  </div>
+                  <div className="compact-stat-content">
+                    {overviewStats.loading ? (
+                      <div className="compact-loading">
+                        <div className="loading-pulse"></div>
+                        <span>Loading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <h4 className="compact-stat-number">{getActiveListings()}</h4>
+                        <p className="compact-stat-label">Active Listings</p>
+                        <span className="compact-stat-sublabel">Available items</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="compact-progress">
+                    <div className="compact-progress-fill" style={{ width: '60%' }}></div>
+                  </div>
+                </div>
+
+                {/* Total Revenue Card */}
+                <div className="compact-stat-card revenue-card">
+                  <div className="compact-stat-header">
+                    <div className="compact-stat-icon">
+                      <DollarSign size={20} />
+                    </div>
+                    <div className="compact-trend positive">+24%</div>
+                  </div>
+                  <div className="compact-stat-content">
+                    {overviewStats.loading ? (
+                      <div className="compact-loading">
+                        <div className="loading-pulse"></div>
+                        <span>Loading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <h4 className="compact-stat-number">৳{getTotalRevenue()}</h4>
+                        <p className="compact-stat-label">Total Revenue</p>
+                        <span className="compact-stat-sublabel">All-time earnings</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="compact-progress">
+                    <div className="compact-progress-fill" style={{ width: '85%' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="compact-trend positive">+24%</div>
-        </div>
-        <div className="compact-stat-content">
-          {overviewStats.loading ? (
-            <div className="compact-loading">
-              <div className="loading-pulse"></div>
-              <span>Loading...</span>
-            </div>
-          ) : (
-            <>
-              <h4 className="compact-stat-number">৳{getTotalRevenue()}</h4>
-              <p className="compact-stat-label">Total Revenue</p>
-              <span className="compact-stat-sublabel">All-time earnings</span>
-            </>
-          )}
-        </div>
-        <div className="compact-progress">
-          <div className="compact-progress-fill" style={{width: '85%'}}></div>
-        </div>
-      </div>
-    </div>
-  )}
-</div>
 
           {/* ========== SEARCH AND FILTER SECTION ========== */}
           <div className="action-bar">
@@ -4148,8 +4162,8 @@ const EnhancedFeesPopup = () => {
                       <label key={option} className="dietary-option">
                         <input
                           type="checkbox"
-                          checked={currentItem.dietaryInfo.includes(option)}
-                          onChange={() => handleDietaryChange(option)}
+                          checked={currentItem.dietaryInfo?.includes(option) || false}
+                          onChange={() => handleDietaryChange(option, 'foodItem')}
                         />
                         <span>{option}</span>
                       </label>
@@ -5086,7 +5100,7 @@ const EnhancedFeesPopup = () => {
           donationError={donationError}
           handleCheckRequests={handleCheckRequests}
           handleMarkAsCompleted={handleMarkAsCompleted}
-          
+
         />
       )}
     </div>

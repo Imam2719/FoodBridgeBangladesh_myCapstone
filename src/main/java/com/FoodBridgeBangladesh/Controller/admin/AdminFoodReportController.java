@@ -15,7 +15,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/admin/food-reports")
 @CrossOrigin(
-        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com"},
         allowCredentials = "true"
 )
 public class AdminFoodReportController {

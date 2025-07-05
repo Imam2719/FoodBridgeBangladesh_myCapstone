@@ -17,63 +17,46 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
 
 
 const DonorDashboard = () => {
-  // Main states
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [logoutSuccess, setLogoutSuccess] = useState(false);
   const [showAllFoodItems, setShowAllFoodItems] = useState(false);
-  // New donation flow states
   const [donationStep, setDonationStep] = useState(0); // 0: not started, 1: category selection, 2: form
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedFood, setSelectedFood] = useState(null);
-
-  // API state
   const [apiLoading, setApiLoading] = useState(false);
   const [apiError, setApiError] = useState(null);
-  //
   const [activeDonations, setActiveDonations] = useState([]);
   const [shouldShowFoodItems, setShouldShowFoodItems] = useState(true);
-  //
   const [allFoodItems, setAllFoodItems] = useState([]);
   const [foodItemsLoading, setFoodItemsLoading] = useState(false);
-  //
   const [showDonationForm, setShowDonationForm] = useState(false);
   const [availableRestaurantFoods, setAvailableRestaurantFoods] = useState([]);
   const [availableGroceryItems, setAvailableGroceryItems] = useState([]);
-  //
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showDonateModal, setShowDonateModal] = useState(false);
   const [selectedFoodDetails, setSelectedFoodDetails] = useState(null);
-  //
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingDonation, setEditingDonation] = useState(null);
   const [showNavigation, setShowNavigation] = useState(true);
-  // State to hold the requests for a donation
   const [donationRequests, setDonationRequests] = useState([]);
   const [showRequestsModal, setShowRequestsModal] = useState(false);
   const [selectedDonationForRequests, setSelectedDonationForRequests] = useState(null);
   const [requestsLoading, setRequestsLoading] = useState(false);
-
   const [selectedSubTab, setSelectedSubTab] = useState('active');
   const [pendingDonations, setPendingDonations] = useState([]);
   const [rejectedDonations, setRejectedDonations] = useState([]);
   const [completedDonations, setCompletedDonations] = useState([]);
-
-  // Add these missing state variables after your existing useState declarations
   const [selectedNotificationTab, setSelectedNotificationTab] = useState('all');
   const [viewingNotificationRequest, setViewingNotificationRequest] = useState(null);
-
-  //
   const [foodRequests, setFoodRequests] = useState([]);
   const [foodRequestsLoading, setFoodRequestsLoading] = useState(false);
   const [foodRequestsError, setFoodRequestsError] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
-  // Profile management states
   const [donorProfile, setDonorProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [showProfileForm, setShowProfileForm] = useState(false);
@@ -94,15 +77,12 @@ const DonorDashboard = () => {
     message: '',
     show: false
   });
-
-  // Add these state variables
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [selectedFoodForPurchase, setSelectedFoodForPurchase] = useState(null);
   const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [purchaseError, setPurchaseError] = useState(null);
   const [purchaseSuccess, setPurchaseSuccess] = useState(null);
   const [purchaseHistory, setPurchaseHistory] = useState([]);
-  //
   const [selectedMainTab, setSelectedMainTab] = useState('donations'); // Update this line if it exists
   const [showMessagesModal, setShowMessagesModal] = useState(false);
   const [selectedMessageTab, setSelectedMessageTab] = useState('received');
@@ -114,8 +94,6 @@ const DonorDashboard = () => {
   const [showComposeModal, setShowComposeModal] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showMessageDetails, setShowMessageDetails] = useState(false);
-
-  // Add these lines after line 85, after the existing state declarations
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
@@ -128,31 +106,23 @@ const DonorDashboard = () => {
     foodRequests: 0
   });
 
-  // Function to fetch notifications
   const handleViewNotificationDetails = async (notification) => {
     try {
-      // Mark as read if unread
       if (!notification.isRead) {
         await handleMarkNotificationAsRead(notification.id);
       }
-
-      // Handle different notification types
       if (notification.type === 'PICKUP_REQUEST' && notification.requestId) {
-        // Fetch the request details and show in donation requests modal
         const response = await fetch(`${API_BASE_URL}/api/donor/donations/${notification.donationId}/requests?donorId=${donorId}`);
         if (response.ok) {
           const requestsData = await response.json();
           const specificRequest = requestsData.find(req => req.id === notification.requestId);
 
           if (specificRequest) {
-            // **FIX: Properly map the image data and create complete request object**
             const enhancedRequest = {
               ...specificRequest,
-              // Map image data if available
               imageUrl: specificRequest.imageData
                 ? `data:${specificRequest.imageContentType || 'image/jpeg'};base64,${specificRequest.imageData}`
-                : null,
-              // Ensure all required fields are present
+                : null,          
               receiverName: specificRequest.receiverName || specificRequest.requesterName || 'Anonymous',
               requestDate: specificRequest.requestDate || new Date(specificRequest.createdAt || Date.now()).toLocaleString(),
               status: specificRequest.status || 'PENDING',
@@ -161,8 +131,6 @@ const DonorDashboard = () => {
               location: specificRequest.location || 'No location specified',
               note: specificRequest.note || specificRequest.notes || ''
             };
-
-            // **FIX: Also fetch the donation details to get donation image if request image is missing**
             let donationImageUrl = null;
             try {
               const donationResponse = await fetch(`${API_BASE_URL}/api/donor/donations/${notification.donationId}?donorId=${donorId}`);
@@ -175,8 +143,6 @@ const DonorDashboard = () => {
             } catch (error) {
               console.warn('Could not fetch donation image:', error);
             }
-
-            // Set up the request modal with enhanced data
             setSelectedDonationForRequests({
               id: notification.donationId,
               foodName: notification.additionalData ?
@@ -208,13 +174,10 @@ const DonorDashboard = () => {
           throw new Error('Failed to fetch request details');
         }
       } else if (notification.type === 'FOOD_REQUEST' && notification.foodRequestId) {
-        // **FIX: Enhanced food request handling**
         try {
           const response = await fetch(`${API_BASE_URL}/api/donor/food-requests/${notification.foodRequestId}`);
           if (response.ok) {
             const requestData = await response.json();
-
-            // Process and show food request details
             const enhancedFoodRequest = {
               ...requestData,
               imageUrl: requestData.imageData
@@ -222,7 +185,6 @@ const DonorDashboard = () => {
                 : '/api/placeholder/400/200'
             };
 
-            // You can implement a food request details modal here
             alert(`Food request from ${requestData.receiverName || 'Anonymous'} - ${requestData.foodTypes?.join(', ') || 'Food needed'}`);
           }
         } catch (error) {
@@ -230,7 +192,6 @@ const DonorDashboard = () => {
           alert('Failed to load food request details');
         }
       } else {
-        // For other types, just show an info message
         alert(notification.message);
       }
     } catch (error) {
@@ -238,29 +199,20 @@ const DonorDashboard = () => {
       alert('Failed to load request details');
     }
   };
-
-  // Add function to delete notification
   const handleDeleteNotification = async (notificationId) => {
     if (!window.confirm('Are you sure you want to delete this notification?')) {
       return;
     }
-
     try {
       const response = await fetch(`${API_BASE_URL}/api/donor/notifications/${notificationId}?donorId=${donorId}`, {
         method: 'DELETE'
       });
-
       if (response.ok) {
-        // Remove notification from list
         setNotifications(prev => prev.filter(notification => notification.id !== notificationId));
-
-        // Update unread count if it was unread
         const deletedNotification = notifications.find(n => n.id === notificationId);
         if (deletedNotification && !deletedNotification.isRead) {
           setUnreadNotifications(prev => Math.max(0, prev - 1));
         }
-
-        // Refresh stats
         fetchNotificationStats();
         console.log('✅ Notification deleted:', notificationId);
       }
@@ -290,18 +242,13 @@ const DonorDashboard = () => {
 
       if (response.ok) {
         console.log('✅ Pickup request notification created');
-        // **ENHANCED: Immediately refresh notifications and update count**
         await fetchNotifications();
         await fetchNotificationStats();
-
-        // **NEW: Show toast notification**
         setNotificationToast({
           type: 'pickup',
           message: `New pickup request from ${requesterName} for ${donationName}`,
           show: true
         });
-
-        // Hide toast after 5 seconds
         setTimeout(() => {
           setNotificationToast(prev => ({ ...prev, show: false }));
         }, 5000);
@@ -311,7 +258,6 @@ const DonorDashboard = () => {
     }
   };
 
-  // Function to create food request notification  
   const createFoodRequestNotification = async (donorId, foodRequestId, requesterName, requesterId, foodType, peopleCount) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/donor/notifications/food-request`, {
@@ -331,7 +277,6 @@ const DonorDashboard = () => {
 
       if (response.ok) {
         console.log('✅ Food request notification created');
-        // Refresh notifications
         fetchNotifications();
         fetchNotificationStats();
       }
@@ -343,7 +288,6 @@ const DonorDashboard = () => {
   const fetchNotifications = async () => {
     setNotificationsLoading(true);
     setNotificationsError(null);
-
     try {
       let endpoint;
       switch (selectedNotificationTab) {
@@ -363,11 +307,8 @@ const DonorDashboard = () => {
       }
       const data = await response.json();
       setNotifications(data);
-
-      // Count unread notifications
       const unreadCount = data.filter(notification => !notification.isRead).length;
       setUnreadNotifications(unreadCount);
-
       console.log('✅ Notifications fetched:', data);
     } catch (error) {
       console.error('💥 Error fetching notifications:', error);
@@ -398,17 +339,13 @@ const DonorDashboard = () => {
       });
 
       if (response.ok) {
-        // Update the notification in the list
         setNotifications(prev =>
           prev.map(notification =>
             notification.id === notificationId ? { ...notification, read: true } : notification
           )
         );
 
-        // Update unread count
         setUnreadNotifications(prev => Math.max(0, prev - 1));
-
-        // Refresh stats
         fetchNotificationStats();
         console.log('✅ Notification marked as read:', notificationId);
       }
@@ -422,17 +359,12 @@ const DonorDashboard = () => {
       const response = await fetch(`${API_BASE_URL}/api/donor/notifications/mark-all-read`, {
         method: 'PUT'
       });
-
       if (response.ok) {
-        // Mark all notifications as read
         setNotifications(prev =>
           prev.map(notification => ({ ...notification, read: true }))
         );
-
-        // Reset unread count
         setUnreadNotifications(0);
 
-        // Refresh stats
         fetchNotificationStats();
         console.log('✅ All notifications marked as read');
       }
@@ -440,13 +372,10 @@ const DonorDashboard = () => {
       console.error('💥 Error marking all notifications as read:', error);
     }
   };
-
   useEffect(() => {
     if (donorId) {
       fetchNotifications();
       fetchNotificationStats();
-
-      // Set up polling for notifications every 15 seconds (more frequent)
       const notificationInterval = setInterval(() => {
         fetchNotifications();
         fetchNotificationStats();
@@ -456,15 +385,10 @@ const DonorDashboard = () => {
     }
   }, [donorId, selectedNotificationTab]);
 
-  // Function end of notifications modal
-
-  // REMOVE donorId from all API calls
   const fetchReceivedMessages = async () => {
     setMessagesLoading(true);
     setMessagesError(null);
-
     try {
-      // UPDATED: Remove donorId from URL - now role-based only
       const response = await fetch(`${API_BASE_URL}/api/donor/messages/received`);
       if (!response.ok) {
         throw new Error('Failed to fetch received messages');
@@ -473,7 +397,6 @@ const DonorDashboard = () => {
       setReceivedMessages(data);
       console.log('✅ Received messages (role-based):', data);
 
-      // Log message roles for debugging
       data.forEach(msg => {
         console.log(`Message ID: ${msg.id}, Role: ${msg.role}, Subject: ${msg.subject}`);
       });
@@ -490,7 +413,6 @@ const DonorDashboard = () => {
     setMessagesError(null);
 
     try {
-      // UPDATED: Remove donorId from URL - now role-based only
       const response = await fetch(`${API_BASE_URL}/api/donor/messages/sent`);
       if (!response.ok) {
         throw new Error('Failed to fetch sent messages');
@@ -508,7 +430,6 @@ const DonorDashboard = () => {
 
   const fetchMessageStats = async () => {
     try {
-      // UPDATED: Remove donorId from URL - now role-based only
       const response = await fetch(`${API_BASE_URL}/api/donor/messages/stats`);
       if (!response.ok) {
         throw new Error('Failed to fetch message stats');
@@ -523,13 +444,11 @@ const DonorDashboard = () => {
 
   const handleMarkAsRead = async (messageId) => {
     try {
-      // UPDATED: Remove donorId from URL - now role-based only
       const response = await fetch(`${API_BASE_URL}/api/donor/messages/messages/${messageId}/mark-read`, {
         method: 'PUT'
       });
 
       if (response.ok) {
-        // Update the message in the list
         setReceivedMessages(prev =>
           prev.map(msg =>
             msg.id === messageId ? { ...msg, read: true } : msg
@@ -547,9 +466,7 @@ const DonorDashboard = () => {
     if (!window.confirm('Are you sure you want to delete this message?')) {
       return;
     }
-
     try {
-      // UPDATED: Remove donorId from URL - now role-based only
       const response = await fetch(`${API_BASE_URL}/api/donor/messages/sent/${messageId}`, {
         method: 'DELETE'
       });
@@ -567,30 +484,23 @@ const DonorDashboard = () => {
     }
   };
 
-  // Add this function in your DonorDashboard component
   const handleSendMessage = async (formData) => {
     try {
       console.log('🚀 Sending message with form data...');
-
-      // Log the FormData contents for debugging
       for (let [key, value] of formData.entries()) {
         console.log(`📝 ${key}: ${value}`);
       }
 
-      // UPDATED: Use the new role-based endpoint (no donorId in URL)
       const response = await fetch(`${API_BASE_URL}/api/donor/messages/send`, {
         method: 'POST',
         body: formData
       });
-
       const result = await response.json();
       console.log(' Response:', result);
 
       if (result.success) {
         alert('Message sent successfully!');
         setShowComposeModal(false);
-
-        // Refresh messages after sending
         fetchSentMessages();
         fetchMessageStats();
 
@@ -611,28 +521,19 @@ const DonorDashboard = () => {
       fetchSentMessages();
       fetchMessageStats();
     }
-  }, [selectedMainTab]); // Removed donorId dependency
-
-
+  }, [selectedMainTab]);
 
   const handleDonate = (food) => {
     console.log('🟢 Opening purchase modal for:', food.name);
 
-    // Close any other modals first
     setShowDonationForm(false);
     setDonationStep(0);
     setSelectedFood(null);
     setShowDetailsModal(false);
-
-    // Reset error states
     setPurchaseError(null);
     setPurchaseSuccess(null);
-
-    // Set the selected food and open modal
     setSelectedFoodForPurchase(food);
     setShowPurchaseModal(true);
-
-    // Fetch fresh food details with image
     fetch(`${API_BASE_URL}/api/donor/food-items/${food.id}`)
       .then(response => {
         if (!response.ok) throw new Error('Failed to fetch food details');
@@ -652,17 +553,12 @@ const DonorDashboard = () => {
 
   const handlePurchaseSubmit = (formData) => {
     console.log('🚀 Starting purchase process with FormData');
-
     setPurchaseLoading(true);
     setPurchaseError(null);
     setPurchaseSuccess(null);
-
-    // Log the FormData contents for debugging
     for (let [key, value] of formData.entries()) {
       console.log(`${key}: ${value}`);
     }
-
-    // Make the API call
     fetch(`${API_BASE_URL}/api/merchant/sales/create`, {
       method: 'POST',
       body: formData, // Send FormData directly
@@ -683,12 +579,10 @@ const DonorDashboard = () => {
         if (result.success !== false) {
           setPurchaseSuccess('Your purchase successfully done!');
 
-          // Auto-close modal after 3 seconds
           setTimeout(() => {
             setShowPurchaseModal(false);
             setSelectedFoodForPurchase(null);
 
-            // Refresh data
             fetchAllFoodItems();
             fetchActiveDonations();
           }, 3000);
@@ -705,7 +599,6 @@ const DonorDashboard = () => {
       });
   };
 
-  // Add this function to fetch purchase history
   const fetchPurchaseHistory = () => {
     if (!donorId) return;
 
@@ -723,15 +616,12 @@ const DonorDashboard = () => {
         console.error('Error fetching purchase history:', error);
       });
   };
-
-  // Call this in useEffect to load purchase history when component mounts
   useEffect(() => {
     if (donorId) {
       fetchPurchaseHistory();
     }
   }, [donorId]);
 
-  //
   const handleDeleteDonation = async (donationId) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this donation?');
 
@@ -746,7 +636,6 @@ const DonorDashboard = () => {
           throw new Error(errorText || 'Failed to delete donation');
         }
 
-        // Remove the deleted donation from the list
         setActiveDonations(prevDonations =>
           prevDonations.filter(donation => donation.id !== donationId)
         );
@@ -759,16 +648,12 @@ const DonorDashboard = () => {
     }
   };
 
-  //
-  // Add or modify this function in the component
   const fetchDonationsByStatus = async (status) => {
     setApiLoading(true);
     setApiError(null);
 
     try {
       console.log(`Fetching donations with status ${status} for donor ID: ${donorId}`);
-
-      // Determine API endpoint based on status
       let apiUrl;
       if (status === 'active') {
         apiUrl = `${API_BASE_URL}/api/donor/donations/active?donorId=${donorId}`;
@@ -781,23 +666,18 @@ const DonorDashboard = () => {
       } else {
         throw new Error(`Unknown status: ${status}`);
       }
-
       const response = await fetch(apiUrl);
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`Error fetching ${status} donations:`, errorText);
         throw new Error(`Failed to fetch ${status} donations`);
       }
-
       const data = await response.json();
-
       if (!Array.isArray(data)) {
         console.warn('Invalid data received:', data);
         return;
       }
 
-      // Format donations consistently
       const formattedDonations = data.map(donation => ({
         id: donation.id,
         foodName: donation.foodName || 'Unnamed Donation',
@@ -818,7 +698,6 @@ const DonorDashboard = () => {
           : '/api/placeholder/400/200'
       }));
 
-      // Update the appropriate state based on status
       if (status === 'active') {
         setActiveDonations(formattedDonations);
       } else if (status === 'pending') {
@@ -832,8 +711,6 @@ const DonorDashboard = () => {
     } catch (error) {
       console.error(`Error in fetchDonationsByStatus(${status}):`, error);
       setApiError(error.message);
-
-      // Set appropriate state to empty array on error
       if (status === 'active') {
         setActiveDonations([]);
       } else if (status === 'pending') {
@@ -848,7 +725,6 @@ const DonorDashboard = () => {
     }
   };
 
-  // Add this effect to trigger when activeDonations or pendingDonations change
   useEffect(() => {
     console.log('Active donations state updated:', activeDonations);
     console.log('Pending donations state updated:', pendingDonations);
@@ -859,7 +735,6 @@ const DonorDashboard = () => {
       setRequestsLoading(true);
       setSelectedDonationForRequests(donation);
 
-      // Close the active donations popup first
       setSelectedMainTab('donations');
 
       console.log(`Checking requests for donation ID: ${donation.id}`);
@@ -873,18 +748,13 @@ const DonorDashboard = () => {
         console.error('Error response body:', errorText);
         throw new Error(`Failed to fetch requests: ${response.statusText}`);
       }
-
       const data = await response.json();
       console.log('Requests data:', data);
-
-      // **FIX: Enhanced request processing with proper image mapping**
       const enhancedRequests = data.map(request => ({
         ...request,
-        // Map image data properly
         imageUrl: request.imageData
           ? `data:${request.imageContentType || 'image/jpeg'};base64,${request.imageData}`
           : donation.imageUrl || '/api/placeholder/400/200', // Use donation image as fallback
-        // Ensure consistent field names
         receiverName: request.receiverName || request.requesterName || 'Anonymous',
         requestDate: request.requestDate || new Date(request.createdAt || Date.now()).toLocaleString(),
         status: request.status || 'PENDING',
@@ -894,10 +764,7 @@ const DonorDashboard = () => {
         note: request.note || request.notes || ''
       }));
 
-      // Filter to only show PENDING requests
       const pendingRequests = enhancedRequests.filter(request => request.status === 'PENDING');
-
-      // Create notifications for new pickup requests (existing logic)
       pendingRequests.forEach(request => {
         const existingNotification = notifications.find(
           notif => notif.type === 'PICKUP_REQUEST' &&
@@ -918,7 +785,7 @@ const DonorDashboard = () => {
         }
       });
 
-      setDonationRequests(pendingRequests); // **FIX: Use enhanced requests**
+      setDonationRequests(pendingRequests);
       setShowRequestsModal(true);
     } catch (error) {
       console.error('Error fetching requests:', error);
@@ -931,8 +798,6 @@ const DonorDashboard = () => {
   const handleUpdateRequestStatus = async (requestId, status, note = '') => {
     try {
       setRequestsLoading(true);
-
-      // First update the request status
       const response = await fetch(`${API_BASE_URL}/api/donor/requests/${requestId}/status?donorId=${donorId}`, {
         method: 'PUT',
         headers: {
@@ -948,8 +813,6 @@ const DonorDashboard = () => {
         const errorText = await response.text();
         throw new Error(`Failed to update request status: ${errorText || response.statusText}`);
       }
-
-      // Refresh the requests for the current donation
       if (selectedDonationForRequests) {
         const refreshResponse = await fetch(
           `${API_BASE_URL}/api/donor/donations/${selectedDonationForRequests.id}/requests?donorId=${donorId}`,
@@ -963,19 +826,15 @@ const DonorDashboard = () => {
         }
       }
 
-      // Close modal if no pending requests remain
       if (donationRequests.length === 0) {
         setShowRequestsModal(false);
       }
-
-      // Refresh donation lists
       await Promise.all([
         fetchActiveDonations(),
         fetchDonationsByStatus('pending'),
         fetchDonationsByStatus('rejected'),
         fetchDonationsByStatus('completed')
       ]);
-
     } catch (error) {
       console.error('Error updating request status:', error);
       alert('Failed to update request status: ' + error.message);
@@ -984,20 +843,15 @@ const DonorDashboard = () => {
     }
   };
 
-  // Add this function to handle opening the edit modal
   const handleEditDonation = (donation) => {
     console.log("Opening edit modal for donation:", donation);
 
-    // Check the current format of the category
     if (donation.category) {
       console.log(`Original category format: ${donation.category}`);
     }
-
-    // Pre-fill the form with the donation's current data
-    // We'll keep the original category format as-is to avoid conversion errors
     const formData = {
       foodName: donation.foodName || '',
-      category: donation.category || '', // Keep original format
+      category: donation.category || '', 
       quantity: donation.quantity || '',
       expiry: donation.expiry || '',
       location: donation.location || '',
@@ -1008,57 +862,39 @@ const DonorDashboard = () => {
       packaging: donation.packaging || '',
       storageInstructions: donation.storageInstructions || '',
       image: null,
-      // Keep the original ID for updating
       donationId: donation.id
     };
 
     console.log("Form data initialized with:", formData);
-
     setDonationForm(formData);
     setEditingDonation(donation);
     setShowEditModal(true);
   };
 
-  // Fixed handleEditSubmit function
   const handleEditSubmit = (e, localFormData) => {
     e.preventDefault();
     setApiLoading(true);
     setApiError(null);
-
-    // Create a FormData object for multipart/form-data submission
     const formData = new FormData();
-
-    // Use localFormData passed from EditDonationModal if available,
-    // otherwise fallback to donationForm (for compatibility)
     const formToUse = localFormData || donationForm;
-
-    // Log which form we're using
     console.log('Using form data:', formToUse);
-
-    // Map frontend field names to backend expectations
     const fieldMapping = {
       'expiry': 'expiryDate',
       'preparation': 'preparationDate'
     };
 
-    // Add all form fields to FormData (with improved logging)
     Object.keys(formToUse).forEach(key => {
       if (formToUse[key] !== null && formToUse[key] !== undefined && key !== 'image' && key !== 'donationId') {
-        // Handle date fields that need special formatting
         if (key === 'expiry' || key === 'preparation') {
-          // Check if this is a datetime-local value (contains 'T')
           if (formToUse[key] && formToUse[key].includes('T')) {
-            // Extract just the date part for fields that expect YYYY-MM-DD
             const dateValue = formToUse[key].split('T')[0];
             formData.append(fieldMapping[key] || key, dateValue);
             console.log(`Converting ${key} from ${formToUse[key]} to ${dateValue}`);
           } else if (formToUse[key]) {
-            // If it's already a date string, use it directly
             formData.append(fieldMapping[key] || key, formToUse[key]);
             console.log(`Using ${key} directly: ${formToUse[key]}`);
           }
         }
-        // Handle dietaryInfo array
         else if (key === 'dietaryInfo') {
           if (Array.isArray(formToUse[key])) {
             formToUse[key].forEach(item => {
@@ -1066,7 +902,6 @@ const DonorDashboard = () => {
               console.log(`Adding dietary info item: ${item}`);
             });
           } else if (typeof formToUse[key] === 'string' && formToUse[key].trim() !== '') {
-            // Handle case where dietaryInfo is a comma-separated string
             const items = formToUse[key].split(',').map(item => item.trim());
             items.forEach(item => {
               if (item) {
@@ -1076,13 +911,10 @@ const DonorDashboard = () => {
             });
           }
         }
-        // Handle category (ensure it's included and properly formatted)
-        else if (key === 'category') {
-          // Make sure category is in the expected format for the backend (enum name)
-          let categoryValue = formToUse[key];
-          // If it's not already in uppercase with underscores format, try to convert it
+        
+        else if (key === 'category') {     
+          let categoryValue = formToUse[key];   
           if (categoryValue && !categoryValue.includes('_')) {
-            // Check if it's a human-readable format that needs conversion
             const categoryMap = {
               "Homemade Food": "HOMEMADE_FOOD",
               "Restaurant & Café Surplus": "RESTAURANT_SURPLUS",
@@ -1096,14 +928,12 @@ const DonorDashboard = () => {
               categoryValue = categoryMap[categoryValue];
             }
           }
-
           if (categoryValue) {
             formData.append('category', categoryValue);
             console.log(`Adding category: ${categoryValue}`);
           }
         }
         else {
-          // Use mapped field name if it exists, otherwise use the original key
           const backendKey = fieldMapping[key] || key;
           formData.append(backendKey, formToUse[key]);
           console.log(`Adding field ${backendKey}: ${formToUse[key]}`);
@@ -1113,37 +943,27 @@ const DonorDashboard = () => {
 
     formData.append('donorId', donorId);
     console.log(`Adding donorId: ${donorId}`);
-
-    // Handle image upload
     if (formToUse.image) {
       formData.append('image', formToUse.image);
       console.log('Adding image file:', formToUse.image.name);
     }
-
-    // Debug: Log all data being sent
     console.log('Sending updated donation data:');
     for (let pair of formData.entries()) {
       console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
     }
-
-    // Send the update request to the API
-    const apiUrl = `${API_BASE_URL || 'https://foodbridge-frontend.onrender.com'}/api/donor/donations/${formToUse.donationId}`;
+    const apiUrl = `${API_BASE_URL}/api/donor/donations/${formToUse.donationId}`;
     console.log('Updating donation at:', apiUrl);
     console.log('🚀 FINAL FORM DATA TO BE SENT:');
     for (let [key, value] of formData.entries()) {
       console.log(`${key}: ${value}`);
     }
-
     fetch(apiUrl, {
       method: 'PUT',
       body: formData,
-      // Don't set Content-Type header manually for FormData
-      // Let the browser set it with the correct boundary
     })
       .then(response => {
         console.log('Response status:', response.status);
         if (!response.ok) {
-          // Try to get more detailed error information
           return response.text().then(text => {
             console.error('Server response:', text);
             throw new Error('Failed to update donation: ' + (text || response.statusText));
@@ -1153,54 +973,39 @@ const DonorDashboard = () => {
       })
       .then(data => {
         console.log('Donation updated successfully:', data);
-
-        // Log the returned category specifically for debugging
         console.log('Updated category returned from server:',
           data.category ?
             (typeof data.category === 'object' ?
               `${data.category.name} (${data.category.label})` :
               data.category) :
             'No category returned');
-
-        // Show success message to user
         alert('Donation updated successfully!');
-
-        // Close the edit modal
         setShowEditModal(false);
         setEditingDonation(null);
-
-        // Refresh the donations list
         fetchActiveDonations();
       })
       .catch(error => {
         console.error('Error updating donation:', error);
         setApiError(error.message);
-
-        // Show error to user
         alert(error.message || 'Failed to update donation. Please try again.');
       })
       .finally(() => {
         setApiLoading(false);
       });
   };
-
-  // Add this function to close the edit modal
   const closeEditModal = () => {
     setShowEditModal(false);
     setEditingDonation(null);
   };
-  //
+  
   const handleCheckPendingRequests = async (donation) => {
     try {
       setRequestsLoading(true);
       setSelectedDonationForRequests(donation);
-
-      // Close the active donations popup first
       setSelectedMainTab('donations');
 
       console.log(`Checking requests for pending donation ID: ${donation.id}`);
 
-      // Include credentials if you're using cookies for authentication
       const response = await fetch(`${API_BASE_URL}/api/donor/donations/${donation.id}/requests?donorId=${donorId}`, {
         credentials: 'include'
       });
@@ -1213,8 +1018,6 @@ const DonorDashboard = () => {
 
       const data = await response.json();
       console.log('Requests data for pending donation:', data);
-
-      // Filter to only show ACCEPTED requests for pending donations
       const acceptedRequests = data.filter(request => request.status === 'ACCEPTED');
       setDonationRequests(acceptedRequests);
       setShowRequestsModal(true);
@@ -1225,7 +1028,7 @@ const DonorDashboard = () => {
       setRequestsLoading(false);
     }
   };
-  // Function to fetch requests for a specific donation
+
   const fetchRequestsForDonation = async (donationId) => {
     try {
       setRequestsLoading(true);
@@ -1253,20 +1056,15 @@ const DonorDashboard = () => {
     const [responseNotes, setResponseNotes] = useState({});
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Early return if modal should not be shown
     if (!showRequestsModal || !selectedDonationForRequests) return null;
 
-    // Safely parse remaining quantity
     const remainingQuantity = selectedDonationForRequests?.quantity
       ? parseInt(selectedDonationForRequests.quantity.replace(/[^0-9]/g, ''))
       : 0;
-
-    // Handler for updating request status with additional error handling
     const handleRequestStatusUpdate = async (requestId, status, note = '') => {
       try {
         setIsProcessing(true);
 
-        // Validate inputs
         if (!requestId || !status) {
           throw new Error('Invalid request parameters');
         }
@@ -1288,15 +1086,9 @@ const DonorDashboard = () => {
           const errorText = await response.text();
           throw new Error(errorText || `Failed to update request status: ${response.statusText}`);
         }
-
-        // Show success toast message
         const message = status === 'ACCEPTED' ? 'Request accepted successfully!' : 'Request declined';
-        // Implement toast notification here if you have a toast system
 
-        // Refresh request list or update UI
         await fetchRequestsForDonation(selectedDonationForRequests.id);
-
-        // Close modal if no pending requests remain
         if (donationRequests.length === 0) {
           setShowRequestsModal(false);
         }
@@ -1309,34 +1101,27 @@ const DonorDashboard = () => {
       }
     };
 
-    // Enhanced fallback image URL function with better image handling
     const getFallbackImageUrl = (request) => {
-      // **FIX: Multiple fallback sources for images**
 
-      // 1. Try request's own image URL
       if (request.imageUrl && request.imageUrl !== '/api/placeholder/400/200') {
         return request.imageUrl;
       }
 
-      // 2. Try request's image data
       if (request.imageData) {
         return `data:${request.imageContentType || 'image/jpeg'};base64,${request.imageData}`;
       }
 
-      // 3. Try selected donation's image URL
       if (selectedDonationForRequests?.imageUrl && selectedDonationForRequests.imageUrl !== '/api/placeholder/400/200') {
         return selectedDonationForRequests.imageUrl;
       }
 
-      // 4. Try selected donation's image data
       if (selectedDonationForRequests?.imageData) {
         return `data:${selectedDonationForRequests.imageContentType || 'image/jpeg'};base64,${selectedDonationForRequests.imageData}`;
       }
 
-      // 5. Final fallback
       return '/api/placeholder/400/200';
     };
-    // Format date function
+
     const formatDate = (dateString) => {
       return new Date(dateString).toLocaleString(undefined, {
         day: 'numeric',
@@ -1349,7 +1134,6 @@ const DonorDashboard = () => {
     return (
       <div className="donation-request-modal-overlay">
         <div className="donation-request-modal-container">
-          {/* Enhanced Modal Header */}
           <div className="donation-request-modal-header">
             <div className="donation-request-header-content">
               <h2>{selectedDonationForRequests.foodName} Requests</h2>
@@ -1367,9 +1151,7 @@ const DonorDashboard = () => {
             </button>
           </div>
 
-          {/* Enhanced Modal Body */}
           <div className="donation-request-modal-body">
-            {/* Loading State */}
             {(requestsLoading || isProcessing) && (
               <div className="donation-request-loading">
                 <span className="donation-request-spinner"></span>
@@ -1377,7 +1159,6 @@ const DonorDashboard = () => {
               </div>
             )}
 
-            {/* Empty State */}
             {!requestsLoading && donationRequests.length === 0 && (
               <div className="donation-request-empty">
                 <Users className="h-16 w-16 text-gray-300" />
@@ -1386,12 +1167,10 @@ const DonorDashboard = () => {
               </div>
             )}
 
-            {/* Requests Grid */}
             {!requestsLoading && donationRequests.length > 0 && (
               <div className="donation-requests-grid">
                 {donationRequests.map(request => (
                   <div key={request.id} className="donation-request-card">
-                    {/* Food Image */}
                     <div className="donation-request-image">
                       <img
                         src={getFallbackImageUrl(request)}
@@ -1400,7 +1179,6 @@ const DonorDashboard = () => {
                       />
                     </div>
 
-                    {/* Request Details */}
                     <div className="donation-request-details">
                       {/* Request Header with User Info */}
                       <div className="donation-request-card-header">
@@ -1415,7 +1193,6 @@ const DonorDashboard = () => {
                         </div>
                       </div>
 
-                      {/* Request Information with Icons */}
                       <div className="donation-request-info">
                         <div className="donation-request-info-item">
                           <Clock className="h-3.5 w-3.5" />
@@ -1441,15 +1218,12 @@ const DonorDashboard = () => {
                           <span>{request.location || 'No location specified'}</span>
                         </div>
                       </div>
-
-                      {/* Request Note with Better Styling */}
                       {request.note && (
                         <div className="donation-request-note">
                           <p>"{request.note}"</p>
                         </div>
                       )}
 
-                      {/* Actions for Pending Requests */}
                       {request.status === 'PENDING' && (
                         <div className="donation-request-actions">
                           <input
@@ -1503,7 +1277,6 @@ const DonorDashboard = () => {
   };
   //
   const EditDonationModal = ({ donation, onClose, onSubmit, loading, error }) => {
-    // Create a local state for form data instead of using the parent state directly
     const [localForm, setLocalForm] = useState({
       foodName: donation?.foodName || '',
       category: donation?.category || '',
@@ -1520,7 +1293,6 @@ const DonorDashboard = () => {
       donationId: donation?.id
     });
 
-    // Theme management functions
     const updateTheme = (isDark) => {
       const body = document.body;
 
@@ -1539,16 +1311,13 @@ const DonorDashboard = () => {
       updateTheme(newDarkMode);
     };
 
-    // Debug the initial form state
     useEffect(() => {
       console.log('Initial edit form state:', localForm);
     }, []);
 
-    // Only update local state without affecting parent state
     const handleLocalChange = (field, value) => {
       console.log(`Changing field ${field} from "${localForm[field]}" to "${value}"`);
 
-      // Special handling for category to ensure proper formatting
       if (field === 'category') {
         console.log(`Category selected: ${value}`);
       }
@@ -1559,16 +1328,13 @@ const DonorDashboard = () => {
       }));
     };
 
-    // When form is submitted, pass the complete form data to parent
     const handleSubmit = (e) => {
       e.preventDefault();
       console.log('Form being submitted with data:', localForm);
 
-      // Ensure category is formatted properly before submission
       const formToSubmit = { ...localForm };
 
       if (formToSubmit.category) {
-        // Convert visual category format (if needed) to the expected backend enum format
         const categoryMap = {
           "Homemade Food": "HOMEMADE_FOOD",
           "Restaurant & Café Surplus": "RESTAURANT_SURPLUS",
@@ -1584,18 +1350,15 @@ const DonorDashboard = () => {
         }
       }
 
-      // Pass the sanitized form data to the parent component
       onSubmit(e, formToSubmit);
     };
 
     if (!donation) return null;
 
-    // Helper function to check if the field has changed from original
     const hasFieldChanged = (field) => {
       return localForm[field] !== donation[field];
     };
 
-    // Debug function to identify category format
     const identifyCategoryFormat = (category) => {
       if (!category) return 'Empty';
       if (category.includes('_')) return 'Enum format (with underscore)';
@@ -1623,7 +1386,6 @@ const DonorDashboard = () => {
 
           <form className="edit-form" onSubmit={handleSubmit}>
             <div className="edit-form-scroll">
-              {/* Food Information Section */}
               <div className="edit-section">
                 <h3 className="edit-section-title">
                   Food Information
@@ -1770,8 +1532,6 @@ const DonorDashboard = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Location & Image Section */}
               <div className="edit-section">
                 <h3 className="edit-section-title">
                   Location & Image
@@ -1851,12 +1611,9 @@ const DonorDashboard = () => {
           setActiveDonations([]);
           return;
         }
-
-        // Filter out donations with quantity <= 0
         const filteredDonations = data.filter(donation => {
           if (!donation.quantity) return false;
 
-          // Extract numeric part from quantity string
           const quantityMatch = donation.quantity.match(/\d+/);
           if (!quantityMatch) return false;
 
@@ -1893,7 +1650,6 @@ const DonorDashboard = () => {
       });
   };
 
-  // Add this new useEffect after line 119:
   useEffect(() => {
     if (selectedMainTab === 'activeDonations' && donorId) {
       fetchActiveDonations();
@@ -1910,7 +1666,6 @@ const DonorDashboard = () => {
     }
   }, [donorId]);
 
-  // 
   const fetchAllFoodItems = () => {
     setFoodItemsLoading(true);
     setApiError(null);
@@ -1940,7 +1695,6 @@ const DonorDashboard = () => {
             : '/api/placeholder/400/200',
           storeName: item.storeName || 'Unknown Source',
           foodType: item.foodType || 'Unspecified',
-          // Use remainingQuantity if available, otherwise fall back to quantity
           quantity: item.remainingQuantity !== undefined
             ? `${item.remainingQuantity} units`
             : `${item.quantity || 0} units`,
@@ -1964,19 +1718,15 @@ const DonorDashboard = () => {
 
   useEffect(() => {
     if (donorId) {
-      // Only fetch if donorId is not null
       fetchAllFoodItems();
     }
   }, [donorId]);
 
   useEffect(() => {
-    // Always keep food items visible unless explicitly in donation form
     setShouldShowFoodItems(!showDonationForm);
   }, [showDonationForm]);
 
-  // Password validation functions
   const validatePassword = (password) => {
-    // Base requirements
     const minLength = password.length >= 8;
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
@@ -1995,7 +1745,6 @@ const DonorDashboard = () => {
     };
   };
 
-  // Add these state variables to manage password validation UI
   const [passwordValidation, setPasswordValidation] = useState({
     requirements: {
       minLength: false,
@@ -2007,49 +1756,38 @@ const DonorDashboard = () => {
     isValid: false
   });
 
-  // Add this function to handle password input changes with validation
   const handlePasswordFormChange = (e) => {
     const { name, value } = e.target;
-
-    // Update the password form state
     setPasswordForm(prev => ({
       ...prev,
       [name]: value
     }));
 
-    // Validate new password when it changes
     if (name === 'newPassword') {
       const validation = validatePassword(value);
       setPasswordValidation(validation);
-
-      // Also validate confirmation match if it exists
       if (passwordForm.confirmPassword) {
         setPasswordsMatch(value === passwordForm.confirmPassword);
       }
     }
 
-    // Check if passwords match when confirmation changes
     if (name === 'confirmPassword') {
       setPasswordsMatch(passwordForm.newPassword === value);
     }
   };
-  //these functions to handle logout
   const handleLogout = () => {
     setShowLogoutModal(true);
   };
 
   const confirmLogout = () => {
-    // Clear authentication data
+
     localStorage.removeItem('authUser');
     sessionStorage.removeItem('authUser');
 
-    // Hide the confirmation modal
     setShowLogoutModal(false);
 
-    // Show success message
     setLogoutSuccess(true);
 
-    // Redirect after a short delay
     setTimeout(() => {
       navigate('/');
     }, 2000);
@@ -2092,7 +1830,6 @@ const DonorDashboard = () => {
     }
   }, []);
 
-  // Add this useEffect after the first one
   useEffect(() => {
     if (donorId) {
       console.log('Donor ID changed, fetching profile data...');
@@ -2111,7 +1848,6 @@ const DonorDashboard = () => {
 
 
   const fetchDonorProfile = async () => {
-    // Only proceed if we have a valid donorId
     if (!donorId) {
       console.error('Attempted to fetch profile without a donor ID');
       return;
@@ -2129,7 +1865,6 @@ const DonorDashboard = () => {
       console.log('Response status:', response.status);
 
       if (!response.ok) {
-        // Try to get more detailed error info
         const errorText = await response.text();
         console.error('Error response body:', errorText);
 
@@ -2138,8 +1873,6 @@ const DonorDashboard = () => {
 
       const data = await response.json();
       console.log('Profile data fetched (raw):', data);
-
-      // Log each property to see what's being returned
       Object.keys(data).forEach(key => {
         console.log(`Profile property ${key}:`, key === 'userPhotoBase64' ? '[PHOTO DATA]' : data[key]);
       });
@@ -2157,7 +1890,6 @@ const DonorDashboard = () => {
     }
   };
 
-  // Add this function to fetch profile without LOB data
   const fetchProfileWithoutLobData = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/donor/profile/${donorId}/basic`);
@@ -2182,14 +1914,12 @@ const DonorDashboard = () => {
     }
   };
 
-  // Function to handle profile form submission
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     setProfileLoading(true);
     setProfileUpdateError('');
     setProfileUpdateSuccess('');
 
-    // Get form data from the event
     const formData = new FormData(e.target);
 
     try {
@@ -2276,25 +2006,19 @@ const DonorDashboard = () => {
         method: 'GET'
       });
 
-      // Parse the response body
       const responseData = await response.json();
 
-      // Check if the response is not okay
       if (!response.ok) {
-        // Throw an error with the message from the server or a default message
         throw new Error(responseData.message || 'Failed to mark donation as completed');
       }
 
-      // Show success message
       alert('Donation marked as completed successfully');
 
-      // Refresh donation lists
       await fetchDonationsByStatus('pending');
       await fetchDonationsByStatus('completed');
     } catch (error) {
       console.error('Error marking donation as completed:', error);
 
-      // Check if error has a response body
       if (error.response) {
         try {
           const errorBody = await error.response.json();
@@ -2303,20 +2027,15 @@ const DonorDashboard = () => {
           alert('Failed to mark donation as completed');
         }
       } else {
-        // If it's a network error or other type of error
         alert(error.message || 'Failed to mark donation as completed');
       }
-
-      // Optional: Log the full error for debugging
       console.error('Full error details:', error);
     }
   };
 
-  // Function to handle password change
   const handlePasswordChange = async (e) => {
     e.preventDefault();
 
-    // Validate before submission
     if (!passwordValidation.isValid) {
       setProfileUpdateError('Password does not meet security requirements');
       return;
@@ -2353,7 +2072,6 @@ const DonorDashboard = () => {
           newPassword: '',
           confirmPassword: ''
         });
-        // Reset validation state
         setPasswordValidation({
           requirements: {
             minLength: false,
@@ -2467,7 +2185,6 @@ const DonorDashboard = () => {
             />
           ))}
         </div>
-        {/* Enhanced Details Modal - More Compact */}
         {showDetailsModal && selectedFoodDetails && (
           <div className="modal-overlay">
             <div className="details-modal">
@@ -2558,7 +2275,6 @@ const DonorDashboard = () => {
           </div>
         )}
 
-        {/* Donate Gateway Modal */}
         {showDonateModal && selectedFood && (
           <div className="modal-overlay">
             <div className="donate-modal">
@@ -2629,7 +2345,6 @@ const DonorDashboard = () => {
       </div>
     );
   };
-  // Form state
   const [donationForm, setDonationForm] = useState({
     foodName: '',
     category: '',
@@ -2643,74 +2358,64 @@ const DonorDashboard = () => {
     packaging: '',
     storageInstructions: '',
     image: null,
-    // Restaurant specific fields
     cuisineType: '',
     servedTime: '',
     temperatureRequirements: '',
-    // Homemade food specific fields
     ingredients: '',
     servingSize: '',
-    // Corporate donation specific fields
     eventName: '',
     corporateName: '',
     contactPerson: '',
-    // Grocery specific fields
     productType: '',
     brandName: '',
     bestBeforeDate: '',
-    // Purchased food specific fields
     purchaseDate: '',
     purchaseSource: '',
-    // Original food item ID if created from a food item
     originalFoodItemId: null
   });
 
-  // Form helpers
   const handleFormChange = (field, value) => {
     setDonationForm({
       ...donationForm,
       [field]: value
     });
   };
-  //
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     setApiLoading(true);
     setApiError(null);
 
-    // Create a FormData object for multipart/form-data submission
     const formData = new FormData();
 
-    // Map frontend field names to backend expectations
     const fieldMapping = {
       'expiry': 'expiryDate',
       'preparation': 'preparationDate'
     };
 
-    // Add all form fields to FormData
     Object.keys(donationForm).forEach(key => {
       if (donationForm[key] !== null && donationForm[key] !== undefined) {
-        // Handle date fields that need special formatting
+       
         if (key === 'expiry' || key === 'preparation') {
-          // Check if this is a datetime-local value (contains 'T')
+        
           if (donationForm[key] && donationForm[key].includes('T')) {
-            // Extract just the date part for fields that expect YYYY-MM-DD
+           
             const dateValue = donationForm[key].split('T')[0];
             formData.append(fieldMapping[key] || key, dateValue);
           } else if (donationForm[key]) {
-            // If it's already a date string, use it directly
+           
             formData.append(fieldMapping[key] || key, donationForm[key]);
           }
         }
-        // Handle dietaryInfo array
+  
         else if (key === 'dietaryInfo' && Array.isArray(donationForm[key])) {
           donationForm[key].forEach(item => {
             formData.append('dietaryInfo', item);
           });
         }
-        // Skip image (handled separately below)
+      
         else if (key !== 'image') {
-          // Use mapped field name if it exists, otherwise use the original key
+         
           const backendKey = fieldMapping[key] || key;
           formData.append(backendKey, donationForm[key]);
         }
@@ -2719,29 +2424,24 @@ const DonorDashboard = () => {
 
     formData.append('donorId', donorId);
 
-    // Handle image upload
     if (donationForm.image) {
       formData.append('image', donationForm.image);
     }
 
-    // Debug the form data being sent
     console.log('Sending donation data:');
     for (let pair of formData.entries()) {
       console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
     }
 
-    // Ensure API base URL is used for the request
     const apiUrl = `${API_BASE_URL || 'https://foodbridge-frontend.onrender.com'}/api/donor/donations`;
     console.log('Submitting donation to:', apiUrl);
 
-    // Send the data to the API
     fetch(apiUrl, {
       method: 'POST',
       body: formData
     })
       .then(response => {
         if (!response.ok) {
-          // Try to get more detailed error information from the response
           return response.text().then(text => {
             console.error('Server response:', text);
             throw new Error('Failed to create donation: ' + (text || response.statusText));
@@ -2752,15 +2452,12 @@ const DonorDashboard = () => {
       .then(data => {
         console.log('Donation created successfully:', data);
 
-        // Show success message to user
         alert('Donation created successfully!');
 
-        // Reset the donation flow
         setDonationStep(0);
         setSelectedCategory('');
         setSelectedFood(null);
 
-        // Add a slight delay before refreshing to ensure the server has processed the new donation
         setTimeout(() => {
           console.log('Refreshing active donations after creation...');
           fetchActiveDonations();
@@ -2770,7 +2467,6 @@ const DonorDashboard = () => {
         console.error('Error creating donation:', error);
         setApiError(error.message);
 
-        // Show error to user
         alert(error.message || 'Failed to create donation. Please try again.');
       })
       .finally(() => {
@@ -2779,14 +2475,13 @@ const DonorDashboard = () => {
   };
   //
   const startDonation = () => {
-    setDonationStep(3); // Directly go to donation form
+    setDonationStep(3); 
     setShowDonationForm(true);
     setShouldShowFoodItems(false);
 
-    // Reset donation form to default state with a clean slate
     setDonationForm({
       foodName: '',
-      category: '', // Dropdown for category selection
+      category: '', 
       quantity: '',
       expiry: '',
       location: '',
@@ -2797,8 +2492,6 @@ const DonorDashboard = () => {
       packaging: '',
       storageInstructions: '',
       image: null,
-
-      // Category-specific fields reset
       cuisineType: '',
       servedTime: '',
       temperatureRequirements: '',
@@ -2816,7 +2509,6 @@ const DonorDashboard = () => {
       purchasePackaging: ''
     });
 
-    // Reset any related state
     setSelectedCategory('');
     setSelectedFood(null);
   };
@@ -2845,19 +2537,12 @@ const DonorDashboard = () => {
       <div className="dashboard-food-grid">
        // In the DashboardFoodItems component, enhance the food item card rendering
         {items.map(item => {
-          // Extract quantity from string (e.g., "5 units" -> 5)
           const quantityMatch = item.quantity.match(/\d+/);
           const totalQuantity = quantityMatch ? parseInt(quantityMatch[0], 10) : 0;
-
-          // Get remaining quantity (default to total if not specified)
           const remainingQuantity = item.remainingQuantity !== undefined ?
             item.remainingQuantity : totalQuantity;
-
-          // Calculate percentage of remaining quantity
           const remainingPercentage = totalQuantity > 0 ?
             (remainingQuantity / totalQuantity) * 100 : 0;
-
-          // Determine if item is available (has remaining quantity)
           const isAvailable = remainingQuantity > 0;
 
           return (
@@ -3012,16 +2697,11 @@ const DonorDashboard = () => {
 
   const handleDirectDonate = (food) => {
     setSelectedFood(food);
-
-    // Set donation step to form (step 3) and show the form
     setDonationStep(3);
     setShowDonationForm(true);
-
-    // Pre-fill the donation form with food item details
     setDonationForm({
       foodName: food.name,
       quantity: food.quantity.toString(),
-      // Set appropriate category based on food type if available
       category: food.foodType?.includes('Restaurant') ? 'RESTAURANT_SURPLUS' : 'GROCERY_EXCESS',
       donorType: food.foodType?.includes('Restaurant') ? 'Restaurant' : 'Grocery Store',
       cuisineType: food.foodType || '',
@@ -3033,7 +2713,6 @@ const DonorDashboard = () => {
     });
   };
 
-  // 6. Create a component to display all food items in a card view
   const AllFoodItemsView = ({ items, onDonate, onViewDetails, onClose }) => (
     <div className="all-food-items-overlay">
       <div className="all-food-items-container">
@@ -3134,7 +2813,8 @@ const DonorDashboard = () => {
     setDonationStep(3);
 
     try {
-      const response = await fetch(`https://foodbridge-frontend.onrender.com/api/donor/food-items/${food.id}`);
+      
+      const response = await fetch(`${API_BASE_URL}/api/donor/food-items/${food.id}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch food item details');
@@ -3147,7 +2827,7 @@ const DonorDashboard = () => {
         foodName: itemData.name,
         quantity: itemData.quantity.toString(),
         category: selectedCategory === 'restaurant'
-          ? 'RESTAURANT_SURPLUS'  // Use enum name instead of display label
+          ? 'RESTAURANT_SURPLUS'  
           : 'GROCERY_EXCESS',
         donorType: selectedCategory === 'restaurant' ? 'Restaurant' : 'Grocery Store',
         cuisineType: itemData.foodType || '',
@@ -3168,16 +2848,12 @@ const DonorDashboard = () => {
 
   const goBack = () => {
     if (donationStep === 3) {
-      // If we're on the form step
       if (selectedCategory === 'restaurant' || selectedCategory === 'grocery') {
-        // For restaurant/grocery, go back to food selection (step 2)
         setDonationStep(2);
       } else {
-        // Exit the donation flow entirely
         setDonationStep(0);
       }
     } else {
-      // Exit the donation flow entirely
       setDonationStep(0);
     }
   };
@@ -3197,10 +2873,8 @@ const DonorDashboard = () => {
   const handleProfileManagement = () => {
     console.log('Profile Management clicked');
     setSelectedMainTab('profile');
-    // Implementation for profile management
   };
 
-  // Component for request cards
   const handleAcceptRequest = async (requestId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/donor/food-requests/${requestId}/accept?donorId=${donorId}`, {
@@ -3214,8 +2888,6 @@ const DonorDashboard = () => {
         const errorText = await response.text();
         throw new Error(`Failed to accept request: ${errorText || response.statusText}`);
       }
-
-      // Refresh the requests list after successful action
       alert('Request accepted successfully');
       fetchFoodRequests();
     } catch (error) {
@@ -3237,8 +2909,6 @@ const DonorDashboard = () => {
         const errorText = await response.text();
         throw new Error(`Failed to decline request: ${errorText || response.statusText}`);
       }
-
-      // Refresh the requests list after successful action
       alert('Request declined successfully');
       fetchFoodRequests();
     } catch (error) {
@@ -3248,8 +2918,6 @@ const DonorDashboard = () => {
   };
 
   const handleContactRequester = (request) => {
-    // This function would handle contacting the requester
-    // Could open a chat dialog, show contact info, etc.
     alert(`Contact ${request.requesterName} regarding their request`);
   };
 
@@ -3290,11 +2958,8 @@ const DonorDashboard = () => {
           : '/api/placeholder/400/200'
       }));
 
-      // **NEW: Create notifications for new food requests**
       formattedRequests.forEach(request => {
-        // Only create notifications for PENDING requests
         if (request.status === 'PENDING') {
-          // Check if notification already exists to avoid duplicates
           const existingNotification = notifications.find(
             notif => notif.type === 'FOOD_REQUEST' && notif.foodRequestId === request.id
           );
@@ -3321,21 +2986,17 @@ const DonorDashboard = () => {
     }
   };
 
-  // 3. Call this function when the component mounts or when the tab is selected
   useEffect(() => {
     if (selectedMainTab === 'requests' && donorId) {
       fetchFoodRequests();
     }
   }, [selectedMainTab, donorId]);
 
-  // Add this useEffect after line 300 (after existing useEffects)
   useEffect(() => {
     if (!donorId) return;
 
-    // Poll for new requests every 30 seconds
     const pollForNewRequests = async () => {
       try {
-        // Check for new pickup requests on active donations
         if (activeDonations.length > 0) {
           for (const donation of activeDonations) {
             const response = await fetch(`${API_BASE_URL}/api/donor/donations/${donation.id}/requests?donorId=${donorId}`, {
@@ -3351,8 +3012,6 @@ const DonorDashboard = () => {
                   notif.requestId === request.id
                 )
               );
-
-              // Create notifications for new pickup requests
               newPendingRequests.forEach(request => {
                 createPickupRequestNotification(
                   donorId,
@@ -3368,7 +3027,6 @@ const DonorDashboard = () => {
           }
         }
 
-        // Check for new food requests
         const foodRequestsResponse = await fetch(`${API_BASE_URL}/api/donor/food-requests`);
         if (foodRequestsResponse.ok) {
           const allFoodRequests = await foodRequestsResponse.json();
@@ -3380,7 +3038,6 @@ const DonorDashboard = () => {
             )
           );
 
-          // Create notifications for new food requests
           newFoodRequests.forEach(request => {
             createFoodRequestNotification(
               donorId,
@@ -3397,10 +3054,8 @@ const DonorDashboard = () => {
       }
     };
 
-    // Initial poll
     pollForNewRequests();
 
-    // Set up interval polling
     const pollInterval = setInterval(pollForNewRequests, 30000); // Poll every 30 seconds
 
     return () => clearInterval(pollInterval);
@@ -3507,10 +3162,8 @@ const DonorDashboard = () => {
       </div>
     </div>
   );
-
   const DonationRequestModal = ({ request, onClose, onAccept, onDecline }) => {
     if (!request) return null;
-
     return (
       <div className="modal-overlay">
         <div className="donation-request-modal">
@@ -3716,7 +3369,6 @@ const DonorDashboard = () => {
             </div>
           </div>
 
-          {/* Dates & Storage Section */}
           <div className="form-section border-b border-gray-200 dark:border-gray-700">
             <h3 className="section-title text-gray-900 dark:text-gray-100 flex items-center">
               <Calendar className="h-5 w-5 text-green-500 dark:text-green-400 mr-2" />
@@ -3791,7 +3443,6 @@ const DonorDashboard = () => {
             </div>
           </div>
 
-          {/* Location & Image Section */}
           <div className="form-section border-b border-gray-200 dark:border-gray-700">
             <h3 className="section-title text-gray-900 dark:text-gray-100 flex items-center">
               <MapPin className="h-5 w-5 text-red-500 dark:text-red-400 mr-2" />
@@ -3833,7 +3484,6 @@ const DonorDashboard = () => {
             </div>
           </div>
 
-          {/* Category-Specific Fields */}
           {donationForm.category && (
             <div className="form-section">
               <h3 className="section-title text-gray-900 dark:text-gray-100 flex items-center">
@@ -3886,7 +3536,6 @@ const DonorDashboard = () => {
                   </>
                 )}
 
-                {/* Homemade Food Fields */}
                 {donationForm.category === 'HOMEMADE_FOOD' && (
                   <>
                     <div className="form-group">
@@ -3911,7 +3560,6 @@ const DonorDashboard = () => {
                   </>
                 )}
 
-                {/* Corporate/Event Fields */}
                 {(donationForm.category === 'CORPORATE_DONATION' || donationForm.category === 'EVENT_LEFTOVER') && (
                   <>
                     <div className="form-group">
@@ -3947,7 +3595,6 @@ const DonorDashboard = () => {
                   </>
                 )}
 
-                {/* Grocery Fields */}
                 {donationForm.category === 'GROCERY_EXCESS' && (
                   <>
                     <div className="form-group">
@@ -3992,7 +3639,6 @@ const DonorDashboard = () => {
                   </>
                 )}
 
-                {/* Purchased Food Fields */}
                 {donationForm.category === 'PURCHASED_FOOD' && (
                   <>
                     <div className="form-group">
@@ -4063,7 +3709,6 @@ const DonorDashboard = () => {
     const [customerName, setCustomerName] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
 
-    // Calculate total price
     const unitPrice = parseFloat(food.price) || 0;
     const totalPrice = (unitPrice * quantity).toFixed(2);
 
@@ -4072,18 +3717,16 @@ const DonorDashboard = () => {
 
       setLoading(true);
 
-      // Get remaining quantity
       fetch(`${API_BASE_URL}/api/merchant/food-items/${food.id}/with-remaining`)
         .then(response => response.ok ? response.json() : Promise.reject('Failed to fetch'))
         .then(data => {
           console.log('Food item remaining quantity data:', data);
           const remaining = data.remainingQuantity || data.foodItem?.remainingQuantity || 1;
           setMaxQuantity(remaining);
-          // FIX: Change Math.min to Math.max to properly set initial quantity
-          setQuantity(Math.max(1, Math.min(remaining, 1))); // Start with 1 but ensure it's not more than available
+         
+          setQuantity(Math.max(1, Math.min(remaining, 1)));
           setDeliveryAddress(food.location || '');
 
-          // Get customer info from auth
           const authUser = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser') || '{}');
 
           if (authUser.firstName) {
@@ -4106,10 +3749,8 @@ const DonorDashboard = () => {
 
       console.log('🎯 Form submitted');
 
-      // Reset errors
       setError(null);
 
-      // Validate form
       if (quantity < 1 || quantity > maxQuantity) {
         setError(`Please select between 1 and ${maxQuantity} units`);
         return;
@@ -4125,7 +3766,6 @@ const DonorDashboard = () => {
         return;
       }
 
-      // Create FormData
       const formData = new FormData();
       formData.append('foodItemId', food.id.toString());
       formData.append('donorId', donorId.toString());
@@ -4138,7 +3778,6 @@ const DonorDashboard = () => {
 
       console.log('📋 FormData created, calling onSubmit');
 
-      // Call the parent handler
       onSubmit(formData);
     };
 
@@ -4158,7 +3797,6 @@ const DonorDashboard = () => {
     return (
       <div className="modal-overlay fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-11/12 max-w-md mx-4">
-          {/* Header */}
           <div className="bg-emerald-500 dark:bg-emerald-600 p-4 rounded-t-xl">
             <div className="flex justify-between items-center">
               <h3 className="text-white font-semibold text-lg">Purchase for Donation</h3>
@@ -4172,7 +3810,6 @@ const DonorDashboard = () => {
             </div>
           </div>
 
-          {/* Content */}
           <div className="p-6">
             {/* Success Message */}
             {purchaseSuccess && (
@@ -4183,7 +3820,6 @@ const DonorDashboard = () => {
               </div>
             )}
 
-            {/* Error Message */}
             {(error || purchaseError) && (
               <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-lg mb-4 text-sm">
                 {error || purchaseError}
@@ -4192,7 +3828,6 @@ const DonorDashboard = () => {
 
             {!purchaseSuccess && (
               <>
-                {/* Food Info */}
                 <div className="mb-6">
                   <div className="flex space-x-4">
                     <img
@@ -4208,9 +3843,7 @@ const DonorDashboard = () => {
                     </div>
                   </div>
                 </div>
-
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  {/* Customer Name */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Customer Name *
@@ -4224,8 +3857,6 @@ const DonorDashboard = () => {
                       required
                     />
                   </div>
-
-                  {/* Customer Phone */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Phone Number (Optional)
@@ -4238,8 +3869,6 @@ const DonorDashboard = () => {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     />
                   </div>
-
-                  {/* Quantity */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Select Quantity
@@ -4302,8 +3931,6 @@ const DonorDashboard = () => {
                       </span>
                     </div>
                   </div>
-
-                  {/* Address */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Delivery Address
@@ -4345,8 +3972,6 @@ const DonorDashboard = () => {
                       />
                     )}
                   </div>
-
-                  {/* Action Buttons */}
                   <div className="flex space-x-3 pt-4">
                     <button
                       type="button"
@@ -4381,8 +4006,7 @@ const DonorDashboard = () => {
         </div>
       </div>
     );
-  };
-
+  }
   return (
     <div className="dashboard-container">
       {showLogoutModal && (
@@ -4439,9 +4063,6 @@ const DonorDashboard = () => {
               </div>
             </div>
             <div className="header-actions flex items-center">
-              {/* Remove the toggle button section completely */}
-
-              {/* Always visible navigation buttons */}
               <div className="header-navigation-buttons flex items-center space-x-2 mr-4">
                 <button
                   className="header-nav-btn hover:bg-gray-100 dark:hover:bg-gray-800 text-blue-600 dark:text-blue-300 transition-colors duration-200"
@@ -4452,7 +4073,6 @@ const DonorDashboard = () => {
                   <Package className="h-4 w-4" />
                   <span>Active Donations</span>
                 </button>
-
                 <button
                   className="header-nav-btn hover:bg-gray-100 dark:hover:bg-gray-800 text-red-600 dark:text-red-300 transition-colors duration-200"
                   onClick={() => setSelectedMainTab('requests')}
@@ -4460,7 +4080,6 @@ const DonorDashboard = () => {
                   <Users className="h-4 w-4" />
                   <span>Requests</span>
                 </button>
-
                 <button
                   className="header-nav-btn hover:bg-gray-100 dark:hover:bg-gray-800 text-purple-600 dark:text-purple-300 transition-colors duration-200 relative"
                   onClick={() => setSelectedMainTab('messages')}
@@ -4494,7 +4113,6 @@ const DonorDashboard = () => {
                   <span>Profile</span>
                 </button>
               </div>
-
               <button
                 className="btn-refresh-dashboard bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-600 dark:to-blue-800 dark:hover:from-blue-500 dark:hover:to-blue-700 text-white shadow-md dark:shadow-blue-900/30 transition-all duration-300 transform hover:-translate-y-0.5"
                 onClick={handleLogout}
@@ -4504,8 +4122,6 @@ const DonorDashboard = () => {
               </button>
             </div>
           </div>
-
-          {/* Updated stats container with real data */}
           <div className="stats-container">
             <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-blue-500 dark:border-blue-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:transform hover:-translate-y-1">
               <div className="stats-icon stats-blue bg-blue-500 dark:bg-blue-400 text-white dark:text-gray-900 shadow-lg dark:shadow-blue-500/30">
@@ -4518,7 +4134,6 @@ const DonorDashboard = () => {
                 <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">ACTIVE DONATIONS</div>
               </div>
             </div>
-
             <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-green-500 dark:border-green-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:transform hover:-translate-y-1">
               <div className="stats-icon stats-green bg-green-500 dark:bg-green-400 text-white dark:text-gray-900 shadow-lg dark:shadow-green-500/30">
                 <CheckCircle className="h-5 w-5" />
@@ -4530,7 +4145,6 @@ const DonorDashboard = () => {
                 <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">COMPLETED</div>
               </div>
             </div>
-
             <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-orange-500 dark:border-orange-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:transform hover:-translate-y-1">
               <div className="stats-icon stats-orange bg-orange-500 dark:bg-orange-400 text-white dark:text-gray-900 shadow-lg dark:shadow-orange-500/30">
                 <Clock3 className="h-5 w-5" />
@@ -4542,7 +4156,6 @@ const DonorDashboard = () => {
                 <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">PENDING</div>
               </div>
             </div>
-
             <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-purple-500 dark:border-purple-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:transform hover:-translate-y-1">
               <div className="stats-icon stats-purple bg-purple-500 dark:bg-purple-400 text-white dark:text-gray-900 shadow-lg dark:shadow-purple-500/30">
                 <Users className="h-5 w-5" />
@@ -4573,8 +4186,6 @@ const DonorDashboard = () => {
             <span>Donate Own Food</span>
           </button>
         </div>
-
-        {/* Display food items directly in the dashboard (new) */}
         {!showDonationForm && shouldShowFoodItems && (
           <div className="dashboard-food-items-container bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md dark:shadow-gray-900/30">
             <h2 className="section-title flex items-center text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-3 mb-6">
@@ -4668,7 +4279,6 @@ const DonorDashboard = () => {
           </div>
         )}
 
-        {/* Details modal */}
         {showDetailsModal && selectedFoodDetails && (
           <div className="modal-overlay fixed inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="details-modal w-11/12 max-w-3xl bg-white dark:bg-gray-800 rounded-xl shadow-xl dark:shadow-black/30 overflow-hidden flex flex-col max-h-[85vh] animate-modal-appear">
@@ -4852,8 +4462,6 @@ const DonorDashboard = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Popup Content */}
               <div className="popup-content flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900">
                 {apiLoading && (
                   <div className="loading-indicator flex flex-col items-center justify-center p-12 text-gray-600 dark:text-gray-400">

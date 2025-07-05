@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/donor/messages")
 @CrossOrigin(
-        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com"},
         allowCredentials = "true"
 )
 public class DonorMessageController {

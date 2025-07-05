@@ -22,7 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(
-        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com"},
         allowCredentials = "true"
 )
 public class Receiver_ActiveFood_Request_Controller {

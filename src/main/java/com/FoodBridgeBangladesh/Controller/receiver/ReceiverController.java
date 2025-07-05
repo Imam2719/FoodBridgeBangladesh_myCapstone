@@ -15,7 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/receiver/food")
 @CrossOrigin(
-        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com"},
         allowCredentials = "true",
         maxAge = 3600,
         allowedHeaders = "*"

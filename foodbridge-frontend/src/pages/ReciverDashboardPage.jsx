@@ -25,10 +25,6 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
 const ReceiverDashboard = () => {
   const { darkMode } = useTheme();
   const navigate = useNavigate();
-
-  // ==========================================
-  // STATE MANAGEMENT
-  // ==========================================
   const [selectedFilter, setSelectedFilter] = useState('available');
   const [showEmergencyForm, setShowEmergencyForm] = useState(false);
   const [showFoodRequestForm, setShowFoodRequestForm] = useState(false);
@@ -38,19 +34,14 @@ const ReceiverDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [searchQuery, setSearchQuery] = useState('');
-
   const [savedFoods, setSavedFoods] = useState([]);
   const [isLoadingSavedItems, setIsLoadingSavedItems] = useState(false);
-
   const [showOverview, setShowOverview] = useState(false);
   const [pickupMethod, setPickupMethod] = useState('self');
-  //
   const [showPickupRequestModal, setShowPickupRequestModal] = useState(false);
   const [requestedMealCount, setRequestedMealCount] = useState(1);
   const [requestNote, setRequestNote] = useState('');
   const [selectedPickupFood, setSelectedPickupFood] = useState(null);
-
-  // Profile Modal States
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [profileFormData, setProfileFormData] = useState({});
@@ -67,34 +58,22 @@ const ReceiverDashboard = () => {
   });
   const [showPasswordSection, setShowPasswordSection] = useState(false);
   const [showActionButtons, setShowActionButtons] = useState(true);
-
   const [showSavedDonationsModal, setShowSavedDonationsModal] = useState(false);
   const [savedDonationsFormAnimation, setSavedDonationsFormAnimation] = useState(false);
   const [savedDonationsData, setSavedDonationsData] = useState([]);
   const [isLoadingSavedDonations, setIsLoadingSavedDonations] = useState(false);
-
-
-  //
   const [acceptedRequests, setAcceptedRequests] = useState([]);
   const [showAcceptedRequestModal, setShowAcceptedRequestModal] = useState(false);
   const [selectedAcceptedRequest, setSelectedAcceptedRequest] = useState(null);
-
-  //
   const [acceptedRequestNotifications, setAcceptedRequestNotifications] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Update state to manage backend data
   const [availableFoods, setAvailableFoods] = useState([]);
   const [pagination, setPagination] = useState({
     currentPage: 0,
     totalPages: 0,
     totalItems: 0
   });
-
-  // User profile data
   const [userProfile, setUserProfile] = useState(null);
-
-  // Get user info from auth storage
   const getUserFromStorage = () => {
     const authUser = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser') || '{}');
     return {
@@ -103,16 +82,12 @@ const ReceiverDashboard = () => {
       email: authUser.email || 'user@example.com'
     };
   };
-
   const currentUser = getUserFromStorage();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState(null);
   const [showDonationDetailsModal, setShowDonationDetailsModal] = useState(false);
-  //
   const [showAcceptedNotificationsModal, setShowAcceptedNotificationsModal] = useState(false);
   const [selectedAcceptedNotification, setSelectedAcceptedNotification] = useState(null);
-
-  //
   const [showOverviewModal, setShowOverviewModal] = useState(false);
   const [overviewFormAnimation, setOverviewFormAnimation] = useState(false);
   const [overviewStats, setOverviewStats] = useState({
@@ -131,8 +106,6 @@ const ReceiverDashboard = () => {
   const [showHelpCenterModal, setShowHelpCenterModal] = useState(false);
   const [helpCenterAnimation, setHelpCenterAnimation] = useState(false);
   const [activeHelpTab, setActiveHelpTab] = useState('about');
-
-  // Form states
   const [emergencyForm, setEmergencyForm] = useState({
     title: '',
     description: '',
@@ -142,7 +115,6 @@ const ReceiverDashboard = () => {
     image: null,
     urgency: 'high'
   });
-
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportFormAnimation, setReportFormAnimation] = useState(false);
   const [selectedFoodForReport, setSelectedFoodForReport] = useState(null);
@@ -154,7 +126,6 @@ const ReceiverDashboard = () => {
     evidenceFile1: null,
     evidenceFile2: null
   });
-
   const openReportModal = (food) => {
     setSelectedFoodForReport(food);
     setReportFormData({
@@ -168,7 +139,6 @@ const ReceiverDashboard = () => {
       setReportFormAnimation(true);
     }, 10);
   };
-
   const closeReportModal = () => {
     setReportFormAnimation(false);
     setTimeout(() => {
@@ -183,14 +153,12 @@ const ReceiverDashboard = () => {
       });
     }, 300);
   };
-
   const handleReportFormChange = (field, value) => {
     setReportFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
-
   const handleEvidenceFileChange = (fileNumber, file) => {
     if (file && file.size > 10 * 1024 * 1024) {
       showErrorNotification('File size must be less than 10MB');
@@ -200,18 +168,15 @@ const ReceiverDashboard = () => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp',
       'application/pdf', 'text/plain', 'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-
     if (file && !allowedTypes.includes(file.type)) {
       showErrorNotification('Invalid file type. Please upload images, PDF, or document files.');
       return;
     }
-
     setReportFormData(prev => ({
       ...prev,
       [`evidenceFile${fileNumber}`]: file
     }));
   };
-
   const showReportConfirmationDialog = () => {
     if (!reportFormData.reportReason.trim() || reportFormData.reportReason.length < 10) {
       showErrorNotification('Please provide a detailed reason (at least 10 characters)');
@@ -219,58 +184,44 @@ const ReceiverDashboard = () => {
     }
     setShowReportConfirmation(true);
   };
-
   const submitFoodReport = async () => {
     if (!selectedFoodForReport || !reportFormData.reportReason.trim()) {
       showErrorNotification('Please provide a reason for reporting this food item');
       return;
     }
-
     if (reportFormData.reportReason.length < 10) {
       showErrorNotification('Report reason must be at least 10 characters long');
       return;
     }
-
     try {
       setIsSubmittingReport(true);
 
       const formData = new FormData();
-
-      // Required fields
       formData.append('foodDonationId', selectedFoodForReport.id);
       formData.append('reporterId', currentUser.id);
       formData.append('reporterEmail', currentUser.email);
       formData.append('reportReason', reportFormData.reportReason.trim());
       formData.append('reportCategory', reportFormData.reportCategory);
-
-      // Food information
       formData.append('foodName', selectedFoodForReport.foodName || '');
       formData.append('foodDescription', selectedFoodForReport.description || '');
       formData.append('foodCategory', selectedFoodForReport.category || '');
       formData.append('foodQuantity', selectedFoodForReport.quantity || '');
       formData.append('foodExpiryDate', selectedFoodForReport.expiryDate || '');
       formData.append('foodLocation', selectedFoodForReport.location || '');
-
-      // Food image
       if (selectedFoodForReport.imageData) {
         formData.append('foodImageBase64', selectedFoodForReport.imageData);
         formData.append('foodImageContentType', selectedFoodForReport.imageContentType || 'image/jpeg');
       }
-
-      // User profile information
       if (userProfile) {
         formData.append('reporterName', `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim());
         formData.append('reporterPhone', userProfile.phone || '');
       }
-
-      // Evidence files
       if (reportFormData.evidenceFile1) {
         formData.append('evidenceFile1', reportFormData.evidenceFile1);
       }
       if (reportFormData.evidenceFile2) {
         formData.append('evidenceFile2', reportFormData.evidenceFile2);
       }
-
       const response = await axios.post(
         `${API_BASE_URL}/api/receiver/food-reports`,
         formData,
@@ -280,7 +231,6 @@ const ReceiverDashboard = () => {
           }
         }
       );
-
       if (response.data.success) {
         showSuccessNotification(
           `Food report submitted successfully! Report ID: ${response.data.reportId}. Our team will review it within 24-48 hours.`
@@ -290,10 +240,8 @@ const ReceiverDashboard = () => {
       } else {
         showErrorNotification(response.data.message || 'Failed to submit report');
       }
-
     } catch (error) {
       console.error('Error submitting food report:', error);
-
       if (error.response?.status === 409) {
         showErrorNotification('You have already reported this food item recently');
       } else if (error.response?.data?.message) {
@@ -305,50 +253,35 @@ const ReceiverDashboard = () => {
       setIsSubmittingReport(false);
     }
   };
-
-  // ==========================================
-  // REFS
-  // ==========================================
   const profileMenuRef = useRef(null);
   const notificationsRef = useRef(null);
   const searchInputRef = useRef(null);
   const profileModalRef = useRef(null);
-
-
   const [formData, setFormData] = useState({
-    priority: 'medium',  // Default priority
-    foodTypes: [],        // Array to match backend
-    recipients: ['donors'], // Array to match backend
+    priority: 'medium',
+    foodTypes: [],
+    recipients: ['donors'],
     peopleCount: 1,
     timeNeeded: 'today',
-    specificDate: '',     // Optional field
-    specificTime: '',     // Optional field
+    specificDate: '',
+    specificTime: '',
     location: '',
     deliveryPreference: 'pickup',
     notes: '',
     image: null
   });
 
-  // Modify the existing fetchAcceptedRequestNotifications function to use the new endpoint
   const fetchAcceptedRequestNotifications = async () => {
     try {
       const response = await axios.get(
         `${API_BASE_URL}/api/receiver/notifications/accepted?receiverId=${currentUser.id}`
       );
-
       if (response.data && response.data.length > 0) {
-        // Store notifications in state
         setAcceptedRequestNotifications(response.data);
-
-        // Show toast notifications for new ones
         response.data.forEach(notification => {
-          // Check if we've already shown this notification
           const notificationSeen = localStorage.getItem(`notification_${notification.id}`);
           if (!notificationSeen) {
-            // Mark as seen
             localStorage.setItem(`notification_${notification.id}`, 'true');
-
-            // Show toast notification
             const notificationElement = document.createElement('div');
             notificationElement.className = 'notification-dropdown';
             notificationElement.innerHTML = `
@@ -358,8 +291,6 @@ const ReceiverDashboard = () => {
             </div>
           `;
             document.body.appendChild(notificationElement);
-
-            // Remove notification after 3 seconds
             setTimeout(() => {
               notificationElement.classList.add('fade-out');
               setTimeout(() => document.body.removeChild(notificationElement), 300);
@@ -377,23 +308,14 @@ const ReceiverDashboard = () => {
       const response = await axios.get(
         `${API_BASE_URL}/api/receiver/notifications/requests?receiverId=${currentUser.id}`
       );
-
       if (response.data && response.data.length > 0) {
-        // Store notifications in state
         setAcceptedRequestNotifications(response.data);
-
-        // Show toast notifications for new ones
         response.data.forEach(notification => {
           const notificationSeen = localStorage.getItem(`notification_${notification.id}`);
           if (!notificationSeen) {
-            // Mark as seen
             localStorage.setItem(`notification_${notification.id}`, 'true');
-
-            // Create notification element
             const notificationElement = document.createElement('div');
             notificationElement.className = 'notification-dropdown';
-
-            // Customize notification based on status
             const isAccepted = notification.status === 'ACCEPTED';
             const iconClass = isAccepted ? 'text-green-500' : 'text-red-500';
             const icon = isAccepted ? CheckCircle : AlertCircle;
@@ -408,8 +330,6 @@ const ReceiverDashboard = () => {
               </div>
             `;
             document.body.appendChild(notificationElement);
-
-            // Remove notification after 3 seconds
             setTimeout(() => {
               notificationElement.classList.add('fade-out');
               setTimeout(() => document.body.removeChild(notificationElement), 300);
@@ -421,28 +341,23 @@ const ReceiverDashboard = () => {
       console.error('Error fetching request notifications:', error);
     }
   };
-
-  // Fetch saved donation IDs from backend
   const fetchSavedDonationIds = async () => {
     try {
       setIsLoadingSavedItems(true);
       const response = await axios.get(
         `${API_BASE_URL}/api/receiver/saved-donations/ids?userId=${currentUser.id}`
       );
-
       if (response.data.success) {
         setSavedFoods(response.data.savedDonationIds);
         console.log('Loaded saved donation IDs:', response.data.savedDonationIds);
       }
     } catch (error) {
       console.error('Error fetching saved donation IDs:', error);
-      // Keep existing saved foods if API fails
     } finally {
       setIsLoadingSavedItems(false);
     }
   };
 
-  // Helper function to show notifications
   const showSaveNotification = (message, type = 'success') => {
     const notification = document.createElement('div');
     notification.className = 'notification-dropdown fixed top-20 right-4 z-50 bg-white rounded-lg shadow-xl border-l-4 p-4 flex items-center w-80 transform transition-all duration-500 ease-in-out';
@@ -473,14 +388,10 @@ const ReceiverDashboard = () => {
   `;
 
     document.body.appendChild(notification);
-
-    // Animate in
     setTimeout(() => {
       notification.style.opacity = '1';
       notification.style.transform = 'translateX(0)';
     }, 100);
-
-    // Auto remove after 3 seconds
     setTimeout(() => {
       notification.style.opacity = '0';
       notification.style.transform = 'translateX(100%)';
@@ -493,7 +404,6 @@ const ReceiverDashboard = () => {
   };
 
   useEffect(() => {
-    // Initial fetch when component mounts
     fetchRequestNotifications();
 
     const handleVisibilityChange = () => {
@@ -512,79 +422,56 @@ const ReceiverDashboard = () => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleFocus);
-      // clearInterval(notificationInterval);
     };
   }, [currentUser?.userId]);
 
-  // Add this method to view full notification details
   const handleViewAcceptedRequestNotification = (notification) => {
     setSelectedAcceptedNotification(notification);
     setShowAcceptedNotificationsModal(true);
   };
 
   useEffect(() => {
-    // Initial fetch when component mounts
     fetchAcceptedRequestNotifications();
-
-    // Set up event listeners for dashboard focus/visibility
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         fetchAcceptedRequestNotifications();
       }
     };
-
     const handleFocus = () => {
       fetchAcceptedRequestNotifications();
     };
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('focus', handleFocus);
-
-    // Still keep a background polling but with longer interval (e.g., 2 minutes)
     const notificationInterval = setInterval(fetchAcceptedRequestNotifications, 120000);
-
-    // Clean up
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleFocus);
       clearInterval(notificationInterval);
     };
   }, [currentUser?.userId]);
-  //
 
   const fetchOverviewData = async () => {
     try {
       setIsLoading(true);
-
-      // Get user ID from authentication storage
       const authUser = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser') || '{}');
       const userId = authUser.userId || currentUser.id;
-
       if (!userId) {
         console.error('User ID not found in authentication data');
         setIsLoading(false);
         return;
       }
 
-      // Fetch request data directly from the API
       const requestsResponse = await axios.get(
         `${API_BASE_URL}/api/receiver/food/requests?receiverId=${userId}`
       );
 
       if (requestsResponse.data) {
-        // Process the food requests data from receiver_food_requests table
         const requests = requestsResponse.data;
-
-        // Count requests by status
         const pendingRequests = requests.filter(req => req.status === "PENDING").length;
         const acceptedRequests = requests.filter(req => req.status === "ACCEPTED").length;
         const rejectedRequests = requests.filter(req => req.status === "REJECTED").length;
-
-        // Set requested and received items for the tabs
         const requestedItems = requests; // All requests
         const receivedItems = requests.filter(req => req.status === "ACCEPTED"); // Only accepted items
-
-        // Create overview stats from actual data
         setOverviewStats({
           requested: requestedItems,
           received: receivedItems,
@@ -606,17 +493,13 @@ const ReceiverDashboard = () => {
   const fetchUserRequests = async () => {
     try {
       setIsLoading(true);
-
-      // Use correct endpoint from NeedFoodRequestController
       const response = await axios.get(
         `${API_BASE_URL}/api/receiver/food/active-requests?receiverId=${currentUser.id}`
       );
 
       if (response.data) {
-        // Filter for accepted requests
         const accepted = response.data.filter(request => request.status === "ACCEPTED");
         setAcceptedRequests(accepted);
-        // This assumes we're tracking "seen" notifications in local storage
         const seenNotifications = JSON.parse(localStorage.getItem('seenRequestNotifications') || '[]');
 
         const newAcceptedRequests = accepted.filter(
@@ -624,7 +507,6 @@ const ReceiverDashboard = () => {
         );
 
         if (newAcceptedRequests.length > 0) {
-          // Add new notifications
           const newNotifications = newAcceptedRequests.map(request => ({
             id: `request-${request.id}`,
             type: 'success',
@@ -634,8 +516,6 @@ const ReceiverDashboard = () => {
           }));
 
           setAcceptedRequestNotifications(prevNotifications => [...newNotifications, ...prevNotifications]);
-
-          // Update seen notifications in storage
           localStorage.setItem(
             'seenRequestNotifications',
             JSON.stringify([...seenNotifications, ...newAcceptedRequests.map(r => r.id)])
@@ -648,20 +528,17 @@ const ReceiverDashboard = () => {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
     if (currentUser.id) {
       fetchUserRequests();
       fetchSavedDonationIds(); // Load saved donations on mount
     }
   }, [currentUser.id]);
-
-  // Add this function to handle viewing the accepted request details
   const handleViewAcceptedRequest = (request) => {
     setSelectedAcceptedRequest(request);
     setShowAcceptedRequestModal(true);
   };
-  //
+
   const handleOpenOverviewModal = () => {
     setShowOverviewModal(true);
     setTimeout(() => {
@@ -669,21 +546,18 @@ const ReceiverDashboard = () => {
     }, 10);
     fetchOverviewData();
   };
-
-  // Add this function to handle changing the overview filter
   const handleOverviewFilterChange = (filter) => {
     setOverviewFilter(filter);
     fetchOverviewData(filter);
   };
 
-  // Add this function to close the overview modal
   const closeOverviewModal = () => {
     setOverviewFormAnimation(false);
     setTimeout(() => {
       setShowOverviewModal(false);
     }, 300);
   };
-  // Function to fetch and display saved donations
+
   const fetchSavedDonations = async () => {
     try {
       setIsLoading(true);
@@ -706,11 +580,8 @@ const ReceiverDashboard = () => {
     }
   };
 
-  // Function to show saved donations in overview modal
   const showSavedDonationsOverview = async () => {
     const savedDonations = await fetchSavedDonations();
-
-    // Create overview stats for saved items
     const savedStats = {
       received: [],
       requested: [],
@@ -732,10 +603,6 @@ const ReceiverDashboard = () => {
     "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"
   ];
 
-  // ==========================================
-  // EFFECTS
-  // ==========================================
-  // Fetch user profile data
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!currentUser.id) return;
@@ -760,7 +627,6 @@ const ReceiverDashboard = () => {
     fetchUserProfile();
   }, [currentUser.id]);
 
-  // Animation for modals
   useEffect(() => {
     if (showEmergencyForm || showFoodRequestForm || showProfileModal) {
       setTimeout(() => {
@@ -771,7 +637,6 @@ const ReceiverDashboard = () => {
     }
   }, [showEmergencyForm, showFoodRequestForm, showProfileModal]);
 
-  // Close profile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
@@ -785,7 +650,6 @@ const ReceiverDashboard = () => {
     };
   }, []);
 
-  // Close profile modal when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileModalRef.current && !profileModalRef.current.contains(event.target)) {
@@ -813,11 +677,9 @@ const ReceiverDashboard = () => {
           size: 10
         }
       });
-
       console.log('API Response Status:', response.status);
       console.log('Full API Response:', response.data);
 
-      // Check if there's an error in the response
       if (response.data.error) {
         console.error('Error from server:', response.data.error);
         setAvailableFoods([]);
@@ -829,7 +691,6 @@ const ReceiverDashboard = () => {
         return;
       }
 
-      // Get donations array from response
       let donationsArray = [];
       if (response.data && response.data.donations && Array.isArray(response.data.donations)) {
         donationsArray = response.data.donations;
@@ -866,10 +727,8 @@ const ReceiverDashboard = () => {
 
       console.log('Transformed donations:', transformedDonations);
 
-      // Update state with the transformed donations
       setAvailableFoods(transformedDonations);
 
-      // Set pagination data more robustly
       setPagination({
         currentPage: response.data.currentPage || 0,
         totalPages: response.data.totalPages || 1,  // Default to 1 page if not specified
@@ -885,8 +744,6 @@ const ReceiverDashboard = () => {
       } else {
         console.error('Error Message:', error.message);
       }
-
-      // Clear the food items when there's an error
       setAvailableFoods([]);
     } finally {
       setIsLoading(false);
@@ -920,7 +777,6 @@ const ReceiverDashboard = () => {
     }
   }, [showHelpCenterModal]);
 
-  // Add this to your existing useEffect for escape key handling
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -951,12 +807,10 @@ const ReceiverDashboard = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showEmergencyForm, showFoodRequestForm, showProfileMenu, showNotifications, showProfileModal, isEditingProfile, showHelpCenterModal]); // Add showHelpCenterModal to dependency array
 
-
   const openHelpCenterModal = () => {
     setShowHelpCenterModal(true);
     setShowProfileMenu(false); // Close profile menu if open
   };
-
   const closeHelpCenterModal = () => {
     setHelpCenterAnimation(false);
     setTimeout(() => {
@@ -964,7 +818,6 @@ const ReceiverDashboard = () => {
       setActiveHelpTab('about');
     }, 300);
   };
-
 
   const openPickupRequestModal = (food) => {
     setSelectedPickupFood(food);
@@ -979,7 +832,6 @@ const ReceiverDashboard = () => {
   const submitPickupRequest = async () => {
     try {
       setIsSubmitting(true);
-
       const response = await axios.post(
         `${API_BASE_URL}/api/receiver/food/pickup/${selectedPickupFood.id}`,
         null,
@@ -1005,8 +857,6 @@ const ReceiverDashboard = () => {
       setIsSubmitting(false);
     }
   };
-
-  // Add this function to close the pickup request modal
   const closePickupRequestModal = () => {
     setFormAnimation(false);
     setTimeout(() => {
@@ -1014,7 +864,6 @@ const ReceiverDashboard = () => {
       setSelectedPickupFood(null);
     }, 300);
   };
-
   const renderPickupRequestModal = () => (
     <div
       className="modal-overlay fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
@@ -1029,7 +878,6 @@ const ReceiverDashboard = () => {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
         <div className="modal-header flex justify-between items-center p-4 border-b border-gray-200 bg-gradient-to-r from-green-500 to-green-600 text-white sticky top-0 z-10">
           <div className="modal-title flex items-center">
             <CheckCircle className="h-5 w-5 mr-2" />
@@ -1043,13 +891,10 @@ const ReceiverDashboard = () => {
           </button>
         </div>
 
-        {/* Scrollable Content Area */}
         {selectedPickupFood && (
           <div className="overflow-y-auto flex-grow" style={{ maxHeight: 'calc(90vh - 130px)' }}>
-            {/* Food Details Section */}
             <div className="p-6 border-b border-gray-200">
               <div className="flex flex-col md:flex-row gap-6">
-                {/* Food Image */}
                 <div className="md:w-1/3">
                   <div className="rounded-lg overflow-hidden h-48 bg-gray-100">
                     <img
@@ -1064,8 +909,6 @@ const ReceiverDashboard = () => {
                     />
                   </div>
                 </div>
-
-                {/* Food Information */}
                 <div className="md:w-2/3">
                   <h3 className="text-xl font-semibold text-gray-800 mb-2">{selectedPickupFood.foodName}</h3>
                   <div className="space-y-2 text-sm">
@@ -1093,13 +936,9 @@ const ReceiverDashboard = () => {
                 </div>
               </div>
             </div>
-
-            {/* Request Details Section */}
             <div className="p-6">
               <h4 className="font-medium text-gray-700 mb-4">Request Details</h4>
-
               <div className="space-y-4">
-                {/* Meal Quantity Selector */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     How many meals do you need?*
@@ -1132,8 +971,6 @@ const ReceiverDashboard = () => {
                     </span>
                   </div>
                 </div>
-
-                {/* Pickup Method Selector */}
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     How would you like to receive this food?*
@@ -1187,8 +1024,6 @@ const ReceiverDashboard = () => {
                       </div>
                     </label>
                   </div>
-
-                  {/* Delivery Charge Message */}
                   {pickupMethod === 'courier' && (
                     <div className="mt-3 bg-yellow-50 border border-yellow-200 p-3 rounded-lg flex items-center">
                       <AlertCircle className="h-11 w-11 text-yellow-500 mr-4" />
@@ -1198,8 +1033,6 @@ const ReceiverDashboard = () => {
                     </div>
                   )}
                 </div>
-
-                {/* Request Note */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Add a note (optional)
@@ -1216,8 +1049,6 @@ const ReceiverDashboard = () => {
             </div>
           </div>
         )}
-
-        {/* Modal Footer */}
         <div className="modal-footer p-4 border-t border-gray-200 flex justify-end space-x-3 sticky bottom-0 bg-white z-10">
           <button
             type="button"
@@ -1237,8 +1068,6 @@ const ReceiverDashboard = () => {
       </div>
     </div>
   );
-
-
   const renderRequestAcceptedNotification = (notification) => {
     return (
       <div className="notification-item accepted">
@@ -1263,7 +1092,6 @@ const ReceiverDashboard = () => {
 
   const renderAcceptedRequestDetailsModal = () => {
     if (!selectedAcceptedRequest) return null;
-
     return (
       <div className="modal-overlay">
         <div className="modal-container">
@@ -1312,11 +1140,7 @@ const ReceiverDashboard = () => {
       </div>
     );
   };
-  // ==========================================
-  // PROFILE MANAGEMENT HANDLERS
-  // ==========================================
 
-  // Open profile modal
   const handleOpenProfileModal = () => {
     setShowProfileModal(true);
     setShowProfileMenu(false);
@@ -1325,13 +1149,11 @@ const ReceiverDashboard = () => {
     setProfileSuccess('');
     setShowPasswordSection(false);
 
-    // Reset form data to current profile
     if (userProfile) {
       setProfileFormData({ ...userProfile });
     }
   };
 
-  // Handle profile form input changes
   const handleProfileInputChange = (e) => {
     const { name, value } = e.target;
     setProfileFormData(prev => ({
@@ -1340,13 +1162,10 @@ const ReceiverDashboard = () => {
     }));
   };
 
-  // Handle profile photo change
   const handleProfilePhotoChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setNewProfilePhoto(file);
-
-      // Create a preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhotoPreview(reader.result);
@@ -1354,8 +1173,6 @@ const ReceiverDashboard = () => {
       reader.readAsDataURL(file);
     }
   };
-
-  // Handle password form changes
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswordFormData(prev => ({
@@ -1364,7 +1181,6 @@ const ReceiverDashboard = () => {
     }));
   };
 
-  // Submit profile update
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -1372,10 +1188,7 @@ const ReceiverDashboard = () => {
     setProfileSuccess('');
 
     try {
-      // Create form data for multipart request
       const updateData = new FormData();
-
-      // Only add fields that have changed
       Object.keys(profileFormData).forEach(key => {
         if (profileFormData[key] !== userProfile[key] &&
           key !== 'userPhotoBase64' &&
@@ -1384,13 +1197,9 @@ const ReceiverDashboard = () => {
           updateData.append(key, profileFormData[key]);
         }
       });
-
-      // Add photo if selected
       if (newProfilePhoto) {
         updateData.append('userPhoto', newProfilePhoto);
       }
-
-      // Handle password change if needed
       if (showPasswordSection &&
         passwordFormData.currentPassword &&
         passwordFormData.newPassword &&
@@ -1405,8 +1214,6 @@ const ReceiverDashboard = () => {
         updateData.append('currentPassword', passwordFormData.currentPassword);
         updateData.append('newPassword', passwordFormData.newPassword);
       }
-
-      // Only send request if there are changes
       if ([...updateData.entries()].length > 0) {
         const response = await axios.put(
           `${API_BASE_URL}/api/receiver/profile/update/${currentUser.id}`,
@@ -1415,7 +1222,6 @@ const ReceiverDashboard = () => {
         );
 
         if (response.data.success) {
-          // Refresh profile data
           const updatedProfile = await axios.get(`${API_BASE_URL}/api/receiver/profile/${currentUser.id}`);
           if (updatedProfile.data.success) {
             setUserProfile(updatedProfile.data.data);
@@ -1445,26 +1251,19 @@ const ReceiverDashboard = () => {
       setIsLoading(false);
     }
   };
-
-  // Handle account deletion
   const handleDeleteAccount = async () => {
     if (!deletePassword) {
       setProfileError('Please enter your password to confirm account deletion');
       return;
     }
-
     setIsLoading(true);
     try {
       const response = await axios.delete(
         `${API_BASE_URL}/api/receiver/profile/${currentUser.id}?password=${deletePassword}`
       );
-
       if (response.data.success) {
-        // Clear auth data and redirect to login
         localStorage.removeItem('authUser');
         sessionStorage.removeItem('authUser');
-
-        // Show success message before redirecting
         setProfileSuccess('Your account has been successfully deleted');
         setTimeout(() => {
           navigate('/login');
@@ -1481,14 +1280,9 @@ const ReceiverDashboard = () => {
       setDeletePassword('');
     }
   };
-
-  // Handle logout
   const handleLogout = () => {
-    // Clear auth data from storage
     localStorage.removeItem('authUser');
     sessionStorage.removeItem('authUser');
-
-    // Show logout notification
     const notification = document.createElement('div');
     notification.className = 'notification-dropdown';
     notification.innerHTML = '<div class="flex items-center p-3"><CheckCircle class="h-5 w-5 mr-2 text-green-500" /><span>Logged out successfully!</span></div>';
@@ -1503,8 +1297,6 @@ const ReceiverDashboard = () => {
       }, 300);
     }, 1500);
   };
-
-  // Close modal with animation
   const closeModal = (type) => {
     setFormAnimation(false);
     setTimeout(() => {
@@ -1522,8 +1314,6 @@ const ReceiverDashboard = () => {
       }
     }, 300);
   };
-
-  // Reset profile form to original values
   const handleCancelProfileEdit = () => {
     setProfileFormData({ ...userProfile });
     setNewProfilePhoto(null);
@@ -1539,20 +1329,15 @@ const ReceiverDashboard = () => {
     });
   };
 
-  // Handle form input changes
   const handleFormChange = (field, value) => {
     setEmergencyForm({
       ...emergencyForm,
       [field]: value
     });
   };
-
-  // Handle emergency form submission
   const handleEmergencySubmit = (e) => {
     e.preventDefault();
     console.log('Emergency submitted:', emergencyForm);
-
-    // Show success notification
     const notification = document.createElement('div');
     notification.className = 'notification-dropdown';
     notification.innerHTML = '<div class="flex items-center p-3"><CheckCircle class="h-5 w-5 mr-2 text-green-500" /><span>Emergency alert sent successfully!</span></div>';
@@ -1572,16 +1357,12 @@ const ReceiverDashboard = () => {
 
     try {
       const formDataObj = new FormData();
-
-      // Required fields as per NeedFoodRequestController
       formDataObj.append('userId', currentUser.id);
       formDataObj.append('priority', formData.priority);
       formDataObj.append('peopleCount', formData.peopleCount);
       formDataObj.append('timeNeeded', formData.timeNeeded);
       formDataObj.append('location', formData.location);
       formDataObj.append('deliveryPreference', formData.deliveryPreference);
-
-      // Handle arrays properly - append each item separately
       if (formData.foodTypes && formData.foodTypes.length > 0) {
         formData.foodTypes.forEach(type => {
           formDataObj.append('foodTypes', type);
@@ -1597,7 +1378,6 @@ const ReceiverDashboard = () => {
       } else {
         formDataObj.append('recipients', 'donors'); // Default value
       }
-
       if (formData.specificDate) formDataObj.append('specificDate', formData.specificDate);
       if (formData.specificTime) formDataObj.append('specificTime', formData.specificTime);
       if (formData.notes) formDataObj.append('notes', formData.notes);
@@ -1610,11 +1390,9 @@ const ReceiverDashboard = () => {
           headers: { 'Content-Type': 'multipart/form-data' }
         }
       );
-
       if (response.data.success) {
         showSuccessNotification();
         closeModal('food');
-
         setFormData({
           priority: 'medium',
           foodTypes: [],
@@ -1636,7 +1414,6 @@ const ReceiverDashboard = () => {
       setIsSubmitting(false);
     }
   };
-
   const handleSwitchToDonorDashboard = () => {
     handleOpenOverviewModal();
   };
@@ -1677,21 +1454,15 @@ const ReceiverDashboard = () => {
       showSaveNotification(errorMessage, 'error');
     }
   };
-
-  // Handle search input
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
-
-  // ADD this new function:
   const handleCategoryChange = (category) => {
     console.log('Category changed to:', category);
     setSelectedCategory(category);
     // Reset pagination when changing category
     setPagination(prev => ({ ...prev, currentPage: 0 }));
   };
-
-
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -1703,10 +1474,6 @@ const ReceiverDashboard = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
-
-  // ==========================================
-  // RENDER HELPER FUNCTIONS
-  // ==========================================
 
   const renderAcceptedRequestsSection = () => (
     <div className="mt-6">
@@ -1760,7 +1527,6 @@ const ReceiverDashboard = () => {
       )}
     </div>
   );
-
   const renderProfileModal = () => (
     <div
       className="modal-overlay fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
@@ -1777,7 +1543,6 @@ const ReceiverDashboard = () => {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header - Fixed at the top */}
         <div className="modal-header sticky top-0 z-10 flex justify-between items-center p-4 bg-green-600 text-white">
           <div className="modal-title flex items-center">
             <User className="h-6 w-6 mr-2" />
@@ -1791,8 +1556,6 @@ const ReceiverDashboard = () => {
             <X className="h-6 w-6" />
           </button>
         </div>
-
-        {/* Scrollable Content Container */}
         <div
           className="overflow-y-auto overflow-x-hidden"
           style={{
@@ -1803,7 +1566,6 @@ const ReceiverDashboard = () => {
               : 'rgba(156, 163, 175, 0.5) rgba(229, 231, 235, 0.5)'
           }}
         >
-          {/* Notification messages */}
           {profileError && (
             <div className={`p-4 mx-4 mt-4 rounded-lg flex items-center ${darkMode ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700'
               }`}>
@@ -1820,7 +1582,6 @@ const ReceiverDashboard = () => {
             </div>
           )}
 
-          {/* Profile Content */}
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Left Column - Photo and Basic Info */}
@@ -1849,7 +1610,6 @@ const ReceiverDashboard = () => {
                         </div>
                       )}
                     </div>
-
                     {isEditingProfile && (
                       <label htmlFor="profile-photo" className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full cursor-pointer hover:bg-blue-600 transition">
                         <Camera className="w-5 h-5 text-white" />
@@ -1864,8 +1624,6 @@ const ReceiverDashboard = () => {
                       </label>
                     )}
                   </div>
-
-                  {/* User Name & Email */}
                   <h2 className={`text-xl font-semibold mb-1 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
                     {userProfile ? `${userProfile.firstName} ${userProfile.lastName}` : 'User Name'}
                   </h2>
@@ -1873,8 +1631,6 @@ const ReceiverDashboard = () => {
                     <Mail className="w-4 h-4 mr-1" />
                     {userProfile ? userProfile.email : 'user@example.com'}
                   </p>
-
-                  {/* Contact Info Card */}
                   <div className={`w-full rounded-lg p-4 mb-4 ${darkMode ? 'bg-gray-700' : 'bg-gray-50'
                     }`}>
                     <h3 className={`font-medium mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
@@ -1895,8 +1651,6 @@ const ReceiverDashboard = () => {
                       </div>
                     </div>
                   </div>
-
-                  {/* Action Buttons */}
                   {!isEditingProfile ? (
                     <button
                       onClick={() => setIsEditingProfile(true)}
@@ -1932,8 +1686,6 @@ const ReceiverDashboard = () => {
                   )}
                 </div>
               </div>
-
-              {/* Right Column - Profile Details */}
               <div className="md:col-span-2">
                 <form onSubmit={handleProfileSubmit}>
                   {/* Personal Information Section */}
@@ -1947,7 +1699,6 @@ const ReceiverDashboard = () => {
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* First Name */}
                       <div>
                         <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
@@ -1973,8 +1724,6 @@ const ReceiverDashboard = () => {
                           </div>
                         )}
                       </div>
-
-                      {/* Last Name */}
                       <div>
                         <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
@@ -2000,8 +1749,6 @@ const ReceiverDashboard = () => {
                           </div>
                         )}
                       </div>
-
-                      {/* Blood Group */}
                       <div>
                         <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
@@ -2030,8 +1777,6 @@ const ReceiverDashboard = () => {
                           </div>
                         )}
                       </div>
-
-                      {/* Date of Birth */}
                       <div>
                         <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
@@ -2056,8 +1801,6 @@ const ReceiverDashboard = () => {
                           </div>
                         )}
                       </div>
-
-                      {/* Phone */}
                       <div>
                         <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
@@ -2085,8 +1828,6 @@ const ReceiverDashboard = () => {
                       </div>
                     </div>
                   </div>
-
-                  {/* Address Section */}
                   <div className="mb-6">
                     <h3 className={`text-lg font-semibold border-b pb-2 mb-4 flex items-center ${darkMode
                       ? 'text-gray-100 border-gray-700'
@@ -2097,7 +1838,6 @@ const ReceiverDashboard = () => {
                     </h3>
 
                     <div className="space-y-4">
-                      {/* Address */}
                       <div>
                         <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
@@ -2123,8 +1863,6 @@ const ReceiverDashboard = () => {
                           </div>
                         )}
                       </div>
-
-                      {/* Address Description */}
                       <div>
                         <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
@@ -2151,8 +1889,6 @@ const ReceiverDashboard = () => {
                       </div>
                     </div>
                   </div>
-
-                  {/* ID Information Section */}
                   <div className="mb-6">
                     <h3 className={`text-lg font-semibold border-b pb-2 mb-4 flex items-center ${darkMode
                       ? 'text-gray-100 border-gray-700'
@@ -2163,7 +1899,6 @@ const ReceiverDashboard = () => {
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* National ID */}
                       <div>
                         <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
@@ -2188,8 +1923,6 @@ const ReceiverDashboard = () => {
                           </div>
                         )}
                       </div>
-
-                      {/* Passport Number */}
                       <div>
                         <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
@@ -2214,8 +1947,6 @@ const ReceiverDashboard = () => {
                           </div>
                         )}
                       </div>
-
-                      {/* Birth Certificate */}
                       <div>
                         <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
@@ -2242,8 +1973,6 @@ const ReceiverDashboard = () => {
                       </div>
                     </div>
                   </div>
-
-                  {/* About Me */}
                   <div className="mb-6">
                     <h3 className={`text-lg font-semibold border-b pb-2 mb-4 flex items-center ${darkMode
                       ? 'text-gray-100 border-gray-700'
@@ -2278,8 +2007,6 @@ const ReceiverDashboard = () => {
                       )}
                     </div>
                   </div>
-
-                  {/* Password Change Section (Only visible in edit mode) */}
                   {isEditingProfile && (
                     <div className="mb-6">
                       <div className={`flex items-center justify-between border-b pb-2 mb-4 ${darkMode ? 'border-gray-700' : 'border-gray-200'
@@ -2298,7 +2025,6 @@ const ReceiverDashboard = () => {
                           {showPasswordSection ? 'Cancel' : 'Change Password'}
                         </button>
                       </div>
-
                       {showPasswordSection && (
                         <div className="space-y-4">
                           <div>
@@ -2319,7 +2045,6 @@ const ReceiverDashboard = () => {
                               required={showPasswordSection}
                             />
                           </div>
-
                           <div>
                             <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                               }`}>
@@ -2338,7 +2063,6 @@ const ReceiverDashboard = () => {
                               required={showPasswordSection}
                             />
                           </div>
-
                           <div>
                             <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'
                               }`}>
@@ -2366,8 +2090,6 @@ const ReceiverDashboard = () => {
             </div>
           </div>
         </div>
-
-        {/* Fixed Footer (Only in edit mode) */}
         {isEditingProfile && (
           <div className={`sticky bottom-0 w-full p-4 border-t z-10 flex justify-end ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
             }`}>
@@ -2391,8 +2113,6 @@ const ReceiverDashboard = () => {
           </div>
         )}
       </div>
-
-      {/* Delete Account Confirmation Dialog */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 flex items-center justify-center z-[60] bg-black bg-opacity-70">
           <div className={`rounded-lg p-6 w-full max-w-md ${darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'
@@ -2420,7 +2140,6 @@ const ReceiverDashboard = () => {
                 required
               />
             </div>
-
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
@@ -2455,7 +2174,6 @@ const ReceiverDashboard = () => {
       )}
     </div>
   );
-
   const renderProfileMenu = () => (
     <div
       ref={profileMenuRef}
@@ -2467,7 +2185,6 @@ const ReceiverDashboard = () => {
         boxShadow: darkMode ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
       }}
     >
-      {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-6 text-white relative flex items-center">
         <div className="w-20 h-20 rounded-full border-4 border-white/30 overflow-hidden mr-4 flex-shrink-0">
           {userProfile && userProfile.userPhotoBase64 ? (
@@ -2495,8 +2212,6 @@ const ReceiverDashboard = () => {
           <X className="h-5 w-5" />
         </button>
       </div>
-
-      {/* Menu Items */}
       <div className="p-4 space-y-1">
         <div className={`text-xs uppercase px-4 mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>ACCOUNT</div>
         <button
@@ -2521,8 +2236,6 @@ const ReceiverDashboard = () => {
           <HelpCircle className="h-5 w-5 text-yellow-500 mr-3" />
           <span>Help Center</span>
         </button>
-
-        {/* Logout Section */}
         <button
           onClick={handleLogout}
           className={`w-full text-left px-4 py-3 rounded-lg flex items-center text-red-600 ${darkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-50'
@@ -2622,8 +2335,6 @@ const ReceiverDashboard = () => {
                 ></textarea>
               </div>
             </div>
-
-            {/* Food Details */}
             <div className="space-y-4">
               <div className="flex items-center space-x-2 mb-2">
                 <Coffee className="h-5 w-5 text-orange-500" />
@@ -2662,8 +2373,6 @@ const ReceiverDashboard = () => {
                 </div>
               </div>
             </div>
-
-            {/* Location */}
             <div className="space-y-4">
               <div className="flex items-center space-x-2 mb-2">
                 <MapPin className="h-5 w-5 text-green-500" />
@@ -2686,8 +2395,6 @@ const ReceiverDashboard = () => {
                   <MapPin className="h-5 w-5 text-blue-500" />
                 </button>
               </div>
-
-              {/* Map Preview Container */}
               <div className="border border-gray-300 rounded-lg h-48 bg-gray-100 flex items-center justify-center">
                 <div className="text-center text-gray-500">
                   <Map className="h-8 w-8 mx-auto mb-2" />
@@ -2695,8 +2402,6 @@ const ReceiverDashboard = () => {
                 </div>
               </div>
             </div>
-
-            {/* Image Upload */}
             <div className="space-y-4">
               <div className="flex items-center space-x-2 mb-2">
                 <Camera className="h-5 w-5 text-purple-500" />
@@ -2777,14 +2482,10 @@ const ReceiverDashboard = () => {
     `;
 
     document.body.appendChild(notification);
-
-    // Animate in
     setTimeout(() => {
       notification.style.opacity = '1';
       notification.style.transform = 'translateX(0)';
     }, 100);
-
-    // Automatically remove after 8 seconds
     setTimeout(() => {
       notification.style.opacity = '0';
       notification.style.transform = 'translateX(100%)';
@@ -2818,14 +2519,10 @@ const ReceiverDashboard = () => {
     `;
 
     document.body.appendChild(notification);
-
-    // Animate in
     setTimeout(() => {
       notification.style.opacity = '1';
       notification.style.transform = 'translateX(0)';
     }, 100);
-
-    // Automatically remove after 8 seconds
     setTimeout(() => {
       notification.style.opacity = '0';
       notification.style.transform = 'translateX(100%)';
@@ -2884,7 +2581,6 @@ const ReceiverDashboard = () => {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header - Same style for both light & dark mode */}
         <div className="modal-header flex justify-between items-center p-5 border-b border-gray-200 dark:border-gray-700 bg-green-600 text-white">
           <div className="modal-title flex items-center">
             <PlusCircle className="h-5 w-5 mr-3" />
@@ -2897,12 +2593,8 @@ const ReceiverDashboard = () => {
             <X className="h-5 w-5" />
           </button>
         </div>
-
-        {/* Modal Content */}
         <div className="modal-content custom-scrollbar max-h-[70vh] overflow-y-auto p-6 dark:text-gray-100">
           <form onSubmit={handleFoodRequestSubmit} className="space-y-6">
-
-            {/* Request Priority Banner */}
             <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex items-start">
               <AlertCircle className="h-5 w-5 text-amber-500 dark:text-amber-400 mr-3 flex-shrink-0 mt-0.5" />
               <div>
@@ -2910,8 +2602,6 @@ const ReceiverDashboard = () => {
                 <p className="text-amber-600 dark:text-amber-300 text-sm">Please indicate how urgently you need this food assistance. Higher priority requests will be highlighted to donors and admins.</p>
               </div>
             </div>
-
-            {/* Priority Selection */}
             <div className="priority-selection">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Request Priority</label>
               <div className="grid grid-cols-3 gap-3">
@@ -2958,8 +2648,6 @@ const ReceiverDashboard = () => {
                 ))}
               </div>
             </div>
-
-            {/* Food Type Selection */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">What type of food assistance do you need?</label>
               <div className="grid grid-cols-3 gap-3">
@@ -3005,8 +2693,6 @@ const ReceiverDashboard = () => {
                 ))}
               </div>
             </div>
-
-            {/* Recipient Selection */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Send Request To:</label>
               <div className="grid grid-cols-3 gap-3">
@@ -3044,8 +2730,6 @@ const ReceiverDashboard = () => {
                 ))}
               </div>
             </div>
-
-            {/* Number of people and Time Needed */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">How many people need food?</label>
@@ -3064,7 +2748,6 @@ const ReceiverDashboard = () => {
                   />
                 </div>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">When do you need it?</label>
                 <div className="relative">
@@ -3091,8 +2774,6 @@ const ReceiverDashboard = () => {
                 </div>
               </div>
             </div>
-
-            {/* Specific Date/Time Selector - Only visible when "Specific date & time" is selected */}
             {formData.timeNeeded === 'specific' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-750 rounded-lg border border-gray-200 dark:border-gray-700">
                 <div>
@@ -3128,8 +2809,6 @@ const ReceiverDashboard = () => {
                 </div>
               </div>
             )}
-
-            {/* Address Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Your Address
@@ -3149,8 +2828,6 @@ const ReceiverDashboard = () => {
                 />
               </div>
             </div>
-
-            {/* Delivery Preference */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Delivery Preference</label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -3189,8 +2866,6 @@ const ReceiverDashboard = () => {
                 ))}
               </div>
             </div>
-
-            {/* Additional Notes */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Additional Notes
@@ -3204,8 +2879,6 @@ const ReceiverDashboard = () => {
                 placeholder="Please share any dietary restrictions, allergies, or special needs."
               />
             </div>
-
-            {/* Image Upload */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                 Add a Photo (Optional)
@@ -3257,8 +2930,6 @@ const ReceiverDashboard = () => {
             </div>
           </form>
         </div>
-
-        {/* Modal Footer */}
         <div className="modal-footer p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex justify-between items-center">
 
           <button
@@ -3362,8 +3033,6 @@ const ReceiverDashboard = () => {
               >
                 <Bookmark className={`h-4 w-4 ${savedFoods.includes(food.id) ? 'fill-current' : ''}`} />
               </button>
-
-              {/* REPORT BUTTON - ADD THIS */}
               <button
                 onClick={() => openReportModal(food)}
                 className="btn-report bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
@@ -3387,7 +3056,6 @@ const ReceiverDashboard = () => {
           className="donation-card rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
         >
           <div className="flex flex-col md:flex-row">
-            {/* Image Section */}
             <div className="relative md:w-1/3">
               <img
                 src={food.imageData
@@ -3405,8 +3073,6 @@ const ReceiverDashboard = () => {
                 </span>
               </div>
             </div>
-
-            {/* Details Section */}
             <div className="p-4 md:w-2/3 flex flex-col justify-between dark:border-gray-700">
               <div>
                 <div className="flex justify-between items-start mb-2">
@@ -3445,8 +3111,6 @@ const ReceiverDashboard = () => {
                   ))}
                 </div>
               </div>
-
-              {/* UPDATED ACTION BUTTONS WITH REPORT BUTTON */}
               <div className="flex space-x-2">
                 <button
                   onClick={() => handleFoodRequest(food.id)}
@@ -3466,8 +3130,6 @@ const ReceiverDashboard = () => {
                 >
                   <Bookmark className={`h-4 w-4 ${savedFoods.includes(food.id) ? 'fill-current' : ''}`} />
                 </button>
-
-                {/* REPORT BUTTON - ADD THIS */}
                 <button
                   onClick={() => openReportModal(food)}
                   className="px-3 py-2 rounded-lg text-sm bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800 transition flex items-center justify-center"
@@ -3509,7 +3171,6 @@ const ReceiverDashboard = () => {
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Modal Header */}
           <div className="modal-header sticky top-0 z-10 flex justify-between items-center p-4 bg-red-600 text-white">
             <div className="modal-title flex items-center">
               <Flag className="h-6 w-6 mr-2" />
@@ -3523,17 +3184,12 @@ const ReceiverDashboard = () => {
               <X className="h-6 w-6" />
             </button>
           </div>
-
-          {/* Scrollable Content */}
           <div className="overflow-y-auto" style={{ maxHeight: 'calc(90vh - 140px)' }}>
-            {/* Food Information Display */}
             <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
               <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
                 Food Item Information
               </h3>
-
               <div className="flex flex-col md:flex-row gap-6">
-                {/* Food Image */}
                 <div className="md:w-1/3">
                   <div className="rounded-lg overflow-hidden h-48 bg-gray-100 dark:bg-gray-700">
                     <img
@@ -3548,8 +3204,6 @@ const ReceiverDashboard = () => {
                     />
                   </div>
                 </div>
-
-                {/* Food Details */}
                 <div className="md:w-2/3">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -3560,7 +3214,6 @@ const ReceiverDashboard = () => {
                         {selectedFoodForReport.foodName}
                       </p>
                     </div>
-
                     <div>
                       <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                         Category
@@ -3569,7 +3222,6 @@ const ReceiverDashboard = () => {
                         {selectedFoodForReport.category}
                       </p>
                     </div>
-
                     <div>
                       <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                         Quantity
@@ -3578,7 +3230,6 @@ const ReceiverDashboard = () => {
                         {selectedFoodForReport.quantity}
                       </p>
                     </div>
-
                     <div>
                       <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                         Expiry Date
@@ -3587,7 +3238,6 @@ const ReceiverDashboard = () => {
                         {selectedFoodForReport.expiryDate}
                       </p>
                     </div>
-
                     <div className="md:col-span-2">
                       <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                         Location
@@ -3596,7 +3246,6 @@ const ReceiverDashboard = () => {
                         {selectedFoodForReport.location}
                       </p>
                     </div>
-
                     <div className="md:col-span-2">
                       <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                         Description
@@ -3609,14 +3258,10 @@ const ReceiverDashboard = () => {
                 </div>
               </div>
             </div>
-
-            {/* Report Form */}
             <div className="p-6">
               <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
                 Report Details
               </h3>
-
-              {/* Report Category Selection */}
               <div className="mb-6">
                 <label className={`block text-sm font-medium mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Report Category *
@@ -3660,8 +3305,6 @@ const ReceiverDashboard = () => {
                   })}
                 </div>
               </div>
-
-              {/* Report Reason */}
               <div className="mb-6">
                 <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Reason for Reporting *
@@ -3693,16 +3336,12 @@ const ReceiverDashboard = () => {
                   {reportFormData.reportReason.length > 900 && 'Approaching character limit'}
                 </div>
               </div>
-
-              {/* Evidence File Uploads */}
               <div className="mb-6">
                 <label className={`block text-sm font-medium mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Supporting Evidence (Optional)
                   <span className="text-xs text-gray-500 ml-2">Upload images, documents, or files to support your report</span>
                 </label>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Evidence File 1 */}
                   <div>
                     <label className={`block text-xs font-medium mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                       Evidence File 1
@@ -3755,8 +3394,6 @@ const ReceiverDashboard = () => {
                       )}
                     </div>
                   </div>
-
-                  {/* Evidence File 2 */}
                   <div>
                     <label className={`block text-xs font-medium mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                       Evidence File 2
@@ -3811,8 +3448,6 @@ const ReceiverDashboard = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Important Notice */}
               <div className={`p-4 rounded-lg border-l-4 border-yellow-500 ${darkMode ? 'bg-yellow-900/30' : 'bg-yellow-50'
                 }`}>
                 <div className="flex items-start">
@@ -3829,8 +3464,6 @@ const ReceiverDashboard = () => {
               </div>
             </div>
           </div>
-
-          {/* Modal Footer */}
           <div className={`sticky bottom-0 w-full p-4 border-t z-10 flex justify-end ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
             }`}>
             <div className="flex space-x-3">
@@ -3855,8 +3488,6 @@ const ReceiverDashboard = () => {
               </button>
             </div>
           </div>
-
-          {/* Confirmation Dialog */}
           {showReportConfirmation && (
             <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
               <div className={`rounded-lg p-6 w-full max-w-md ${darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'
@@ -3874,7 +3505,6 @@ const ReceiverDashboard = () => {
                     Reason: {reportFormData.reportReason.substring(0, 100)}{reportFormData.reportReason.length > 100 ? '...' : ''}
                   </p>
                 </div>
-
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={() => setShowReportConfirmation(false)}
@@ -3916,12 +3546,10 @@ const ReceiverDashboard = () => {
   const handleViewDetails = async (donationId) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/receiver/food/${donationId}`);
-      // Open a modal or navigate to details page with full donation details
       setSelectedDonation(response.data);
       setShowDonationDetailsModal(true);
     } catch (error) {
       console.error('Error fetching donation details:', error);
-      // Show error notification
     }
   };
 
@@ -3934,19 +3562,15 @@ const ReceiverDashboard = () => {
 
   const renderAcceptedNotificationsModal = () => {
     if (!showAcceptedNotificationsModal) return null;
-
-    // Separate accepted and rejected notifications
     const acceptedNotifications = acceptedRequestNotifications.filter(
       notification => notification.status === 'ACCEPTED'
     );
     const rejectedNotifications = acceptedRequestNotifications.filter(
       notification => notification.status === 'REJECTED'
     );
-
     return (
       <div className="modal-overlay fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div className="notifications-modal bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
-          {/* Header */}
           <div className="notifications-header bg-blue-600 dark:bg-blue-700 p-4 flex justify-between items-center text-white">
             <div className="flex items-center">
               <Bell className="h-6 w-6 mr-3" />
@@ -3959,8 +3583,6 @@ const ReceiverDashboard = () => {
               <X className="h-6 w-6" />
             </button>
           </div>
-
-          {/* Tabs */}
           <div className="flex border-b border-gray-200 dark:border-gray-700">
             <button
               className={`flex-1 py-3 font-semibold flex items-center justify-center transition-all duration-300 ${overviewTab === 'accepted'
@@ -3983,8 +3605,6 @@ const ReceiverDashboard = () => {
               Rejected Requests ({rejectedNotifications.length})
             </button>
           </div>
-
-          {/* Notifications Body */}
           <div className="notifications-body flex-grow overflow-y-auto p-4 bg-white dark:bg-gray-800">
             {acceptedRequestNotifications.length === 0 ? (
               <div className="empty-notifications text-center py-12">
@@ -4082,8 +3702,6 @@ const ReceiverDashboard = () => {
               </div>
             )}
           </div>
-
-          {/* Footer */}
           <div className="modal-footer bg-gray-100 dark:bg-gray-750 p-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
             <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
               <Bell className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
@@ -4101,7 +3719,6 @@ const ReceiverDashboard = () => {
       </div>
     );
   };
-
   const renderSelectedNotificationDetailModal = () => {
     if (!selectedAcceptedNotification) return null;
 
@@ -4134,8 +3751,6 @@ const ReceiverDashboard = () => {
               </h2>
             </div>
           </div>
-
-          {/* Scrollable Content */}
           <div className="flex-grow overflow-y-auto p-6">
             {/* Status Banner */}
             <div className={`rounded-lg p-4 mb-6 ${statusColor} border flex items-center`}>
@@ -4156,8 +3771,6 @@ const ReceiverDashboard = () => {
                 </p>
               </div>
             </div>
-
-            {/* Food Item Details */}
             <div className="mb-6">
               <h4 className="text-lg font-semibold mb-3 border-b pb-2 flex items-center">
                 <Package className="h-5 w-5 mr-2 text-blue-500" />
@@ -4201,8 +3814,6 @@ const ReceiverDashboard = () => {
                 </div>
               </div>
             </div>
-
-            {/* Donor/Receiver Information */}
             <div className="grid grid-cols-2 gap-6 mb-6">
               {/* Receiver Card */}
               <div className={`rounded-xl p-5 ${isAccepted
@@ -4242,8 +3853,6 @@ const ReceiverDashboard = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Donor Card */}
               <div className={`rounded-xl p-5 ${isAccepted
                 ? 'bg-green-50 border-green-100'
                 : 'bg-gray-50 border-gray-100'} border`}
@@ -4276,8 +3885,6 @@ const ReceiverDashboard = () => {
                 </div>
               </div>
             </div>
-
-            {/* Donor's Message */}
             {selectedAcceptedNotification.responseNote && (
               <div className={`p-4 rounded-lg ${isAccepted
                 ? 'bg-yellow-50 border-yellow-100'
@@ -4296,8 +3903,6 @@ const ReceiverDashboard = () => {
               </div>
             )}
           </div>
-
-          {/* Footer with Close Button */}
           <div className={`modal-footer p-4 border-t ${isAccepted
             ? 'border-green-100 bg-green-50'
             : 'border-red-100 bg-red-50'} flex justify-end`}
@@ -4333,7 +3938,6 @@ const ReceiverDashboard = () => {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
         <div className="modal-header flex justify-between items-center p-4 bg-green-600 text-white sticky top-0 z-10">
           <div className="modal-title flex items-center">
             <BarChart className="h-6 w-6 mr-2" />
@@ -4347,7 +3951,6 @@ const ReceiverDashboard = () => {
           </button>
         </div>
 
-        {/* Modal Content */}
         <div className="p-6 bg-white dark:bg-gray-800 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 130px)' }}>
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -4388,7 +3991,6 @@ const ReceiverDashboard = () => {
             </div>
           </div>
 
-          {/* Tab Buttons */}
           <div className="flex items-center space-x-0 mb-4 border dark:border-gray-700 rounded-lg overflow-hidden w-fit">
             <button
               onClick={() => setOverviewTab('received')}
@@ -4428,7 +4030,6 @@ const ReceiverDashboard = () => {
             </button>
           </div>
 
-          {/* Data Display */}
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
             {/* Received Tab (ACCEPTED foods) */}
             {overviewTab === 'received' && (
@@ -4506,7 +4107,6 @@ const ReceiverDashboard = () => {
               </div>
             )}
 
-            {/* Requested Tab (All requests) */}
             {overviewTab === 'requested' && (
               <div>
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
@@ -4600,7 +4200,6 @@ const ReceiverDashboard = () => {
               </div>
             )}
 
-            {/* Accepted Tab (Shows accepted requests that need pickup) */}
             {overviewTab === 'accepted' && (
               <div>
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
@@ -4687,7 +4286,6 @@ const ReceiverDashboard = () => {
               </div>
             )}
 
-            {/* Saved Tab (Shows saved food donations) */}
             {overviewTab === 'saved' && (
               <div>
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
@@ -4806,7 +4404,6 @@ const ReceiverDashboard = () => {
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Modal Header */}
           <div className="modal-header flex justify-between items-center p-4 bg-purple-600 text-white sticky top-0 z-10">
             <div className="modal-title flex items-center">
               <Bookmark className="h-6 w-6 mr-2" />
@@ -4822,8 +4419,6 @@ const ReceiverDashboard = () => {
               <X className="h-6 w-6" />
             </button>
           </div>
-
-          {/* Modal Content */}
           <div className="flex-grow overflow-y-auto p-6 dark:bg-gray-800">
             {isLoadingSavedDonations ? (
               <div className="flex items-center justify-center py-12">
@@ -4854,7 +4449,6 @@ const ReceiverDashboard = () => {
                     className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
                   >
                     <div className="flex flex-col md:flex-row">
-                      {/* Image Section */}
                       <div className="md:w-1/3 relative">
                         <div className="h-48 bg-gray-100 dark:bg-gray-600">
                           <img
@@ -4868,7 +4462,6 @@ const ReceiverDashboard = () => {
                             }}
                           />
                         </div>
-                        {/* Saved Badge */}
                         <div className="absolute top-3 right-3">
                           <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium flex items-center">
                             <Bookmark className="h-3 w-3 mr-1 fill-current" />
@@ -4877,7 +4470,6 @@ const ReceiverDashboard = () => {
                         </div>
                       </div>
 
-                      {/* Details Section */}
                       <div className="md:w-2/3 p-6">
                         <div className="flex justify-between items-start mb-3">
                           <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
@@ -4888,7 +4480,6 @@ const ReceiverDashboard = () => {
                           </span>
                         </div>
 
-                        {/* Food Details */}
                         <div className="space-y-2 mb-4">
                           <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                             <MapPin className="h-4 w-4 mr-2 text-green-500" />
@@ -4911,8 +4502,6 @@ const ReceiverDashboard = () => {
                             <span><strong>Saved on:</strong> {new Date(item.savedAt).toLocaleDateString()}</span>
                           </div>
                         </div>
-
-                        {/* Description */}
                         {item.description && (
                           <div className="mb-4">
                             <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -4920,8 +4509,6 @@ const ReceiverDashboard = () => {
                             </p>
                           </div>
                         )}
-
-                        {/* Action Buttons */}
                         <div className="flex space-x-3">
                           <button
                             onClick={() => {
@@ -4947,7 +4534,6 @@ const ReceiverDashboard = () => {
                           <button
                             onClick={async () => {
                               await toggleSaveFood(item.donationId);
-                              // Refresh the saved donations list
                               showDedicatedSavedDonationsModal();
                             }}
                             className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition flex items-center justify-center space-x-2"
@@ -4958,7 +4544,6 @@ const ReceiverDashboard = () => {
 
                           <button
                             onClick={() => {
-                              // Copy sharing link or show details
                               navigator.clipboard.writeText(`Food: ${item.foodName} at ${item.location}`);
                               showSaveNotification('Food details copied to clipboard!', 'success');
                             }}
@@ -5021,7 +4606,6 @@ const ReceiverDashboard = () => {
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Modal Header */}
           <div className="modal-header sticky top-0 z-10 flex justify-between items-center p-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
             <div className="modal-title flex items-center">
               <HelpCircle className="h-6 w-6 mr-2" />
@@ -5035,7 +4619,6 @@ const ReceiverDashboard = () => {
             </button>
           </div>
 
-          {/* Tab Navigation */}
           <div className={`flex border-b ${darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
             {Object.entries(tabData).map(([key, tab]) => (
               <button
@@ -5052,9 +4635,7 @@ const ReceiverDashboard = () => {
             ))}
           </div>
 
-          {/* Scrollable Content */}
           <div className="overflow-y-auto" style={{ maxHeight: 'calc(90vh - 140px)' }}>
-            {/* About Tab */}
             {activeHelpTab === 'about' && (
               <div className="p-6">
                 <div className="text-center mb-8">
@@ -5127,7 +4708,6 @@ const ReceiverDashboard = () => {
               </div>
             )}
 
-            {/* System Tab */}
             {activeHelpTab === 'system' && (
               <div className="p-6">
                 <h2 className={`text-2xl font-bold mb-6 text-center ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
@@ -5135,7 +4715,6 @@ const ReceiverDashboard = () => {
                 </h2>
 
                 <div className="space-y-8">
-                  {/* For Food Receivers */}
                   <div className={`p-6 rounded-xl ${darkMode ? 'bg-blue-900/30' : 'bg-blue-50'} border ${darkMode ? 'border-blue-800' : 'border-blue-100'}`}>
                     <h3 className={`text-xl font-semibold mb-4 flex items-center ${darkMode ? 'text-blue-300' : 'text-blue-700'}`}>
                       <Users className="h-6 w-6 mr-2" />
@@ -5173,7 +4752,6 @@ const ReceiverDashboard = () => {
                     </div>
                   </div>
 
-                  {/* For Donors */}
                   <div className={`p-6 rounded-xl ${darkMode ? 'bg-green-900/30' : 'bg-green-50'} border ${darkMode ? 'border-green-800' : 'border-green-100'}`}>
                     <h3 className={`text-xl font-semibold mb-4 flex items-center ${darkMode ? 'text-green-300' : 'text-green-700'}`}>
                       <Heart className="h-6 w-6 mr-2" />
@@ -5195,7 +4773,6 @@ const ReceiverDashboard = () => {
                     </div>
                   </div>
 
-                  {/* For Merchants */}
                   <div className={`p-6 rounded-xl ${darkMode ? 'bg-purple-900/30' : 'bg-purple-50'} border ${darkMode ? 'border-purple-800' : 'border-purple-100'}`}>
                     <h3 className={`text-xl font-semibold mb-4 flex items-center ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>
                       <ShoppingBag className="h-6 w-6 mr-2" />
@@ -5225,8 +4802,6 @@ const ReceiverDashboard = () => {
                 </div>
               </div>
             )}
-
-            {/* Terms Tab */}
             {activeHelpTab === 'terms' && (
               <div className="p-6">
                 <h2 className={`text-2xl font-bold mb-6 text-center ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
@@ -5318,7 +4893,6 @@ const ReceiverDashboard = () => {
               </div>
             )}
 
-            {/* Contact Tab */}
             {activeHelpTab === 'contact' && (
               <div className="p-6">
                 <h2 className={`text-2xl font-bold mb-6 text-center ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
@@ -5355,7 +4929,6 @@ const ReceiverDashboard = () => {
                         Visit Homepage Contact
                       </button>
                     </div>
-
                     <div className={`p-5 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-green-50'} border ${darkMode ? 'border-gray-600' : 'border-green-100'}`}>
                       <h4 className={`font-semibold mb-3 flex items-center ${darkMode ? 'text-green-300' : 'text-green-700'}`}>
                         <Mail className="h-5 w-5 mr-2" />
@@ -5373,7 +4946,6 @@ const ReceiverDashboard = () => {
                       </button>
                     </div>
                   </div>
-
                   <div className={`p-5 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-gray-50'} border ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
                     <h4 className={`font-semibold mb-3 flex items-center ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                       <HelpCircle className="h-5 w-5 mr-2" />
@@ -5414,19 +4986,14 @@ const ReceiverDashboard = () => {
   };
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-16 transition-colors duration-300">
-      {/* Loading Overlay */}
       {isLoading && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-70">
           <div className="w-16 h-16 border-4 border-blue-500 border-t-4 border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
-
-      {/* Content Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
 
-        {/* Enhanced Top Bar with Welcome Message and Collapsible Action Buttons */}
         <div className="dashboard-topbar">
-          {/* Left Side - Enhanced Welcome Message */}
           <div className="welcome-container">
             <div className="welcome-user">
               <div className="welcome-header">
@@ -5438,7 +5005,6 @@ const ReceiverDashboard = () => {
             </div>
           </div>
 
-          {/* Right Side - Action Buttons with Toggle */}
           <div className="action-buttons-wrapper">
             <button
               onClick={() => setShowActionButtons(!showActionButtons)}
@@ -5524,8 +5090,6 @@ const ReceiverDashboard = () => {
           </div>
         </div>
 
-
-        {/* REPLACE this entire filter section: */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="category-container mb-6 pb-2 overflow-x-auto flex items-center space-x-2 justify-end">
@@ -5577,13 +5141,10 @@ const ReceiverDashboard = () => {
           </div>
         </div>
 
-        {/* Food Items - Grid or List View based on selection */}
         {availableFoods.length > 0 ? (
           <>
-            {/* Display food items based on selected view mode */}
             {viewMode === 'grid' ? renderGridView() : renderListView()}
 
-            {/* Pagination */}
             <div className="flex justify-center mt-8">
               <nav className="flex items-center space-x-1">
                 <button
@@ -5593,14 +5154,11 @@ const ReceiverDashboard = () => {
                 >
                   Previous
                 </button>
-
-                {/* Page numbers - limit to showing 5 page buttons */}
                 {(() => {
                   const totalPages = pagination.totalPages || 1;
                   let startPage = Math.max(0, pagination.currentPage - 2);
                   let endPage = Math.min(totalPages - 1, startPage + 4);
 
-                  // Adjust startPage if we're near the end
                   if (endPage - startPage < 4) {
                     startPage = Math.max(0, endPage - 4);
                   }
@@ -5642,7 +5200,6 @@ const ReceiverDashboard = () => {
               }
             </p>
 
-            {/* Additional information if there's an error */}
             {pagination.error && (
               <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-900 rounded-lg text-sm text-red-600 dark:text-red-400 max-w-md">
                 <div className="flex items-start">

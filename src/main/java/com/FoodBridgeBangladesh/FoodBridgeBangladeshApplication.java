@@ -59,11 +59,7 @@ class HealthController {
 		
 		return ResponseEntity.ok(status);
 	}
-	
-	// REMOVED THE CONFLICTING @GetMapping("/") METHOD
-	// This was conflicting with navigationControllelr#home() 
-	// Let navigationController handle the root "/" path
-	
+
 	@GetMapping("/api/status")
 	public ResponseEntity<Map<String, String>> apiStatus() {
 		Map<String, String> response = new HashMap<>();

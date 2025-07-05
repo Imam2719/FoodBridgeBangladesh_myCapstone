@@ -21,7 +21,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/merchant/donate")
 @CrossOrigin(
-        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com","https://viewlive.onrender.com"},
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com"},
         allowCredentials = "true"
 )
 public class MerchantDonationController {
