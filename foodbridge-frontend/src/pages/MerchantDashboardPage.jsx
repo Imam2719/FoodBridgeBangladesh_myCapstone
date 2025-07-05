@@ -3883,18 +3883,12 @@ Best regards,
                         </div>
                       )}
 
-                      {/* Price Badge */}
                       <div className="food-card-price">
-                        <DollarSign size={14} />
-                        <span>{item.price}</span>
+                        <span>{item.price}Tk</span>
                       </div>
                     </div>
-
-                    {/* Food Card Content Section */}
                     <div className="food-card-content">
                       <h3 className="food-card-title">{item.name}</h3>
-
-                      {/* Store Details */}
                       <div className="food-card-details">
                         <div className="detail-item">
                           <Store size={14} />
@@ -3905,8 +3899,6 @@ Best regards,
                           <span>{item.location}</span>
                         </div>
                       </div>
-
-                      {/* Timing and Quantity Details */}
                       <div className="food-card-details">
                         <div className="detail-item">
                           <Clock size={14} />
@@ -3918,8 +3910,8 @@ Best regards,
                         </div>
                       </div>
 
-                      {/* Dietary Information Tags */}
                       <div className="food-dietary-tags">
+                          <span>Dietary Information: </span>                         
                         {item.dietaryInfo.map(tag => (
                           <span key={tag} className="dietary-tag">{tag}</span>
                         ))}
