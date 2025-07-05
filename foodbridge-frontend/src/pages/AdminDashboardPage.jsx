@@ -13,6 +13,7 @@ import {
   PlusCircle, Phone, Lock, Shield, Laptop, DollarSign,
   LifeBuoy, Camera, Check, Pause, PackageCheck, TrendingUp, ChevronLeft, Paperclip, Send
 } from 'lucide-react';
+import API_CONFIG from '../config/api';
 
 const AdminDashboard = () => {
   const { darkMode } = useTheme();
@@ -156,7 +157,7 @@ const AdminDashboard = () => {
   // Fetch email templates
   const fetchAdminEmailTemplates = async () => {
     try {
-      const response = await fetch('https://viewlive.onrender.com/api/admin/email/templates');
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/email/templates`);
       if (response.ok) {
         const templates = await response.json();
         setAdminEmailTemplates(templates);
@@ -284,11 +285,10 @@ const AdminDashboard = () => {
         });
 
         try {
-          const response = await fetch('https://viewlive.onrender.com/api/admin/email/send', {
+          const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/email/send`, {
             method: 'POST',
             body: formData
           });
-
           console.log('📡 API Response Status:', response.status);
           const result = await response.json();
           console.log('📡 API Response Data:', result);
@@ -329,7 +329,7 @@ const AdminDashboard = () => {
         emailFormData.append('attachments', file);
       });
 
-      const emailResponse = await fetch('https://viewlive.onrender.com/api/admin/email/send-by-email', {
+      const emailResponse = await fetch(`${API_CONFIG.BASE_URL}/api/admin/email/send-by-email`, {
         method: 'POST',
         body: emailFormData
       });
@@ -563,9 +563,7 @@ FoodBridge Billing Team`
       merchantEmailData.attachments.forEach((file, index) => {
         formData.append('attachments', file);
       });
-
-      // Use the database ID (merchant.id) instead of merchantId
-      const response = await fetch(`https://viewlive.onrender.com/api/admin/merchants/${selectedMerchantForEmail.id}/send-email`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/merchants/${selectedMerchantForEmail.id}/send-email`, {
         method: 'POST',
         body: formData
       });
@@ -602,7 +600,7 @@ FoodBridge Billing Team`
 
   const fetchEmailTemplates = async () => {
     try {
-      const response = await fetch('https://viewlive.onrender.com/api/admin/email-templates');
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/email-templates`);
       if (response.ok) {
         const templates = await response.json();
         setEmailTemplates(templates);
@@ -680,7 +678,7 @@ FoodBridge Billing Team`
         formData.append('attachments', file);
       });
 
-      const response = await fetch(`https://viewlive.onrender.com/api/admin/users/${selectedUserForEmail.id}/send-email`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/users/${selectedUserForEmail.id}/send-email`, {
         method: 'POST',
         body: formData
       });
@@ -716,10 +714,7 @@ FoodBridge Billing Team`
     try {
       const month = selectedMonth || currentFeeMonth;
 
-      // ✅ ENHANCED: Fee calculation with better error handling
-      const feeResponse = await fetch(
-        `https://viewlive.onrender.com/api/merchant/fees/calculate?merchantId=${merchantId}&selectedMonth=${month}`
-      );
+      const feeResponse = await fetch(`${API_CONFIG.BASE_URL}/api/merchant/fees/calculate?merchantId=${merchantId}&selectedMonth=${month}`);
 
       if (!feeResponse.ok) {
         throw new Error(`Fee calculation failed: ${feeResponse.status} ${feeResponse.statusText}`);
@@ -731,12 +726,10 @@ FoodBridge Billing Team`
 
       // ✅ MAIN FIX: Enhanced payment history fetch with detailed logging
       console.log(`📋 Fetching payment history for merchant ${merchantId}...`);
-      const historyResponse = await fetch(
-        `https://viewlive.onrender.com/api/merchant/fees/payment-history?merchantId=${merchantId}`
-      );
+      const historyResponse = await fetch(`${API_CONFIG.BASE_URL}/api/merchant/fees/payment-history?merchantId=${merchantId}`);
 
       if (!historyResponse.ok) {
-        console.error(`❌ Payment history fetch failed: ${historyResponse.status} ${historyResponse.statusText}`);
+        console.error(` Payment history fetch failed: ${historyResponse.status} ${historyResponse.statusText}`);
         throw new Error(`Payment history fetch failed: ${historyResponse.status}`);
       }
 
@@ -758,16 +751,14 @@ FoodBridge Billing Team`
         historyData = [];
       }
 
-      // ✅ ENHANCED: Validate and set payment history
       const validHistoryData = Array.isArray(historyData) ? historyData : [];
       setMerchantPaymentHistory(validHistoryData);
       console.log(`💾 Set ${validHistoryData.length} payment history records in state`);
 
-      // ✅ ENHANCED: Payment statistics with better error handling
       console.log(`📈 Fetching payment statistics for merchant ${merchantId}...`);
-      const statsResponse = await fetch(
-        `https://viewlive.onrender.com/api/merchant/fees/payment-stats?merchantId=${merchantId}`
-      );
+
+      const statsResponse = await fetch(`${API_CONFIG.BASE_URL}/api/merchant/fees/payment-stats?merchantId=${merchantId}`);
+
 
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
@@ -781,7 +772,6 @@ FoodBridge Billing Team`
     } catch (error) {
       console.error('❌ Error fetching merchant fee data:', error);
 
-      // ✅ ENHANCED: Better error handling with user-friendly messages
       setMerchantFeeData({
         success: false,
         message: `Failed to load fee data: ${error.message}`
@@ -789,7 +779,6 @@ FoodBridge Billing Team`
       setMerchantPaymentHistory([]);
       setMerchantPaymentStats({});
 
-      // ✅ ENHANCED: Show user-friendly error
       alert(`Error loading fee data for merchant ${merchantId}: ${error.message}`);
 
     } finally {
@@ -896,8 +885,8 @@ FoodBridge Billing Team`
     setFoodReportsError(null);
 
     try {
-      const response = await fetch(`https://viewlive.onrender.com/api/admin/food-reports/all?page=${page}&size=10&status=${status}`);
 
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/food-reports/all?page=${page}&size=10&status=${status}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch reports: ${response.status}`);
       }
@@ -966,7 +955,7 @@ FoodBridge Billing Team`
 
   const fetchFoodReportsStats = async () => {
     try {
-      const response = await fetch('https://viewlive.onrender.com/api/admin/food-reports/stats');
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/food-reports/stats`);
 
       if (response.ok) {
         const data = await response.json();
@@ -985,7 +974,7 @@ FoodBridge Billing Team`
       const authData = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser'));
       const adminId = authData?.id || 1;
 
-      const response = await fetch(`https://viewlive.onrender.com/api/admin/food-reports/${reportId}/status?status=${newStatus}&adminNotes=${encodeURIComponent(adminNotes)}&adminId=${adminId}`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/food-reports/${reportId}/status?status=${newStatus}&adminNotes=${encodeURIComponent(adminNotes)}&adminId=${adminId}`, {
         method: 'PUT'
       });
 
@@ -1011,7 +1000,8 @@ FoodBridge Billing Team`
   const handleDeleteReport = async (reportId) => {
     if (window.confirm('Are you sure you want to delete this report? This action cannot be undone.')) {
       try {
-        const response = await fetch(`https://viewlive.onrender.com/api/admin/food-reports/${reportId}`, {
+
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/food-reports/${reportId}`, {
           method: 'DELETE'
         });
 
@@ -1037,7 +1027,8 @@ FoodBridge Billing Team`
   const fetchReportDetails = async (reportId) => {
     setReportDetailsLoading(true);
     try {
-      const response = await fetch(`https://viewlive.onrender.com/api/admin/food-reports/${reportId}`);
+
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/food-reports/${reportId}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -1067,7 +1058,7 @@ FoodBridge Billing Team`
   // Download evidence file
   const handleDownloadEvidence = (reportId, fileNumber, fileName) => {
     const link = document.createElement('a');
-    link.href = `https://viewlive.onrender.com/api/admin/food-reports/${reportId}/evidence/${fileNumber}`;
+    link.href = `${API_CONFIG.BASE_URL}/api/admin/food-reports/${reportId}/evidence/${fileNumber}`;
     link.download = fileName;
     document.body.appendChild(link);
     link.click();
@@ -1076,7 +1067,7 @@ FoodBridge Billing Team`
 
   // View evidence file
   const handleViewEvidence = (reportId, fileNumber) => {
-    window.open(`https://viewlive.onrender.com/api/admin/food-reports/${reportId}/evidence/${fileNumber}/view`, '_blank');
+    window.open(`${API_CONFIG.BASE_URL}/api/admin/food-reports/${reportId}/evidence/${fileNumber}/view`, '_blank');
   };
 
   // Show status update modal
@@ -1107,7 +1098,7 @@ FoodBridge Billing Team`
       const authData = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser'));
       const adminId = authData?.id || 1;
 
-      const response = await fetch(`https://viewlive.onrender.com/api/admin/food-reports/${statusUpdateData.reportId}/status?status=${statusUpdateData.newStatus}&adminNotes=${encodeURIComponent(statusUpdateData.adminNotes)}&adminId=${adminId}`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/food-reports/${statusUpdateData.reportId}/status?status=${statusUpdateData.newStatus}&adminNotes=${encodeURIComponent(statusUpdateData.adminNotes)}&adminId=${adminId}`, {
         method: 'PUT'
       });
 
@@ -1147,12 +1138,10 @@ FoodBridge Billing Team`
 
     try {
       let endpoint = '/api/messages/admin/all';
-
       if (messageFilter !== 'all') {
         endpoint = `/api/messages/admin/filter?filter=${messageFilter}`;
       }
-
-      const response = await fetch(`https://viewlive.onrender.com${endpoint}`);
+      const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch messages: ${response.status}`);
@@ -1173,8 +1162,7 @@ FoodBridge Billing Team`
   // Function to fetch message statistics
   const fetchMessageStats = async () => {
     try {
-      const response = await fetch('https://viewlive.onrender.com/api/messages/admin/stats');
-
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/messages/admin/stats`);
       if (response.ok) {
         const stats = await response.json();
         setMessageStats(stats);
@@ -1189,9 +1177,7 @@ FoodBridge Billing Team`
     try {
       const authData = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser'));
       const adminEmail = authData?.email || 'admin@foodbridge.com';
-
-      const response = await fetch(`https://viewlive.onrender.com/api/messages/admin/${messageId}?adminEmail=${encodeURIComponent(adminEmail)}`);
-
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/messages/admin/${messageId}?adminEmail=${encodeURIComponent(adminEmail)}`);
       if (response.ok) {
         const result = await response.json();
         if (result.success) {
@@ -1215,7 +1201,7 @@ FoodBridge Billing Team`
   const handleDeleteMessage = async (messageId) => {
     if (window.confirm('Are you sure you want to permanently delete this message? This action cannot be undone.')) {
       try {
-        const response = await fetch(`https://viewlive.onrender.com/api/messages/admin/${messageId}`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/messages/admin/${messageId}`, {
           method: 'DELETE'
         });
 
@@ -1263,7 +1249,7 @@ FoodBridge Billing Team`
       formData.append('adminEmail', adminEmail);
       formData.append('adminName', adminName);
 
-      const response = await fetch(`https://viewlive.onrender.com/api/messages/admin/${selectedMessage.id}/reply`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/messages/admin/${selectedMessage.id}/reply`, {
         method: 'POST',
         body: formData
       });
@@ -1292,7 +1278,8 @@ FoodBridge Billing Team`
   // Function to download attachment
   const handleDownloadAttachment = (messageId, fileName) => {
     const link = document.createElement('a');
-    link.href = `https://viewlive.onrender.com/api/messages/admin/${messageId}/download`;
+    link.href = `${API_CONFIG.BASE_URL}/api/messages/admin/${messageId}/download`;
+
     link.download = fileName;
     document.body.appendChild(link);
     link.click();
@@ -1300,7 +1287,7 @@ FoodBridge Billing Team`
   };
 
   const handleViewAttachment = (messageId, fileName) => {
-    window.open(`https://viewlive.onrender.com/api/messages/admin/${messageId}/view`, '_blank');
+    window.open(`${API_CONFIG.BASE_URL}/api/messages/admin/${messageId}/view`, '_blank');
   };
 
 
@@ -1340,7 +1327,8 @@ FoodBridge Billing Team`
     setDonationsError(null);
 
     try {
-      const response = await fetch('https://viewlive.onrender.com/api/admin/donations/all');
+
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/donations/all`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch donations');
@@ -1414,7 +1402,7 @@ FoodBridge Billing Team`
     // Implement donation pause logic
     // This might involve an API call to update donation status
     try {
-      fetch(`https://viewlive.onrender.com/api/admin/donations/${donationId}/pause`, {
+      fetch(`${API_CONFIG.BASE_URL}/api/admin/donations/${donationId}/pause`, {
         method: 'PUT'
       })
         .then(response => {
@@ -1440,7 +1428,7 @@ FoodBridge Billing Team`
   const handleDeleteDonation = async (donationId) => {
     if (window.confirm('Are you sure you want to delete this donation? This action cannot be undone.')) {
       try {
-        const response = await fetch(`https://viewlive.onrender.com/api/admin/donations/${donationId}`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/donations/${donationId}`, {
           method: 'DELETE'
         });
 
@@ -1461,7 +1449,7 @@ FoodBridge Billing Team`
   const fetchUsers = async () => {
     setUsersLoading(true);
     try {
-      const response = await fetch('https://viewlive.onrender.com/api/admin/users');
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/users`);
 
       if (!response.ok) {
         throw new Error(`Error fetching users: ${response.status}`);
@@ -1487,7 +1475,7 @@ FoodBridge Billing Team`
   const handleDeleteUser = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        const response = await fetch(`https://viewlive.onrender.com/api/admin/users/${userId}`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/users/${userId}`, {
           method: 'DELETE'
         });
 
@@ -1507,7 +1495,7 @@ FoodBridge Billing Team`
     try {
       console.log("Sending verification status:", verificationStatus); // Add this debug log
 
-      const response = await fetch(`https://viewlive.onrender.com/api/admin/users/${userId}/verify?verified=${verificationStatus}`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/users/${userId}/verify?verified=${verificationStatus}`, {
         method: 'PUT'
       });
 
@@ -1565,8 +1553,7 @@ FoodBridge Billing Team`
 
       console.log("Fetching profile with email:", authData.email); // Add logging
 
-      // Fetch admin profile data from the backend by email
-      const response = await fetch(`https://viewlive.onrender.com/api/admin/management/profile?email=${encodeURIComponent(authData.email)}`);
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/management/profile?email=${encodeURIComponent(authData.email)}`);
 
       console.log("Profile fetch response status:", response.status); // Add logging
 
@@ -1595,7 +1582,8 @@ FoodBridge Billing Team`
   const fetchMerchants = async () => {
     setMerchantsLoading(true);
     try {
-      const response = await fetch('https://viewlive.onrender.com/api/admin/merchants/all');
+
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/merchants/all`);
 
       console.log("Fetch merchants response status:", response.status);
 
@@ -1898,7 +1886,7 @@ FoodBridge Billing Team`
                     <p className="text-xs text-gray-500 dark:text-gray-400">{merchant.licenseDocumentType}</p>
                   </div>
                   <a
-                    href={`https://viewlive.onrender.com/api/admin/merchants/${merchant.merchantId}/license`}
+                    href={`${API_CONFIG.BASE_URL}/api/admin/merchants/${merchant.merchantId}/license`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors"
@@ -2051,7 +2039,7 @@ FoodBridge Billing Team`
       submitButton.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">...</svg> Updating...';
 
       try {
-        const response = await fetch(`https://viewlive.onrender.com/api/admin/merchants/${merchant.merchantId}`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/merchants/${merchant.merchantId}`, {
           method: 'PUT',
           body: submitData
         });
@@ -2775,7 +2763,7 @@ FoodBridge Billing Team`
     submitButton.disabled = true;
     submitButton.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">...</svg> Adding...';
 
-    fetch('https://viewlive.onrender.com/api/admin/merchants/add', {
+    fetch(`${API_CONFIG.BASE_URL}/api/admin/merchants/add`, {
       method: 'POST',
       body: formData,
     })
@@ -2823,7 +2811,7 @@ FoodBridge Billing Team`
     submitButton.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">...</svg> Adding...';
 
     try {
-      const response = await fetch('https://viewlive.onrender.com/api/admin/users', {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/users`, {
         method: 'POST',
         body: formData
       });
@@ -2903,8 +2891,7 @@ FoodBridge Billing Team`
     submitButton.disabled = true;
     submitButton.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">...</svg> Adding...';
 
-    // Send request to backend
-    fetch('https://viewlive.onrender.com/api/admin/management/add', {
+    fetch(`${API_CONFIG.BASE_URL}/api/admin/management/add`, {
       method: 'POST',
       body: formData,
     })
@@ -2931,7 +2918,7 @@ FoodBridge Billing Team`
   const fetchAdmins = async () => {
     setAdminsLoading(true);
     try {
-      const response = await fetch('https://viewlive.onrender.com/api/admin/management/all');
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/management/all`);
       if (!response.ok) {
         throw new Error(`Error fetching admins: ${response.status}`);
       }
@@ -3229,7 +3216,7 @@ FoodBridge Billing Team`
       submitButton.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">...</svg> Adding...';
 
       try {
-        const response = await fetch('https://viewlive.onrender.com/api/admin/users', {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/users`, {
           method: 'POST',
           body: formData
         });
@@ -4533,7 +4520,7 @@ FoodBridge Billing Team`
           throw new Error('Admin profile ID is missing');
         }
 
-        const response = await fetch(`https://viewlive.onrender.com/api/admin/management/${adminProfile.id}`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/management/${adminProfile.id}`, {
           method: 'PUT',
           body: updateData
         });
@@ -5098,7 +5085,7 @@ FoodBridge Billing Team`
       formData.append('adminEmail', adminEmail);
       formData.append('adminName', adminName);
 
-      const response = await fetch('https://viewlive.onrender.com/api/messages/admin/compose', {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/messages/admin/compose`, {
         method: 'POST',
         body: formData
       });
@@ -6729,7 +6716,7 @@ FoodBridge Billing Team`
                             title="Delete Merchant"
                             onClick={() => {
                               if (window.confirm(`Are you sure you want to delete ${merchant.businessName}?`)) {
-                                fetch(`https://viewlive.onrender.com/api/admin/merchants/${merchant.merchantId}`, {
+                                fetch(`${API_CONFIG.BASE_URL}/api/admin/merchants/${merchant.merchantId}`, {
                                   method: 'DELETE'
                                 })
                                   .then(response => response.json())
@@ -6757,7 +6744,7 @@ FoodBridge Billing Team`
                             title={merchant.status === 'Active' ? "Block Merchant" : "Activate Merchant"}
                             onClick={() => {
                               const newStatus = merchant.status === 'Active' ? 'Inactive' : 'Active';
-                              fetch(`https://viewlive.onrender.com/api/admin/merchants/${merchant.merchantId}/status?status=${newStatus}`, {
+                              fetch(`${API_CONFIG.BASE_URL}/api/admin/merchants/${merchant.merchantId}/status?status=${newStatus}`, {
                                 method: 'PUT'
                               })
                                 .then(response => response.json())
@@ -7086,7 +7073,7 @@ FoodBridge Billing Team`
                             title="Delete Admin"
                             onClick={() => {
                               if (window.confirm(`Are you sure you want to delete ${admin.firstName} ${admin.lastName}?`)) {
-                                fetch(`https://viewlive.onrender.com/api/admin/management/${admin.id}`, {
+                                fetch(`${API_CONFIG.BASE_URL}/api/admin/management/${admin.id}`, {
                                   method: 'DELETE'
                                 })
                                   .then(response => response.json())
