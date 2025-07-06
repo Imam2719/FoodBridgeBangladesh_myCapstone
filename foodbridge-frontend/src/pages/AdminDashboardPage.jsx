@@ -1528,7 +1528,7 @@ FoodBridge Billing Team`
 
     localStorage.removeItem('authUser');
     sessionStorage.removeItem('authUser');
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   useEffect(() => {

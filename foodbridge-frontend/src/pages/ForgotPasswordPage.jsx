@@ -15,15 +15,14 @@ import {
 import '../style/auth.css';
 import { useTheme } from '../contexts/ThemeContext';
 
-const API_URL = process.env.NODE_ENV === 'production' 
-    ? 'https://viewlive.onrender.com/api' 
-    : 'http://localhost:8080/api';
+const API_URL = process.env.NODE_ENV === 'production'
+  ? 'https://viewlive.onrender.com/api'
+  : 'http://localhost:8080/api';
 
 const ResetPasswordPage = () => {
   const { darkMode } = useTheme();
   const navigate = useNavigate();
 
-  // Stage management
   const [stage, setStage] = useState('email'); // email, otp, password, success
 
   // Form data
