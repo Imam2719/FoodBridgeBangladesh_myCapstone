@@ -18,6 +18,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@CrossOrigin(
+        origins = {"http://localhost:3000", "https://foodbridge-frontend.onrender.com"},
+        allowCredentials = "true"
+)
 public class SignupController {
 
     private static final Logger log = LoggerFactory.getLogger(SignupController.class);
