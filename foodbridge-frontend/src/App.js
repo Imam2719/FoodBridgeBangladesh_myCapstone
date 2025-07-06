@@ -11,10 +11,7 @@ import DonorDashboardPage from './pages/DonerDashboardPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import MerchantDashboardPage from './pages/MerchantDashboardPage';
 
-/**
- * Main App component that sets up routing and theme context
- * The ThemeProvider wraps the entire application to provide dark/light mode functionality
- */
+
 function App() {
   return (
     <ThemeProvider>

@@ -15,8 +15,9 @@ import {
 import '../style/auth.css';
 import { useTheme } from '../contexts/ThemeContext';
 
-// API base URL
-const API_URL = 'https://foodbridge-frontend.onrender.com/api';
+const API_URL = process.env.NODE_ENV === 'production' 
+    ? 'https://viewlive.onrender.com/api' 
+    : 'http://localhost:8080/api';
 
 const ResetPasswordPage = () => {
   const { darkMode } = useTheme();
