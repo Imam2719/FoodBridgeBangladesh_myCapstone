@@ -11,9 +11,10 @@ import {
   Zap, Crown, Package, LogIn
 } from 'lucide-react';
 import '../style/HomePage.css';
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-    ? 'https://viewlive.onrender.com/api' 
-    : 'http://localhost:8080/api';
+
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? 'https://viewlive.onrender.com/api'
+  : 'http://localhost:8080/api';
 
 const HomePage = () => {
 
@@ -32,12 +33,12 @@ const HomePage = () => {
   });
   const [statsLoading, setStatsLoading] = useState(true);
 
-    const fetchStatistics = async () => {
+  const fetchStatistics = async () => {
     try {
       setStatsLoading(true);
       const response = await fetch(`${API_BASE_URL}/statistics/homepage`);
       const data = await response.json();
-      
+
       if (response.ok) {
         setStatistics({
           mealsShared: data.mealsShared || '0',
@@ -57,7 +58,7 @@ const HomePage = () => {
 
   useEffect(() => {
     setIsVisible(true);
-    
+
     // Fetch statistics on component mount
     fetchStatistics();
 
@@ -84,7 +85,7 @@ const HomePage = () => {
     };
   }, []);
 
-   const stats = [
+  const stats = [
     {
       icon: Utensils,
       number: statistics.mealsShared,
@@ -229,7 +230,7 @@ const HomePage = () => {
     }
   ];
 
-const howItWorksSteps = [
+  const howItWorksSteps = [
     {
       number: '01',
       title: 'Simple Registration',
@@ -311,7 +312,7 @@ const howItWorksSteps = [
     }
   ];
 
-const handleFileAttachment = (event) => {
+  const handleFileAttachment = (event) => {
     const files = Array.from(event.target.files);
     const newFiles = files.map(file => ({
       id: Date.now() + Math.random(),
@@ -351,7 +352,7 @@ const handleFileAttachment = (event) => {
         formData.append('attachment', attachedFiles[0].file);
       }
 
-     const response = await fetch(`${API_BASE_URL}/messages/submit`, {
+      const response = await fetch(`${API_BASE_URL}/messages/submit`, {
         method: 'POST',
         body: formData,
       });
@@ -377,34 +378,41 @@ const handleFileAttachment = (event) => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-all duration-300">
-      {/* Hero Section - Enhanced with Dark Mode */}
-      <div className="bg-gradient-to-br from-emerald-50 via-white to-blue-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 px-6 py-16 max-w-7xl mx-auto transition-all duration-300">
+      <div
+        className="relative px-6 py-16 max-w-7xl mx-auto transition-all duration-300 min-h-screen flex items-center"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/4.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed'
+        }}
+      >
         <div className="flex flex-col lg:flex-row items-center gap-12">
           <div className="lg:w-1/2">
-            <div className="inline-flex items-center bg-gradient-to-r from-emerald-100 to-blue-100 dark:from-emerald-900/30 dark:to-blue-900/30 rounded-full px-4 py-1 mb-6 shadow-sm border border-emerald-200/50 dark:border-emerald-700/50">
-              <Star className="w-4 h-4 mr-2 text-emerald-500 dark:text-emerald-400" />
-              <span className="text-sm font-medium bg-gradient-to-r from-emerald-700 to-blue-700 dark:from-emerald-400 dark:to-blue-400 bg-clip-text text-transparent">
+            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-4 py-1 mb-6 shadow-sm border border-white/30">
+              <Star className="w-4 h-4 mr-2 text-yellow-300" />
+              <span className="text-sm font-medium text-white">
                 Fighting hunger in Bangladesh
               </span>
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-gray-900 dark:text-white">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white drop-shadow-lg">
               Bridging Food Surplus
-              <span className="block bg-gradient-to-r from-emerald-600 to-blue-600 dark:from-emerald-400 dark:to-blue-400 bg-clip-text text-transparent">
+              <span className="block text-emerald-300 drop-shadow-lg">
                 With Those in Need
               </span>
             </h1>
 
-            <p className="text-lg mb-8 text-gray-600 dark:text-gray-300">
+            <p className="text-lg mb-8 text-white/90 drop-shadow-md">
               FoodBridge connects food donors with people in need, reduces waste and hunger
-              throughout Bangladesh. <span className="font-semibold text-emerald-600 dark:text-emerald-400">Donate freely or sell affordably</span> - One meal at a time.
+              throughout Bangladesh. <span className="font-semibold text-emerald-300">Donate freely or sell affordably</span> - One meal at a time.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              {/* New Login Button */}
               <button
                 onClick={() => navigate('/login')}
-                className="group bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-500 dark:to-purple-500 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 dark:hover:from-blue-600 dark:hover:to-purple-600 transition-all flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="group bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 backdrop-blur-sm border border-white/20"
               >
                 <LogIn className="w-5 h-5 mr-2" />
                 Join Now
@@ -414,33 +422,30 @@ const handleFileAttachment = (event) => {
 
           <div className="lg:w-1/2">
             <div className="relative">
-              {/* Enhanced decoration with dark mode */}
-              <div className="absolute -z-10 top-8 right-8 w-64 h-64 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900/20 dark:to-emerald-800/20 animate-pulse"></div>
-              <div className="absolute -z-10 -bottom-8 -left-8 w-64 h-64 rounded-full bg-gradient-to-br from-blue-100 to-purple-200 dark:from-blue-900/20 dark:to-purple-900/20 animate-pulse" style={{ animationDelay: '1s' }}></div>
+              {/* Enhanced decoration - removed for cleaner background image look */}
 
-              {/* Enhanced stats grid with dark mode and loading state */}
+              {/* Enhanced stats grid with background image optimization */}
               <div className="relative grid grid-cols-2 gap-4">
                 {stats.map((stat, index) => (
                   <div
                     key={stat.label}
-                    className={`bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700 hover:border-emerald-200 dark:hover:border-emerald-600 transform hover:-translate-y-1 ${activeIndex === index ? 'ring-2 ring-emerald-500/50 dark:ring-emerald-400/50 scale-105' : ''
-                      }`}
+                    className={`bg-white/5 dark:bg-gray-900/8 backdrop-blur-3xl rounded-2xl p-6 transition-all duration-500 border border-white/10 dark:border-gray-700/15 hover:border-emerald-400/20 dark:hover:border-emerald-500/25 transform hover:-translate-y-2 hover:scale-[1.02] ${activeIndex === index ? 'ring-1 ring-emerald-400/20 dark:ring-emerald-500/25 scale-105 bg-white/8 dark:bg-gray-800/12' : ''
+                      } group`}
                   >
-                    <div className={`inline-flex items-center justify-center w-12 h-12 mb-4 rounded-xl ${stat.color} shadow-sm`}>
-                      <stat.icon className="w-6 h-6" />
+                    <div className={`inline-flex items-center justify-center w-14 h-14 mb-4 rounded-2xl backdrop-blur-lg border border-white/8 dark:border-gray-600/12 group-hover:scale-110 transition-all duration-300 bg-white/5 dark:bg-gray-800/8`}>
+                      <stat.icon className={`w-7 h-7 ${stat.color.split(' ')[0]}`} />
                     </div>
 
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                    <h3 className="text-3xl font-bold text-white dark:text-gray-100 mb-2 drop-shadow-lg">
                       {statsLoading ? (
-                        <div className="animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-16 rounded"></div>
+                        <div className="animate-pulse bg-gray-300/30 dark:bg-gray-600/30 h-8 w-16 rounded-lg"></div>
                       ) : (
                         stat.number
                       )}
                     </h3>
 
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{stat.label}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{stat.description}</p>
-                  </div>
+                    <p className="text-sm font-semibold text-white/95 dark:text-gray-200 mb-2 drop-shadow-md">{stat.label}</p>
+                    <p className="text-xs text-white/85 dark:text-gray-300 leading-relaxed drop-shadow-sm">{stat.description}</p>                  </div>
                 ))}
               </div>
             </div>
@@ -792,5 +797,4 @@ const handleFileAttachment = (event) => {
     </div>
   );
 };
-
 export default HomePage;

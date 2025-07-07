@@ -581,6 +581,139 @@ footer {
 .dark footer {
   border-top: 1px solid var(--gray-800);
 }
+/* Footer Text */
+/* Enhanced Glass Morphism for Stats Cards */
+.backdrop-blur-xl {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.shadow-3xl {
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.dark .shadow-3xl {
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Glassmorphism hover effects */
+.group:hover .backdrop-blur-xl {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Enhanced ring effects for active state */
+.ring-emerald-400\/50 {
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.5);
+}
+
+.dark .ring-emerald-500\/60 {
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.6);
+}
+
+/* Smooth scale animations */
+.hover\:scale-\[1\.02\]:hover {
+  transform: scale(1.02);
+}
+
+/* Enhanced border gradients */
+.border-emerald-400\/60 {
+  border-color: rgba(52, 211, 153, 0.6);
+}
+
+.dark .border-emerald-500\/60 {
+  border-color: rgba(16, 185, 129, 0.6);
+}
+/* Ultra-transparent pure glass effect */
+.backdrop-blur-3xl {
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+}
+
+/* Remove all shadows and create pure glass effect */
+.glass-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+
+.dark .glass-card {
+  background: linear-gradient(
+    135deg,
+    rgba(17, 24, 39, 0.05) 0%,
+    rgba(17, 24, 39, 0.02) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Glass hover effect */
+.glass-card:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  box-shadow: none;
+}
+
+.dark .glass-card:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(17, 24, 39, 0.08) 0%,
+    rgba(17, 24, 39, 0.03) 100%
+  );
+}
+
+/* Remove all shadow utilities */
+.shadow-none {
+  box-shadow: none !important;
+}
+
+/* Ultra-thin borders for glass effect */
+.border-glass {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.dark .border-glass {
+  border-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Ring effects with minimal visibility */
+.ring-glass {
+  box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.15);
+}
+
+.dark .ring-glass {
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.18);
+}
+/* Background Image Enhancements */
+.hero-bg-image {
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Mobile optimizations for background image */
+@media (max-width: 768px) {
+  .hero-bg-image {
+    background-attachment: scroll;
+  }
+}
 
 /* Special elements like statistics numbers */
 [class*="text-4xl"], [class*="text-3xl"], [class*="text-2xl"], [class*="text-xl"] {
