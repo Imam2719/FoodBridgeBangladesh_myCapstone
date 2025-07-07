@@ -6570,8 +6570,7 @@ const EnhancedEmergencyRequestCard = ({ request, onView, onAction, statusFilter 
           } border-r`}
       >
 
-        {/* Sidebar Navigation Menu */}
-        <nav className="p-4 space-y-1 flex-1 overflow-y-auto">
+       <nav className="p-4 space-y-1 flex-1 overflow-y-auto max-h-[calc(100vh-180px)] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
           {menuItems.map((item) => (
             <button
               key={item.id}
