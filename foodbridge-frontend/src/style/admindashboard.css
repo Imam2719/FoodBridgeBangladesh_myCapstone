@@ -2925,9 +2925,10 @@
     background-position: 200% 0;
   }
 }
+
+
 /* ============== merchant email CSS ============== */
 
-/* Section Headers */
 .section-header {
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 1rem;

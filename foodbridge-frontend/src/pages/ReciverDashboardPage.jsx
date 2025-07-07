@@ -1334,21 +1334,229 @@ const ReceiverDashboard = () => {
       [field]: value
     });
   };
-  const handleEmergencySubmit = (e) => {
-    e.preventDefault();
-    console.log('Emergency submitted:', emergencyForm);
-    const notification = document.createElement('div');
-    notification.className = 'notification-dropdown';
-    notification.innerHTML = '<div class="flex items-center p-3"><CheckCircle class="h-5 w-5 mr-2 text-green-500" /><span>Emergency alert sent successfully!</span></div>';
-    document.body.appendChild(notification);
 
-    setTimeout(() => {
-      notification.classList.add('fade-out');
-      setTimeout(() => document.body.removeChild(notification), 300);
-    }, 3000);
+ const handleEmergencySubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    closeModal('emergency');
-  };
+  try {
+    // Check if user can make new request (rate limiting)
+    const eligibilityResponse = await axios.get(
+      `${API_BASE_URL}/api/receiver/emergency-requests/user/${currentUser.id}/can-request`
+    );
+
+    if (!eligibilityResponse.data.canMakeRequest) {
+      showErrorNotification(eligibilityResponse.data.message || 'You have reached the daily limit for emergency requests');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Create FormData for multipart request
+    const formData = new FormData();
+    formData.append('userId', currentUser.id);
+    formData.append('title', emergencyForm.title);
+    formData.append('description', emergencyForm.description);
+    formData.append('location', emergencyForm.location);
+    formData.append('category', emergencyForm.category);
+    formData.append('peopleCount', emergencyForm.peopleCount);
+    formData.append('urgency', emergencyForm.urgency);
+    
+    // Add user information if available
+    if (userProfile) {
+      formData.append('requesterName', `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim());
+      formData.append('requesterEmail', userProfile.email || currentUser.email);
+      formData.append('requesterPhone', userProfile.phone || '');
+    } else {
+      formData.append('requesterName', currentUser.name);
+      formData.append('requesterEmail', currentUser.email);
+    }
+
+    // Add image if provided
+    if (emergencyForm.image) {
+      formData.append('image', emergencyForm.image);
+    }
+
+    // Submit emergency request
+    const response = await axios.post(
+      `${API_BASE_URL}/api/receiver/emergency-requests`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+
+    if (response.data.success) {
+      // Show success notification with additional details
+      const successMessage = response.data.urgentAlert 
+        ? `${response.data.message}\n\n⚠️ ${response.data.urgentAlert}`
+        : response.data.message;
+      
+      showSuccessNotification(successMessage);
+      
+      // Create detailed success notification
+      const notification = document.createElement('div');
+      notification.className = 'notification-dropdown fixed top-20 right-4 z-50 bg-white rounded-lg shadow-xl border-l-4 border-green-500 p-4 flex items-start w-96 transform transition-all duration-500 ease-in-out';
+      notification.style.opacity = '0';
+      notification.style.transform = 'translateX(100%)';
+
+      const urgentBadge = response.data.urgentAlert 
+        ? '<div class="mt-2 bg-red-100 border border-red-200 rounded p-2"><span class="text-red-700 text-xs font-medium">🚨 URGENT: Admin has been notified immediately</span></div>'
+        : '';
+
+      notification.innerHTML = `
+        <div class="bg-green-100 p-2 rounded-full mr-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-medium text-gray-800 mb-1">Emergency Request Submitted!</h3>
+          <div class="text-sm text-gray-600">
+            <p class="mb-2">Your emergency food request has been submitted successfully.</p>
+            <div class="bg-green-50 p-2 rounded text-sm">
+              <p class="text-green-700 font-medium">Request Details:</p>
+              <ul class="list-disc list-inside text-green-700 text-xs mt-1">
+                <li>Request ID: ${response.data.requestId}</li>
+                <li>Title: ${emergencyForm.title}</li>
+                <li>Urgency: ${emergencyForm.urgency}</li>
+                <li>People Count: ${emergencyForm.peopleCount}</li>
+                <li>Category: ${emergencyForm.category}</li>
+                <li>Priority Score: ${response.data.priorityScore}</li>
+                <li>Status: ${response.data.status}</li>
+              </ul>
+            </div>
+            ${urgentBadge}
+            <p class="mt-2 text-gray-600 text-xs">You will receive email updates about your request status. Check your notifications regularly.</p>
+          </div>
+        </div>
+        <button class="text-gray-400 hover:text-gray-600 ml-4" onclick="this.parentElement.remove()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      `;
+
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+      }, 100);
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.parentElement.removeChild(notification);
+          }
+        }, 500);
+      }, 8000);
+
+      // Reset form and close modal
+      setEmergencyForm({
+        title: '',
+        description: '',
+        location: '',
+        category: 'meal',
+        peopleCount: 1,
+        image: null,
+        urgency: 'high'
+      });
+      closeModal('emergency');
+      
+      // Optionally refresh any emergency requests list if displayed
+      // fetchUserEmergencyRequests();
+      
+    } else {
+      showErrorNotification(response.data.message || 'Failed to submit emergency request');
+    }
+  } catch (error) {
+    console.error('Error submitting emergency request:', error);
+    
+    let errorMessage = 'Failed to submit emergency request. Please try again.';
+    
+    if (error.response?.status === 429) {
+      errorMessage = 'You have reached the daily limit for emergency requests. Please try again tomorrow.';
+    } else if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    showErrorNotification(errorMessage);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+// Helper function to fetch user's emergency requests
+const fetchUserEmergencyRequests = async (page = 0, size = 10) => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/api/receiver/emergency-requests/user/${currentUser.id}`,
+      {
+        params: { page, size }
+      }
+    );
+    
+    if (response.data.success) {
+      return response.data;
+    } else {
+      console.error('Failed to fetch emergency requests:', response.data.message);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching emergency requests:', error);
+    return null;
+  }
+};
+
+// Helper function to get user's active emergency requests
+const fetchActiveEmergencyRequests = async () => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/api/receiver/emergency-requests/user/${currentUser.id}/active`
+    );
+    
+    if (response.data.success) {
+      return response.data.requests;
+    } else {
+      console.error('Failed to fetch active emergency requests:', response.data.message);
+      return [];
+    }
+  } catch (error) {
+    console.error('Error fetching active emergency requests:', error);
+    return [];
+  }
+};
+
+// Helper function to cancel emergency request
+const cancelEmergencyRequest = async (requestId) => {
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/api/receiver/emergency-requests/${requestId}/cancel`,
+      null,
+      {
+        params: { userId: currentUser.id }
+      }
+    );
+    
+    if (response.data.success) {
+      showSuccessNotification('Emergency request cancelled successfully');
+      // Refresh the requests list
+      fetchUserEmergencyRequests();
+      return true;
+    } else {
+      showErrorNotification(response.data.message || 'Failed to cancel emergency request');
+      return false;
+    }
+  } catch (error) {
+    console.error('Error cancelling emergency request:', error);
+    showErrorNotification('Failed to cancel emergency request');
+    return false;
+  }
+};
 
   const handleFoodRequestSubmit = async (e) => {
     e.preventDefault();
@@ -2434,12 +2642,13 @@ const ReceiverDashboard = () => {
             Cancel
           </button>
           <button
-            onClick={handleEmergencySubmit}
-            className="btn-primary px-4 py-2 rounded-lg text-white text-sm bg-red-500 hover:bg-red-600 flex items-center space-x-2"
-          >
-            <AlertCircle className="h-4 w-4" />
-            <span>Submit Emergency Alert</span>
-          </button>
+  onClick={handleEmergencySubmit}  // NEW HANDLER
+  className="btn-primary px-4 py-2 rounded-lg text-white text-sm bg-red-500 hover:bg-red-600 flex items-center space-x-2"
+  disabled={isSubmitting}
+>
+  <AlertCircle className="h-4 w-4" />
+  <span>Submit Emergency Alert</span>
+</button>
         </div>
       </div>
     </div>
