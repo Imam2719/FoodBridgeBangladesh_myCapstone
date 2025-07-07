@@ -1292,8 +1292,7 @@ const ReceiverDashboard = () => {
       notification.classList.add('fade-out');
       setTimeout(() => {
         document.body.removeChild(notification);
-        // Navigate to login page
-        navigate('/login');
+        navigate('/');
       }, 300);
     }, 1500);
   };

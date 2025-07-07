@@ -44,6 +44,7 @@ const MerchantDashboard = () => {
   const [salesLoading, setSalesLoading] = useState(false);
   const [salesError, setSalesError] = useState('');
 
+
   const [selectedPaymentMonth, setSelectedPaymentMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -473,6 +474,7 @@ const MerchantDashboard = () => {
   };
 
 
+  // MODIFY your existing profile useEffect (around line 450)
   useEffect(() => {
     const fetchMerchantProfile = async () => {
       if (!merchantId) {
@@ -537,6 +539,58 @@ const MerchantDashboard = () => {
       fetchMerchantProfile();
     }
   }, [merchantId, profileOpen]);
+
+  useEffect(() => {
+    const fetchMerchantProfileOnLoad = async () => {
+      if (!merchantId) {
+        console.error('No merchant ID available for immediate profile fetch');
+        return;
+      }
+
+      // Don't reload if we already have the profile data
+      if (userProfile.name && userProfile.name !== '') {
+        return;
+      }
+
+      try {
+        console.log(`Fetching profile immediately for merchantId: ${merchantId}`);
+        const response = await fetch(`${BASE_URL}/api/merchant/profile?merchantId=${merchantId}`);
+
+        if (!response.ok) {
+          console.error(`Failed to fetch merchant profile on load: ${response.status}`);
+          return;
+        }
+
+        const merchantData = await response.json();
+        setUserProfile({
+          name: `${merchantData.ownerFirstName} ${merchantData.ownerLastName}`,
+          email: merchantData.email,
+          phone: merchantData.phoneNumber || '',
+          address: merchantData.businessAddress || '',
+          storeName: merchantData.businessName || '',
+          bio: merchantData.businessDescription || '',
+          avatar: merchantData.logoBase64 ?
+            `data:${merchantData.logoType || 'image/jpeg'};base64,${merchantData.logoBase64}` :
+            'https://randomuser.me/api/portraits/men/41.jpg',
+          businessType: merchantData.businessType || '',
+          businessLicenseNumber: merchantData.businessLicenseNumber || '',
+          city: merchantData.city || '',
+          stateProvince: merchantData.stateProvince || '',
+          postalCode: merchantData.postalCode || ''
+        });
+
+        console.log('Profile loaded immediately on dashboard load');
+
+      } catch (error) {
+        console.error('Error fetching profile on load:', error);
+      }
+    };
+
+    // Fetch profile immediately when merchantId is available
+    if (merchantId) {
+      fetchMerchantProfileOnLoad();
+    }
+  }, [merchantId]); // Only depend on merchantId, not profileOpen
 
   useEffect(() => {
     if (!merchantId) {
@@ -3911,7 +3965,7 @@ Best regards,
                       </div>
 
                       <div className="food-dietary-tags">
-                          <span>Dietary Information: </span>                         
+                        <span>Dietary Information: </span>
                         {item.dietaryInfo.map(tag => (
                           <span key={tag} className="dietary-tag">{tag}</span>
                         ))}
