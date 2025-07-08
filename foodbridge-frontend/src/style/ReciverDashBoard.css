@@ -1161,47 +1161,41 @@ body {
   content: none !important;
   visibility: hidden !important;
 }
-
 /* ==========================================================================
-   2. SPECIFIC MODAL TYPES - TARGET ALL VARIANTS
+   2. SPECIFIC MODAL TYPES - REMOVE INVALID :has-text() SELECTORS
 ========================================================================== */
 
-/* Food Request Modal */
-div[class*="modal-title"]:has-text("Request Food Assistance")::before {
+/* Instead of invalid :has-text() selectors, use generic class-based targeting */
+
+/* All modal titles - generic approach */
+.modal-title::before,
+.modal-header .modal-title::before,
+[class*="modal-title"]::before {
   display: none !important;
   content: none !important;
 }
 
-/* Emergency Modal */
-div[class*="modal-title"]:has-text("Emergency")::before {
+/* Target modal titles by their container classes if needed */
+.food-request-modal .modal-title::before,
+.emergency-modal .modal-title::before,
+.profile-modal .modal-title::before,
+.overview-modal .modal-title::before,
+.report-modal .modal-title::before,
+.help-modal .modal-title::before {
   display: none !important;
   content: none !important;
 }
 
-/* Profile Modal */
-div[class*="modal-title"]:has-text("Profile")::before {
+/* Alternative: Target by data attributes (recommended approach) */
+[data-modal-type="food-request"] .modal-title::before,
+[data-modal-type="emergency"] .modal-title::before,
+[data-modal-type="profile"] .modal-title::before,
+[data-modal-type="overview"] .modal-title::before,
+[data-modal-type="report"] .modal-title::before,
+[data-modal-type="help"] .modal-title::before {
   display: none !important;
   content: none !important;
 }
-
-/* Overview Modal */
-div[class*="modal-title"]:has-text("Overview")::before {
-  display: none !important;
-  content: none !important;
-}
-
-/* Report Modal */
-div[class*="modal-title"]:has-text("Report")::before {
-  display: none !important;
-  content: none !important;
-}
-
-/* Help Center Modal */
-div[class*="modal-title"]:has-text("Help")::before {
-  display: none !important;
-  content: none !important;
-}
-
 /* ==========================================================================
    3. GENERAL PSEUDO-ELEMENT RESET FOR RECEIVER DASHBOARD
 ========================================================================== */
