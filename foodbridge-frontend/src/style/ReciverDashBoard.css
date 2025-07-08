@@ -1606,32 +1606,6 @@ svg::after {
   filter: brightness(1.1) contrast(1.05);
 }
 
-/* Image Container */
-.premium-donation-card .relative.md\\:w-1\\/3,
-.premium-donation-card .image-container {
-  position: relative;
-  overflow: hidden;
-}
-
-.premium-donation-card .relative.md\\:w-1\\/3::after,
-.premium-donation-card .image-container::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    45deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 100%
-  );
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.premium-donation-card:hover .relative.md\\:w-1\\/3::after,
-.premium-donation-card:hover .image-container::after {
-  opacity: 1;
-}
 /* ==========================================================================
    6. TYPOGRAPHY ENHANCEMENTS
 ========================================================================== */
@@ -1692,10 +1666,10 @@ svg::after {
 }
 
 /* ==========================================================================
-   8. RESPONSIVE ENHANCEMENTS
+   8. RESPONSIVE ENHANCEMENTS - FINAL FIXED VERSION
 ========================================================================== */
 
-/* Mobile Optimizations */
+/* Mobile Optimizations - COMPLETELY FIXED */
 @media (max-width: 768px) {
   .premium-donation-card {
     border-radius: 1.25rem;
@@ -1707,10 +1681,10 @@ svg::after {
     gap: 0.75rem;
   }
   
-  .premium-donation-card .flex.flex-col.sm\\:flex-row,
-.premium-donation-card .responsive-flex {
-  flex-direction: column;
-}
+  /* FIXED - Remove the problematic Tailwind selector completely */
+  .premium-donation-card .responsive-flex {
+    flex-direction: column;
+  }
   
   .premium-btn-primary {
     padding: 0.875rem 1.5rem;
@@ -1718,12 +1692,11 @@ svg::after {
   }
 }
 
-/* Tablet Optimizations */
+/* Tablet Optimizations - FIXED */
 @media (min-width: 769px) and (max-width: 1024px) {
-  .premium-donation-card .grid.grid-cols-1.lg\\:grid-cols-2,
-.premium-donation-card .responsive-grid {
-  grid-template-columns: repeat(2, 1fr);
-}
+  .premium-donation-card .responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* ==========================================================================
@@ -3592,19 +3565,31 @@ svg::after {
   gap: 0.75rem;
 }
 
-/* Ensure parent containers don't interfere */
-@media (max-width: 768px) {
- .bg-white.dark\\:bg-gray-800.p-4.rounded-xl.shadow-sm.border,
-.category-parent-container {
-  overflow: visible !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+/* Image Container - FIXED */
+.premium-donation-card .image-container,
+.premium-donation-card .responsive-image-container {
+  position: relative;
+  overflow: hidden;
 }
 
-.flex.flex-col.sm\\:flex-row.justify-between.items-start.sm\\:items-center.gap-4,
-.category-header-container {
-  overflow: visible !important;
+.premium-donation-card .image-container::after,
+.premium-donation-card .responsive-image-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
+
+.premium-donation-card:hover .image-container::after,
+.premium-donation-card:hover .responsive-image-container::after {
+  opacity: 1;
 }
 
 /* ==========================================================================
