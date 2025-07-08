@@ -13,7 +13,7 @@ import {
   Compass, Zap, Award, HelpCircle, ShoppingBag, Grid, List, Save,
   Mail, Eye, EyeOff, MoreHorizontal, Check, ExternalLink, Shield,
   Phone, Lock, BarChart, PieChart, ArrowLeft, Receipt, Leaf, Users,
-  Flag, AlertTriangle, Send, AlertOctagon
+  Flag, AlertTriangle, Send, AlertOctagon, ChevronLeft
 } from 'lucide-react';
 
 import '../style/ReciverDashBoard.css';
@@ -57,7 +57,6 @@ const ReceiverDashboard = () => {
     confirmPassword: ''
   });
   const [showPasswordSection, setShowPasswordSection] = useState(false);
-  const [showActionButtons, setShowActionButtons] = useState(true);
   const [showSavedDonationsModal, setShowSavedDonationsModal] = useState(false);
   const [savedDonationsFormAnimation, setSavedDonationsFormAnimation] = useState(false);
   const [savedDonationsData, setSavedDonationsData] = useState([]);
@@ -126,6 +125,191 @@ const ReceiverDashboard = () => {
     evidenceFile1: null,
     evidenceFile2: null
   });
+  const [scrollPosition, setScrollPosition] = useState(0);
+const [showLeftArrow, setShowLeftArrow] = useState(false);
+const [showRightArrow, setShowRightArrow] = useState(false);
+const [scrollProgress, setScrollProgress] = useState(0);
+const categoryContainerRef = useRef(null);
+const [actionScrollPosition, setActionScrollPosition] = useState(0);
+const [showActionLeftArrow, setShowActionLeftArrow] = useState(false);
+const [showActionRightArrow, setShowActionRightArrow] = useState(false);
+const [actionScrollProgress, setActionScrollProgress] = useState(0);
+const actionButtonsContainerRef = useRef(null);
+
+useEffect(() => {
+  const container = categoryContainerRef.current;
+  if (!container) return;
+
+  const handleScroll = () => {
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    
+    // Update scroll position
+    setScrollPosition(scrollLeft);
+    
+    // Update arrow visibility
+    setShowLeftArrow(scrollLeft > 0);
+    setShowRightArrow(scrollLeft < scrollWidth - clientWidth);
+    
+    // Update progress bar
+    const progress = scrollWidth > clientWidth 
+      ? (scrollLeft / (scrollWidth - clientWidth)) * 100 
+      : 0;
+    setScrollProgress(progress);
+  };
+
+  const handleResize = () => {
+    handleScroll(); // Recalculate on resize
+  };
+
+  // Initial calculation
+  handleScroll();
+
+  // Add event listeners
+  container.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener('resize', handleResize);
+
+  return () => {
+    container.removeEventListener('scroll', handleScroll);
+    window.removeEventListener('resize', handleResize);
+  };
+}, []);
+
+useEffect(() => {
+  const container = actionButtonsContainerRef.current;
+  if (!container) return;
+
+  const handleActionScroll = () => {
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    
+    // Update scroll position
+    setActionScrollPosition(scrollLeft);
+    
+    // Update arrow visibility (not needed now, but keep for progress bar)
+    setShowActionLeftArrow(scrollLeft > 0);
+    setShowActionRightArrow(scrollLeft < scrollWidth - clientWidth);
+    
+    // Update progress bar
+    const progress = scrollWidth > clientWidth 
+      ? (scrollLeft / (scrollWidth - clientWidth)) * 100 
+      : 0;
+    setActionScrollProgress(progress);
+    
+    // Update gradient indicators
+    if (scrollLeft > 0) {
+      container.classList.add('scrolled-left');
+    } else {
+      container.classList.remove('scrolled-left');
+    }
+    
+    if (scrollLeft < scrollWidth - clientWidth) {
+      container.classList.add('scrolled-right');
+    } else {
+      container.classList.remove('scrolled-right');
+    }
+  };
+
+  const handleActionResize = () => {
+    handleActionScroll();
+  };
+
+  // Initial calculation
+  handleActionScroll();
+
+  // Add event listeners
+  container.addEventListener('scroll', handleActionScroll, { passive: true });
+  window.addEventListener('resize', handleActionResize);
+
+  return () => {
+    container.removeEventListener('scroll', handleActionScroll);
+    window.removeEventListener('resize', handleActionResize);
+  };
+}, []);
+
+// Scroll functions
+const scrollLeft = () => {
+  const container = categoryContainerRef.current;
+  if (container) {
+    const scrollAmount = container.clientWidth * 0.8;
+    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  }
+};
+
+const scrollRight = () => {
+  const container = categoryContainerRef.current;
+  if (container) {
+    const scrollAmount = container.clientWidth * 0.8;
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+};
+
+// Action buttons scroll functions
+const scrollActionLeft = () => {
+  const container = actionButtonsContainerRef.current;
+  if (container) {
+    const scrollAmount = container.clientWidth * 0.8;
+    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  }
+};
+
+const scrollActionRight = () => {
+  const container = actionButtonsContainerRef.current;
+  if (container) {
+    const scrollAmount = container.clientWidth * 0.8;
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+};
+
+
+const [touchStart, setTouchStart] = useState(0);
+const [touchEnd, setTouchEnd] = useState(0);
+const [actionTouchStart, setActionTouchStart] = useState(0);
+const [actionTouchEnd, setActionTouchEnd] = useState(0);
+const handleTouchStart = (e) => {
+  setTouchStart(e.targetTouches[0].clientX);
+};
+
+const handleTouchMove = (e) => {
+  setTouchEnd(e.targetTouches[0].clientX);
+};
+
+const handleTouchEnd = () => {
+  if (!touchStart || !touchEnd) return;
+  
+  const distance = touchStart - touchEnd;
+  const isLeftSwipe = distance > 50;
+  const isRightSwipe = distance < -50;
+
+  if (isLeftSwipe) {
+    scrollRight();
+  }
+  if (isRightSwipe) {
+    scrollLeft();
+  }
+};
+// Action buttons touch handling
+const handleActionTouchStart = (e) => {
+  setActionTouchStart(e.targetTouches[0].clientX);
+};
+
+const handleActionTouchMove = (e) => {
+  setActionTouchEnd(e.targetTouches[0].clientX);
+};
+
+const handleActionTouchEnd = () => {
+  if (!actionTouchStart || !actionTouchEnd) return;
+  
+  const distance = actionTouchStart - actionTouchEnd;
+  const isLeftSwipe = distance > 50;
+  const isRightSwipe = distance < -50;
+
+  if (isLeftSwipe) {
+    scrollActionRight();
+  }
+  if (isRightSwipe) {
+    scrollActionLeft();
+  }
+};
+
   const openReportModal = (food) => {
     setSelectedFoodForReport(food);
     setReportFormData({
@@ -1335,77 +1519,77 @@ const ReceiverDashboard = () => {
     });
   };
 
- const handleEmergencySubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+  const handleEmergencySubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  try {
-    // Check if user can make new request (rate limiting)
-    const eligibilityResponse = await axios.get(
-      `${API_BASE_URL}/api/receiver/emergency-requests/user/${currentUser.id}/can-request`
-    );
+    try {
+      // Check if user can make new request (rate limiting)
+      const eligibilityResponse = await axios.get(
+        `${API_BASE_URL}/api/receiver/emergency-requests/user/${currentUser.id}/can-request`
+      );
 
-    if (!eligibilityResponse.data.canMakeRequest) {
-      showErrorNotification(eligibilityResponse.data.message || 'You have reached the daily limit for emergency requests');
-      setIsSubmitting(false);
-      return;
-    }
-
-    // Create FormData for multipart request
-    const formData = new FormData();
-    formData.append('userId', currentUser.id);
-    formData.append('title', emergencyForm.title);
-    formData.append('description', emergencyForm.description);
-    formData.append('location', emergencyForm.location);
-    formData.append('category', emergencyForm.category);
-    formData.append('peopleCount', emergencyForm.peopleCount);
-    formData.append('urgency', emergencyForm.urgency);
-    
-    // Add user information if available
-    if (userProfile) {
-      formData.append('requesterName', `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim());
-      formData.append('requesterEmail', userProfile.email || currentUser.email);
-      formData.append('requesterPhone', userProfile.phone || '');
-    } else {
-      formData.append('requesterName', currentUser.name);
-      formData.append('requesterEmail', currentUser.email);
-    }
-
-    // Add image if provided
-    if (emergencyForm.image) {
-      formData.append('image', emergencyForm.image);
-    }
-
-    // Submit emergency request
-    const response = await axios.post(
-      `${API_BASE_URL}/api/receiver/emergency-requests`,
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      if (!eligibilityResponse.data.canMakeRequest) {
+        showErrorNotification(eligibilityResponse.data.message || 'You have reached the daily limit for emergency requests');
+        setIsSubmitting(false);
+        return;
       }
-    );
 
-    if (response.data.success) {
-      // Show success notification with additional details
-      const successMessage = response.data.urgentAlert 
-        ? `${response.data.message}\n\n⚠️ ${response.data.urgentAlert}`
-        : response.data.message;
-      
-      showSuccessNotification(successMessage);
-      
-      // Create detailed success notification
-      const notification = document.createElement('div');
-      notification.className = 'notification-dropdown fixed top-20 right-4 z-50 bg-white rounded-lg shadow-xl border-l-4 border-green-500 p-4 flex items-start w-96 transform transition-all duration-500 ease-in-out';
-      notification.style.opacity = '0';
-      notification.style.transform = 'translateX(100%)';
+      // Create FormData for multipart request
+      const formData = new FormData();
+      formData.append('userId', currentUser.id);
+      formData.append('title', emergencyForm.title);
+      formData.append('description', emergencyForm.description);
+      formData.append('location', emergencyForm.location);
+      formData.append('category', emergencyForm.category);
+      formData.append('peopleCount', emergencyForm.peopleCount);
+      formData.append('urgency', emergencyForm.urgency);
 
-      const urgentBadge = response.data.urgentAlert 
-        ? '<div class="mt-2 bg-red-100 border border-red-200 rounded p-2"><span class="text-red-700 text-xs font-medium">🚨 URGENT: Admin has been notified immediately</span></div>'
-        : '';
+      // Add user information if available
+      if (userProfile) {
+        formData.append('requesterName', `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim());
+        formData.append('requesterEmail', userProfile.email || currentUser.email);
+        formData.append('requesterPhone', userProfile.phone || '');
+      } else {
+        formData.append('requesterName', currentUser.name);
+        formData.append('requesterEmail', currentUser.email);
+      }
 
-      notification.innerHTML = `
+      // Add image if provided
+      if (emergencyForm.image) {
+        formData.append('image', emergencyForm.image);
+      }
+
+      // Submit emergency request
+      const response = await axios.post(
+        `${API_BASE_URL}/api/receiver/emergency-requests`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
+      if (response.data.success) {
+        // Show success notification with additional details
+        const successMessage = response.data.urgentAlert
+          ? `${response.data.message}\n\n⚠️ ${response.data.urgentAlert}`
+          : response.data.message;
+
+        showSuccessNotification(successMessage);
+
+        // Create detailed success notification
+        const notification = document.createElement('div');
+        notification.className = 'notification-dropdown fixed top-20 right-4 z-50 bg-white rounded-lg shadow-xl border-l-4 border-green-500 p-4 flex items-start w-96 transform transition-all duration-500 ease-in-out';
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+
+        const urgentBadge = response.data.urgentAlert
+          ? '<div class="mt-2 bg-red-100 border border-red-200 rounded p-2"><span class="text-red-700 text-xs font-medium">🚨 URGENT: Admin has been notified immediately</span></div>'
+          : '';
+
+        notification.innerHTML = `
         <div class="bg-green-100 p-2 rounded-full mr-3">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -1438,125 +1622,125 @@ const ReceiverDashboard = () => {
         </button>
       `;
 
-      document.body.appendChild(notification);
-      setTimeout(() => {
-        notification.style.opacity = '1';
-        notification.style.transform = 'translateX(0)';
-      }, 100);
-      setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateX(100%)';
+        document.body.appendChild(notification);
         setTimeout(() => {
-          if (notification.parentElement) {
-            notification.parentElement.removeChild(notification);
-          }
-        }, 500);
-      }, 8000);
+          notification.style.opacity = '1';
+          notification.style.transform = 'translateX(0)';
+        }, 100);
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          notification.style.transform = 'translateX(100%)';
+          setTimeout(() => {
+            if (notification.parentElement) {
+              notification.parentElement.removeChild(notification);
+            }
+          }, 500);
+        }, 8000);
 
-      // Reset form and close modal
-      setEmergencyForm({
-        title: '',
-        description: '',
-        location: '',
-        category: 'meal',
-        peopleCount: 1,
-        image: null,
-        urgency: 'high'
-      });
-      closeModal('emergency');
-      
-      // Optionally refresh any emergency requests list if displayed
-      // fetchUserEmergencyRequests();
-      
-    } else {
-      showErrorNotification(response.data.message || 'Failed to submit emergency request');
-    }
-  } catch (error) {
-    console.error('Error submitting emergency request:', error);
-    
-    let errorMessage = 'Failed to submit emergency request. Please try again.';
-    
-    if (error.response?.status === 429) {
-      errorMessage = 'You have reached the daily limit for emergency requests. Please try again tomorrow.';
-    } else if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
-    } else if (error.message) {
-      errorMessage = error.message;
-    }
-    
-    showErrorNotification(errorMessage);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+        // Reset form and close modal
+        setEmergencyForm({
+          title: '',
+          description: '',
+          location: '',
+          category: 'meal',
+          peopleCount: 1,
+          image: null,
+          urgency: 'high'
+        });
+        closeModal('emergency');
 
-// Helper function to fetch user's emergency requests
-const fetchUserEmergencyRequests = async (page = 0, size = 10) => {
-  try {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/receiver/emergency-requests/user/${currentUser.id}`,
-      {
-        params: { page, size }
+        // Optionally refresh any emergency requests list if displayed
+        // fetchUserEmergencyRequests();
+
+      } else {
+        showErrorNotification(response.data.message || 'Failed to submit emergency request');
       }
-    );
-    
-    if (response.data.success) {
-      return response.data;
-    } else {
-      console.error('Failed to fetch emergency requests:', response.data.message);
+    } catch (error) {
+      console.error('Error submitting emergency request:', error);
+
+      let errorMessage = 'Failed to submit emergency request. Please try again.';
+
+      if (error.response?.status === 429) {
+        errorMessage = 'You have reached the daily limit for emergency requests. Please try again tomorrow.';
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      showErrorNotification(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Helper function to fetch user's emergency requests
+  const fetchUserEmergencyRequests = async (page = 0, size = 10) => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/receiver/emergency-requests/user/${currentUser.id}`,
+        {
+          params: { page, size }
+        }
+      );
+
+      if (response.data.success) {
+        return response.data;
+      } else {
+        console.error('Failed to fetch emergency requests:', response.data.message);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching emergency requests:', error);
       return null;
     }
-  } catch (error) {
-    console.error('Error fetching emergency requests:', error);
-    return null;
-  }
-};
+  };
 
-// Helper function to get user's active emergency requests
-const fetchActiveEmergencyRequests = async () => {
-  try {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/receiver/emergency-requests/user/${currentUser.id}/active`
-    );
-    
-    if (response.data.success) {
-      return response.data.requests;
-    } else {
-      console.error('Failed to fetch active emergency requests:', response.data.message);
+  // Helper function to get user's active emergency requests
+  const fetchActiveEmergencyRequests = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/receiver/emergency-requests/user/${currentUser.id}/active`
+      );
+
+      if (response.data.success) {
+        return response.data.requests;
+      } else {
+        console.error('Failed to fetch active emergency requests:', response.data.message);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching active emergency requests:', error);
       return [];
     }
-  } catch (error) {
-    console.error('Error fetching active emergency requests:', error);
-    return [];
-  }
-};
+  };
 
-// Helper function to cancel emergency request
-const cancelEmergencyRequest = async (requestId) => {
-  try {
-    const response = await axios.put(
-      `${API_BASE_URL}/api/receiver/emergency-requests/${requestId}/cancel`,
-      null,
-      {
-        params: { userId: currentUser.id }
+  // Helper function to cancel emergency request
+  const cancelEmergencyRequest = async (requestId) => {
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}/api/receiver/emergency-requests/${requestId}/cancel`,
+        null,
+        {
+          params: { userId: currentUser.id }
+        }
+      );
+
+      if (response.data.success) {
+        showSuccessNotification('Emergency request cancelled successfully');
+        // Refresh the requests list
+        fetchUserEmergencyRequests();
+        return true;
+      } else {
+        showErrorNotification(response.data.message || 'Failed to cancel emergency request');
+        return false;
       }
-    );
-    
-    if (response.data.success) {
-      showSuccessNotification('Emergency request cancelled successfully');
-      // Refresh the requests list
-      fetchUserEmergencyRequests();
-      return true;
-    } else {
-      showErrorNotification(response.data.message || 'Failed to cancel emergency request');
+    } catch (error) {
+      console.error('Error cancelling emergency request:', error);
+      showErrorNotification('Failed to cancel emergency request');
       return false;
     }
-  } catch (error) {
-    console.error('Error cancelling emergency request:', error);
-    showErrorNotification('Failed to cancel emergency request');
-    return false;
-  }
-};
+  };
 
   const handleFoodRequestSubmit = async (e) => {
     e.preventDefault();
@@ -2642,13 +2826,13 @@ const cancelEmergencyRequest = async (requestId) => {
             Cancel
           </button>
           <button
-  onClick={handleEmergencySubmit}  // NEW HANDLER
-  className="btn-primary px-4 py-2 rounded-lg text-white text-sm bg-red-500 hover:bg-red-600 flex items-center space-x-2"
-  disabled={isSubmitting}
->
-  <AlertCircle className="h-4 w-4" />
-  <span>Submit Emergency Alert</span>
-</button>
+            onClick={handleEmergencySubmit}  // NEW HANDLER
+            className="btn-primary px-4 py-2 rounded-lg text-white text-sm bg-red-500 hover:bg-red-600 flex items-center space-x-2"
+            disabled={isSubmitting}
+          >
+            <AlertCircle className="h-4 w-4" />
+            <span>Submit Emergency Alert</span>
+          </button>
         </div>
       </div>
     </div>
@@ -3221,7 +3405,6 @@ const cancelEmergencyRequest = async (requestId) => {
               <span>Expires: {food.expiryDate ? String(food.expiryDate) : 'N/A'}</span>
             </div>
 
-            {/* UPDATED CARD ACTIONS WITH REPORT BUTTON */}
             <div className="card-actions border-t border-gray-100 dark:border-gray-700">
               <button
                 onClick={() => handleFoodRequest(food.id)}
@@ -3233,10 +3416,7 @@ const cancelEmergencyRequest = async (requestId) => {
 
               <button
                 onClick={() => toggleSaveFood(food.id)}
-                className={`btn-save ${savedFoods.includes(food.id)
-                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
-                  } hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors`}
+                className={`btn-save ${savedFoods.includes(food.id) ? 'saved' : ''}`}
                 title={savedFoods.includes(food.id) ? 'Remove from saved' : 'Save for later'}
               >
                 <Bookmark className={`h-4 w-4 ${savedFoods.includes(food.id) ? 'fill-current' : ''}`} />
@@ -3257,102 +3437,184 @@ const cancelEmergencyRequest = async (requestId) => {
   );
 
   const renderListView = () => (
-    <div className="space-y-4 mt-6">
-      {availableFoods.map((food) => (
-        <div
-          key={food.id}
-          className="donation-card rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
-        >
-          <div className="flex flex-col md:flex-row">
-            <div className="relative md:w-1/3">
+  <div className="space-y-6 mt-8">
+    {availableFoods.map((food) => (
+      <div
+        key={food.id}
+        className="premium-donation-card group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-700"
+      >
+        {/* Premium Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50/30 to-purple-50/20 dark:from-gray-800 dark:via-blue-900/10 dark:to-purple-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        
+        <div className="relative flex flex-col md:flex-row">
+          {/* Enhanced Image Section */}
+          <div className="relative md:w-1/3 overflow-hidden">
+            <div className="relative h-64 md:h-56 lg:h-64">
               <img
                 src={food.imageData
                   ? `data:${food.imageContentType || 'image/jpeg'};base64,${food.imageData}`
                   : "/api/placeholder/400/300"}
                 alt={food.foodName}
-                className="food-image w-full h-48 object-cover"
+                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                 onError={(e) => {
                   e.target.src = "/api/placeholder/400/300";
                 }}
               />
-              <div className="absolute top-3 right-3">
-                <span className="status-badge px-2 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
+              {/* Image Overlay Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+              
+              {/* Enhanced Category Badge */}
+              <div className="absolute top-4 right-4">
+                <span className="premium-badge px-3 py-1.5 text-xs font-semibold bg-white/90 backdrop-blur-sm text-gray-800 rounded-full shadow-lg border border-white/50">
                   {food.category}
                 </span>
               </div>
+              
+              {/* Food Type Indicator */}
+              <div className="absolute top-4 left-4">
+                <div className="w-3 h-3 bg-green-400 rounded-full shadow-lg animate-pulse"></div>
+              </div>
             </div>
-            <div className="p-4 md:w-2/3 flex flex-col justify-between dark:border-gray-700">
-              <div>
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {food.foodName} {' (Total '}{food.quantity || 'No quantity available'}{' Meal)'}
+          </div>
+
+          {/* Enhanced Content Section */}
+          <div className="p-6 md:w-2/3 flex flex-col justify-between relative">
+            <div className="flex-grow">
+              {/* Enhanced Header */}
+              <div className="mb-4">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
+                    {food.foodName}
                   </h3>
-                </div>
-
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                  {food.description}
-                </p>
-
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                    <Clock className="h-4 w-4 mr-2 flex-shrink-0 text-blue-400 dark:text-blue-300" />
-                    <span>Expires: {food.expiryDate}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                    <Utensils className="h-4 w-4 mr-2 flex-shrink-0 text-green-400 dark:text-green-300" />
-                    <span>{food.location}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                    <Package className="h-4 w-4 mr-2 flex-shrink-0 text-purple-400 dark:text-purple-300" />
-                    <span>Quantity: {food.quantity}</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {food.dietaryInfo && food.dietaryInfo.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300"
-                    >
-                      {tag}
+                  <div className="ml-4 flex items-center">
+                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-lg">
+                      {food.quantity || 'N/A'} Meals
                     </span>
-                  ))}
+                  </div>
+                </div>
+                
+                {/* Enhanced Description */}
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm">
+                  {food.description || 'Fresh and delicious food ready for pickup.'}
+                </p>
+              </div>
+
+              {/* Enhanced Info Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                {/* Expiry Info */}
+                <div className="flex items-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-100 dark:border-orange-800/30">
+                  <div className="flex-shrink-0 w-8 h-8 bg-orange-100 dark:bg-orange-800/50 rounded-lg flex items-center justify-center mr-3">
+                    <Clock className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-orange-700 dark:text-orange-300">Expires</p>
+                    <p className="text-sm font-semibold text-orange-800 dark:text-orange-200">{food.expiryDate}</p>
+                  </div>
+                </div>
+
+                {/* Location Info */}
+                <div className="flex items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-100 dark:border-green-800/30">
+                  <div className="flex-shrink-0 w-8 h-8 bg-green-100 dark:bg-green-800/50 rounded-lg flex items-center justify-center mr-3">
+                    <Utensils className="h-4 w-4 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-green-700 dark:text-green-300">Location</p>
+                    <p className="text-sm font-semibold text-green-800 dark:text-green-200 truncate">{food.location}</p>
+                  </div>
+                </div>
+
+                {/* Quantity Info */}
+                <div className="flex items-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-100 dark:border-purple-800/30">
+                  <div className="flex-shrink-0 w-8 h-8 bg-purple-100 dark:bg-purple-800/50 rounded-lg flex items-center justify-center mr-3">
+                    <Package className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-purple-700 dark:text-purple-300">Available</p>
+                    <p className="text-sm font-semibold text-purple-800 dark:text-purple-200">{food.quantity} Portions</p>
+                  </div>
+                </div>
+
+                {/* Dietary Tags */}
+                <div className="flex items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/30">
+                  <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-800/50 rounded-lg flex items-center justify-center mr-3">
+                    <svg className="h-4 w-4 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">Dietary Info</p>
+                    <div className="flex flex-wrap gap-1">
+                      {food.dietaryInfo && food.dietaryInfo.length > 0 ? (
+                        food.dietaryInfo.map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-800/50 text-blue-700 dark:text-blue-300 rounded-md"
+                          >
+                            {tag}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-blue-600 dark:text-blue-400">Standard</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleFoodRequest(food.id)}
-                  className="btn-primary flex-1 px-3 py-2 rounded-lg text-white text-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition flex items-center justify-center space-x-1"
-                >
-                  <CheckCircle className="h-4 w-4" />
-                  <span>Request Pickup</span>
-                </button>
+            </div>
 
+            {/* Enhanced Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+              {/* Primary Action Button */}
+              <button
+                onClick={() => handleFoodRequest(food.id)}
+                className="premium-btn-primary flex-1 group relative overflow-hidden px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                <div className="relative flex items-center justify-center space-x-2">
+                  <CheckCircle className="h-5 w-5" />
+                  <span>Request Pickup</span>
+                </div>
+              </button>
+
+              {/* Secondary Action Buttons */}
+              <div className="flex gap-3">
+                {/* Save Button */}
                 <button
                   onClick={() => toggleSaveFood(food.id)}
-                  className={`px-3 py-2 rounded-lg text-sm transition flex items-center justify-center ${savedFoods.includes(food.id)
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-                    }`}
+                  className={`premium-btn-secondary relative overflow-hidden px-4 py-3 rounded-xl font-medium transition-all duration-300 transform hover:-translate-y-0.5 ${
+                    savedFoods.includes(food.id)
+                      ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-white shadow-lg hover:shadow-xl hover:from-yellow-500 hover:to-yellow-600'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-md hover:shadow-lg'
+                  }`}
                   title={savedFoods.includes(food.id) ? 'Remove from saved' : 'Save for later'}
                 >
-                  <Bookmark className={`h-4 w-4 ${savedFoods.includes(food.id) ? 'fill-current' : ''}`} />
+                  <Bookmark className={`h-5 w-5 ${savedFoods.includes(food.id) ? 'fill-current' : ''}`} />
                 </button>
+
+                {/* Report Button */}
                 <button
                   onClick={() => openReportModal(food)}
-                  className="px-3 py-2 rounded-lg text-sm bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800 transition flex items-center justify-center"
+                  className="premium-btn-danger relative overflow-hidden px-4 py-3 rounded-xl font-medium bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/30 hover:bg-red-100 dark:hover:bg-red-900/30 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
                   title="Report this food item"
                 >
-                  <Flag className="h-4 w-4" />
+                  <Flag className="h-5 w-5" />
                 </button>
               </div>
+            </div>
 
+            {/* Premium Status Indicator */}
+            <div className="absolute top-2 right-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full shadow-sm animate-pulse"></div>
             </div>
           </div>
         </div>
-      ))}
-    </div>
-  );
+
+        {/* Hover Effect Border */}
+        <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-blue-200 dark:group-hover:border-blue-700 transition-colors duration-500 pointer-events-none"></div>
+      </div>
+    ))}
+  </div>
+);
 
   const renderReportModal = () => {
     if (!showReportModal || !selectedFoodForReport) return null;
@@ -5213,187 +5475,245 @@ const cancelEmergencyRequest = async (requestId) => {
             </div>
           </div>
 
-          <div className="action-buttons-wrapper">
-            <button
-              onClick={() => setShowActionButtons(!showActionButtons)}
-              className="toggle-buttons-btn"
-              aria-label={showActionButtons ? "Hide options" : "Show options"}
-            >
-              {showActionButtons ? <ChevronRight className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+       <div className="action-buttons-wrapper">
+  <div 
+    ref={actionButtonsContainerRef}
+    className="action-buttons-container"
+    onTouchStart={handleActionTouchStart}
+    onTouchMove={handleActionTouchMove}
+    onTouchEnd={handleActionTouchEnd}
+  >
+    <button
+      onClick={() => setShowFoodRequestForm(true)}
+      className="topbar-btn group"
+    >
+      <div className="topbar-icon-wrapper bg-emerald-50 dark:bg-emerald-900/30 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-800/50">
+        <PlusCircle className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
+      </div>
+      <span className="topbar-label">Need Food</span>
+    </button>
 
-            <div className={`action-buttons-container ${showActionButtons ? 'visible' : 'hidden'}`}>
-              <button
-                onClick={() => setShowFoodRequestForm(true)}
-                className="topbar-btn group"
-              >
-                <div className="topbar-icon-wrapper bg-emerald-50 dark:bg-emerald-900/30 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-800/50">
-                  <PlusCircle className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
-                </div>
-                <span className="topbar-label">Need Food</span>
-              </button>
+    <button
+      onClick={() => setShowEmergencyForm(true)}
+      className="topbar-btn group"
+    >
+      <div className="topbar-icon-wrapper bg-orange-50 dark:bg-orange-900/30 group-hover:bg-orange-100 dark:group-hover:bg-orange-800/50">
+        <AlertCircle className="h-4 w-4 text-orange-500 dark:text-orange-400" />
+      </div>
+      <span className="topbar-label">Emergency</span>
+    </button>
 
-              <button
-                onClick={() => setShowEmergencyForm(true)}
-                className="topbar-btn group"
-              >
-                <div className="topbar-icon-wrapper bg-orange-50 dark:bg-orange-900/30 group-hover:bg-orange-100 dark:group-hover:bg-orange-800/50">
-                  <AlertCircle className="h-4 w-4 text-orange-500 dark:text-orange-400" />
-                </div>
-                <span className="topbar-label">Emergency</span>
-              </button>
+    <button
+      onClick={handleOpenOverviewModal}
+      className="topbar-btn group"
+    >
+      <div className="topbar-icon-wrapper bg-blue-50 dark:bg-blue-900/30 group-hover:bg-blue-100 dark:group-hover:bg-blue-800/50">
+        <BarChart className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+      </div>
+      <span className="topbar-label">Overview</span>
+    </button>
 
-              <button
-                onClick={handleOpenOverviewModal}
-                className="topbar-btn group"
-              >
-                <div className="topbar-icon-wrapper bg-blue-50 dark:bg-blue-900/30 group-hover:bg-blue-100 dark:group-hover:bg-blue-800/50">
-                  <BarChart className="h-4 w-4 text-blue-500 dark:text-blue-400" />
-                </div>
-                <span className="topbar-label">Overview</span>
-              </button>
+    <button
+      onClick={showDedicatedSavedDonationsModal}
+      className="topbar-btn group relative"
+    >
+      <div className="topbar-icon-wrapper bg-purple-50 dark:bg-purple-900/30 group-hover:bg-purple-100 dark:group-hover:bg-purple-800/50">
+        <Bookmark className="h-4 w-4 text-purple-500 dark:text-purple-400" />
+      </div>
+      <span className="topbar-label">Saved</span>
+      {savedFoods.length > 0 && (
+        <span className="notification-badge">
+          {savedFoods.length > 9 ? '9+' : savedFoods.length}
+        </span>
+      )}
+    </button>
 
-              <button
-                onClick={showDedicatedSavedDonationsModal}
-                className="topbar-btn group relative"
-              >
-                <div className="topbar-icon-wrapper bg-purple-50 dark:bg-purple-900/30 group-hover:bg-purple-100 dark:group-hover:bg-purple-800/50">
-                  <Bookmark className="h-4 w-4 text-purple-500 dark:text-purple-400" />
-                </div>
-                <span className="topbar-label">Saved</span>
-                {savedFoods.length > 0 && (
-                  <span className="notification-badge">
-                    {savedFoods.length > 9 ? '9+' : savedFoods.length}
-                  </span>
-                )}
-              </button>
+    <button
+      onClick={() => setShowAcceptedNotificationsModal(true)}
+      className="topbar-btn group"
+    >
+      <div className="topbar-icon-wrapper bg-purple-50 dark:bg-purple-900/30 group-hover:bg-purple-100 dark:group-hover:bg-purple-800/50">
+        <Bell className="h-4 w-4 text-purple-500 dark:text-purple-400" />
+      </div>
+      <span className="topbar-label">Notifications</span>
+      {acceptedRequestNotifications.length > 0 && (
+        <span className="notification-badge">
+          {acceptedRequestNotifications.length > 9 ? '9+' : acceptedRequestNotifications.length}
+        </span>
+      )}
+    </button>
 
-              <div className="relative">
-                <button
-                  onClick={() => setShowAcceptedNotificationsModal(true)}
-                  className="topbar-btn group"
-                >
-                  <div className="topbar-icon-wrapper bg-purple-50 dark:bg-purple-900/30 group-hover:bg-purple-100 dark:group-hover:bg-purple-800/50">
-                    <Bell className="h-4 w-4 text-purple-500 dark:text-purple-400" />
-                  </div>
-                  <span className="topbar-label">Notifications</span>
-                  {acceptedRequestNotifications.length > 0 && (
-                    <span className="notification-badge">
-                      {acceptedRequestNotifications.length > 9 ? '9+' : acceptedRequestNotifications.length}
-                    </span>
-                  )}
-                </button>
-              </div>
+    <button
+      onClick={() => setShowProfileMenu(!showProfileMenu)}
+      className="topbar-btn group"
+    >
+      <div className="topbar-icon-wrapper bg-sky-50 dark:bg-sky-900/30 group-hover:bg-sky-100 dark:group-hover:bg-sky-800/50">
+        <User className="h-4 w-4 text-sky-500 dark:text-sky-400" />
+      </div>
+      <span className="topbar-label">Profile</span>
+    </button>
+  </div>
 
-              <button
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="topbar-btn group"
-              >
-                <div className="topbar-icon-wrapper bg-sky-50 dark:bg-sky-900/30 group-hover:bg-sky-100 dark:group-hover:bg-sky-800/50">
-                  <User className="h-4 w-4 text-sky-500 dark:text-sky-400" />
-                </div>
-                <span className="topbar-label">Profile</span>
-              </button>
-            </div>
-          </div>
+  {/* Progress Bar (Optional - shows scroll position) */}
+  <div className="category-scroll-progress">
+    <div 
+      className="category-scroll-progress-bar animated"
+      style={{ width: `${actionScrollProgress}%` }}
+    />
+  </div>
+
+  {/* Mobile Scroll Hint */}
+  <div className="mobile-scroll-hint">
+    ← Swipe to see more actions →
+  </div>
+
+  {/* Scroll Indicators (Dots) */}
+  <div className="category-scroll-indicator">
+    {[...Array(Math.ceil(6 / 3))].map((_, index) => (
+      <div
+        key={index}
+        className={`scroll-indicator-dot ${
+          Math.floor(actionScrollPosition / (actionButtonsContainerRef.current?.clientWidth || 1)) === index ? 'active' : ''
+        }`}
+        onClick={() => {
+          const container = actionButtonsContainerRef.current;
+          if (container) {
+            container.scrollTo({
+              left: index * container.clientWidth,
+              behavior: 'smooth'
+            });
+          }
+        }}
+      />
+    ))}
+  </div>
+</div>
         </div>
 
         <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="category-container mb-6 pb-2 overflow-x-auto flex items-center space-x-2 justify-end">
-              {[
-                { name: 'All', icon: <Globe className="h-4 w-4 mr-1.5" /> },
-                { name: 'Restaurant', icon: <Utensils className="h-4 w-4 mr-1.5" /> },
-                { name: 'Homemade', icon: <Coffee className="h-4 w-4 mr-1.5" /> },
-                { name: 'Bakery', icon: <Zap className="h-4 w-4 mr-1.5" /> },
-                { name: 'Grocery', icon: <ShoppingBag className="h-4 w-4 mr-1.5" /> },
-                { name: 'Event', icon: <Calendar className="h-4 w-4 mr-1.5" /> },
-                { name: 'Corporate', icon: <Award className="h-4 w-4 mr-1.5" /> },
-              ].map(category => (
-                <button
-                  key={category.name}
-                  onClick={() => handleCategoryChange(category.name)}
-                  className={`category-pill flex items-center whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory === category.name
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-700 border'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border-transparent border'
-                    }`}
-                >
-                  {category.icon}
-                  <span>{category.name}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="flex items-center space-x-2 mt-3 sm:mt-0">
-              <div className="flex items-center border dark:border-gray-700 rounded-lg overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 ${viewMode === 'grid'
-                    ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
-                    : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400'}`}
-                >
-                  <Grid className="h-5 w-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('list')}
-                  className={`p-2 ${viewMode === 'list'
-                    ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
-                    : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400'}`}
-                >
-                  <List className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-          </div>
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      
+      {/* Category Section with Scrolling */}
+      <div className="category-section-wrapper w-full">
+        {/* Scroll Arrows */}
+        <div className={`category-scroll-arrows left ${showLeftArrow ? 'visible' : 'hidden'}`}>
+          <button
+            onClick={scrollLeft}
+            className="scroll-arrow-btn"
+            aria-label="Scroll categories left"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
         </div>
+        
+        <div className={`category-scroll-arrows right ${showRightArrow ? 'visible' : 'hidden'}`}>
+          <button
+            onClick={scrollRight}
+            className="scroll-arrow-btn"
+            aria-label="Scroll categories right"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Category Container */}
+        <div 
+          ref={categoryContainerRef}
+          className="category-container"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {[
+            { name: 'All', icon: <Globe className="h-4 w-4" /> },
+            { name: 'Restaurant', icon: <Utensils className="h-4 w-4" /> },
+            { name: 'Homemade', icon: <Coffee className="h-4 w-4" /> },
+            { name: 'Bakery', icon: <Zap className="h-4 w-4" /> },
+            { name: 'Grocery', icon: <ShoppingBag className="h-4 w-4" /> },
+            { name: 'Event', icon: <Calendar className="h-4 w-4" /> },
+            { name: 'Corporate', icon: <Award className="h-4 w-4" /> },
+          ].map(category => (
+            <button
+              key={category.name}
+              onClick={() => handleCategoryChange(category.name)}
+              className={`category-pill flex items-center whitespace-nowrap transition-all ${
+                selectedCategory === category.name
+                  ? 'active bg-blue-500 dark:bg-blue-600 text-white border-blue-500 dark:border-blue-600'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600'
+              }`}
+              onTouchStart={(e) => e.currentTarget.classList.add('touch-active')}
+              onTouchEnd={(e) => e.currentTarget.classList.remove('touch-active')}
+            >
+              {category.icon}
+              <span className="category-pill-text">{category.name}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Progress Bar */}
+        <div className="category-scroll-progress">
+          <div 
+            className="category-scroll-progress-bar animated"
+            style={{ width: `${scrollProgress}%` }}
+          />
+        </div>
+
+        {/* Mobile Scroll Hint */}
+        <div className="mobile-scroll-hint">
+          ← Swipe to see more categories →
+        </div>
+
+        {/* Scroll Indicators (Dots) */}
+        <div className="category-scroll-indicator">
+          {[...Array(Math.ceil(7 / 3))].map((_, index) => (
+            <div
+              key={index}
+              className={`scroll-indicator-dot ${
+                Math.floor(scrollPosition / (categoryContainerRef.current?.clientWidth || 1)) === index ? 'active' : ''
+              }`}
+              onClick={() => {
+                const container = categoryContainerRef.current;
+                if (container) {
+                  container.scrollTo({
+                    left: index * container.clientWidth,
+                    behavior: 'smooth'
+                  });
+                }
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* View Controls */}
+      <div className="flex items-center space-x-2 mt-3 sm:mt-0 flex-shrink-0">
+        <div className="flex items-center border dark:border-gray-700 rounded-lg overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setViewMode('grid')}
+            className={`p-2 ${viewMode === 'grid'
+              ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
+              : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400'}`}
+          >
+            <Grid className="h-5 w-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('list')}
+            className={`p-2 ${viewMode === 'list'
+              ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
+              : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400'}`}
+          >
+            <List className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
         {availableFoods.length > 0 ? (
           <>
             {viewMode === 'grid' ? renderGridView() : renderListView()}
-
-            <div className="flex justify-center mt-8">
-              <nav className="flex items-center space-x-1">
-                <button
-                  onClick={() => setPagination(prev => ({ ...prev, currentPage: Math.max(0, prev.currentPage - 1) }))}
-                  disabled={pagination.currentPage === 0}
-                  className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
-                {(() => {
-                  const totalPages = pagination.totalPages || 1;
-                  let startPage = Math.max(0, pagination.currentPage - 2);
-                  let endPage = Math.min(totalPages - 1, startPage + 4);
-
-                  if (endPage - startPage < 4) {
-                    startPage = Math.max(0, endPage - 4);
-                  }
-
-                  return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(index => (
-                    <button
-                      key={index}
-                      onClick={() => setPagination(prev => ({ ...prev, currentPage: index }))}
-                      className={`w-8 h-8 flex items-center justify-center rounded-lg ${pagination.currentPage === index
-                        ? 'bg-blue-600 dark:bg-blue-700 text-white'
-                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700'
-                        }`}
-                    >
-                      {index + 1}
-                    </button>
-                  ));
-                })()}
-
-                <button
-                  onClick={() => setPagination(prev => ({ ...prev, currentPage: Math.min(prev.totalPages - 1, prev.currentPage + 1) }))}
-                  disabled={pagination.currentPage === (pagination.totalPages - 1) || pagination.totalPages === 0}
-                  className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
-              </nav>
-            </div>
           </>
         ) : (
           <div className="flex flex-col items-center justify-center p-10 bg-white dark:bg-gray-800 rounded-xl shadow-sm mt-6">
