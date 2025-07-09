@@ -1962,16 +1962,26 @@ a:hover {
 
 .card-action-btn {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 12px;
-  background: none;
-  border: none;
-  font-size: 0.75rem;
-  color: var(--neutral-600);
+  gap: 6px;
+  padding: 10px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  transition: all 0.3s ease;
+  min-width: 90px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .card-action-btn:not(:last-child) {
@@ -2041,6 +2051,157 @@ a:hover {
   height: 100%;
   background-color: var(--primary-color);
   border-radius: 2px;
+}
+
+/* STEP 4: Add/Update CSS to ensure donation action buttons are visible */
+
+/* Ensure donation actions container is properly displayed */
+.donation-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  justify-content: center !important;
+  padding: 12px !important;
+  border-top: 1px solid #e2e8f0 !important;
+  background-color: #f8fafc !important;
+  margin-top: auto !important; /* Push to bottom of card */
+}
+
+/* Enhanced action button styles for better visibility */
+.card-action-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 8px 12px !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  background: white !important;
+  color: #374151 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  min-width: 80px !important;
+  text-align: center !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  opacity: 1 !important; /* Force visibility */
+  visibility: visible !important; /* Force visibility */
+}
+
+.card-action-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Specific button styles for different actions */
+.card-action-btn.check-requests {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  color: white !important;
+  border-color: #3b82f6 !important;
+}
+
+.card-action-btn.check-requests:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+  border-color: #2563eb !important;
+}
+
+.card-action-btn.view {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+  border-color: #10b981 !important;
+}
+
+.card-action-btn.view:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  border-color: #059669 !important;
+}
+
+.card-action-btn.edit {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: white !important;
+  border-color: #f59e0b !important;
+}
+
+.card-action-btn.edit:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+  border-color: #d97706 !important;
+}
+
+.card-action-btn.delete {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
+  border-color: #ef4444 !important;
+}
+
+.card-action-btn.delete:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+  border-color: #dc2626 !important;
+}
+
+/* Ensure donation card has proper structure */
+.donation-card {
+  background-color: white !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: auto !important;
+}
+
+.donation-content {
+  padding: 15px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex-grow: 1 !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .donation-actions {
+    flex-direction: column !important;
+    gap: 6px !important;
+    padding: 10px !important;
+  }
+  
+  .card-action-btn {
+    min-width: auto !important;
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* Dark mode support */
+.dark .donation-actions {
+  background-color: #1e2734 !important;
+  border-top-color: #4a5568 !important;
+}
+
+.dark .card-action-btn {
+  background-color: #2d3748 !important;
+  border-color: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+.dark .card-action-btn:hover {
+  background-color: #4a5568 !important;
+}
+
+/* Override any potential conflicting styles */
+.donations-popup .card-action-btn {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure proper spacing in donations grid */
+.donations-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+  gap: 20px !important;
+  padding: 20px !important;
 }
 /* Donation Modal Styling */
 .modal-overlay {
@@ -2132,19 +2293,36 @@ a:hover {
 
 .preview-image {
   width: 100%;
-  height: 200px;
+  height: 280px;
   display: flex;
   justify-content: center;
+  align-items: center;
   overflow: hidden;
-  border-radius: 6px;
-  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .preview-image img {
-  width: auto;
+  width: 100%;
   height: 100%;
-  max-width: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Mandatory image indicator */
+.preview-image[data-required="true"]::after {
+  content: "* Required";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #ef4444;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .preview-details {
@@ -2328,14 +2506,38 @@ a:hover {
 }
 
 .donation-image {
-  height: 180px;
+  width: 100%;
+  height: 220px;
   position: relative;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+  background-color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .donation-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+  border: none;
+}
+
+.donation-card:hover .donation-image img {
+  transform: scale(1.1);
+}
+
+/* Fallback for missing images */
+.donation-image:empty::before {
+  content: "🍽️";
+  font-size: 48px;
+  color: #cbd5e1;
+}
+
+.donation-card:hover .donation-image img {
+  transform: scale(1.05);
 }
 
 .status-badge {
@@ -2395,8 +2597,12 @@ a:hover {
 
 .donation-actions {
   display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 12px;
+  border-top: 1px solid #e2e8f0;
+  background-color: #f8fafc;
 }
 
 .action-btn {
@@ -2667,14 +2873,62 @@ a:hover {
   border: 1px solid #4a5568;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
-  .donations-tabs {
-    justify-content: center;
-  }
-  
   .donations-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .donation-card {
+    padding: 0;
+    min-height: auto;
+    margin-bottom: 16px;
+  }
+  
+  .donation-image {
+    height: 180px;
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .donation-content {
+    padding: 16px;
+  }
+  
+  .preview-image {
+    height: 200px;
+  }
+}
+@media (max-width: 480px) {
+  .donations-popup {
+    width: 95%;
+    height: 90vh;
+    margin: 5vh auto;
+  }
+  
+  .donations-popup .popup-body {
+    padding: 12px;
+  }
+  
+  .donation-image {
+    height: 160px;
+  }
+  
+  .preview-image {
+    height: 180px;
+  }
+  
+  .donation-content {
+    padding: 12px;
+  }
+  
+  .donation-title {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  
+  .meta-item, .detail-item {
+    font-size: 13px;
   }
 }
 
@@ -2724,10 +2978,11 @@ a:hover {
 }
 
 .view-donation-modal .donation-detail-image {
-  max-height: 250px;
-  max-width: 100%;
-  object-fit: contain;
-  border-radius: 4px;
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Detail sections styling */

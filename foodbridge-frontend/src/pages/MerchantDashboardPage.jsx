@@ -2878,199 +2878,200 @@ Best regards,
     }
   }, [merchantId]);
 
+const DonationsPopup = ({
+  isOpen,
+  onClose,
+  donationsSubTab,
+  setDonationsSubTab,
+  merchantDonations,
+  pendingDonations,
+  rejectedDonations,
+  completedDonations,
+  donationLoading,
+  donationError,
+  handleCheckRequests,
+  handleMarkAsCompleted,
+  // ADD THESE MISSING PROPS:
+  handleViewDonation,
+  handleEditDonation,
+  handleDeleteDonation
+}) => {
+  if (!isOpen) return null;
 
-  const DonationsPopup = ({
-    isOpen,
-    onClose,
-    donationsSubTab,
-    setDonationsSubTab,
-    merchantDonations,
-    pendingDonations,
-    rejectedDonations,
-    completedDonations,
-    donationLoading,
-    donationError,
-    handleCheckRequests,
-    handleMarkAsCompleted
-  }) => {
-    if (!isOpen) return null;
+  return (
+    <div className="popup-overlay">
+      <div className="popup-content donations-popup">
+        <div className="popup-header">
+          <h2>My Donations</h2>
+          <button className="close-button" onClick={onClose}>
+            <X size={24} />
+          </button>
+        </div>
 
-    return (
-      <div className="popup-overlay">
-        <div className="popup-content donations-popup">
-          <div className="popup-header">
-            <h2>My Donations</h2>
-            <button className="close-button" onClick={onClose}>
-              <X size={24} />
+        <div className="popup-body">
+          <div className="donations-tabs">
+            <button
+              className={`donation-tab ${donationsSubTab === 'active' ? 'active' : ''}`}
+              onClick={() => setDonationsSubTab('active')}
+            >
+              Active
+            </button>
+            <button
+              className={`donation-tab ${donationsSubTab === 'pending' ? 'active' : ''}`}
+              onClick={() => setDonationsSubTab('pending')}
+            >
+              Pending
+            </button>
+            <button
+              className={`donation-tab ${donationsSubTab === 'rejected' ? 'active' : ''}`}
+              onClick={() => setDonationsSubTab('rejected')}
+            >
+              Rejected
+            </button>
+            <button
+              className={`donation-tab ${donationsSubTab === 'completed' ? 'active' : ''}`}
+              onClick={() => setDonationsSubTab('completed')}
+            >
+              Completed
             </button>
           </div>
 
-          <div className="popup-body">
-            <div className="donations-tabs">
-              <button
-                className={`donation-tab ${donationsSubTab === 'active' ? 'active' : ''}`}
-                onClick={() => setDonationsSubTab('active')}
-              >
-                Active
-              </button>
-              <button
-                className={`donation-tab ${donationsSubTab === 'pending' ? 'active' : ''}`}
-                onClick={() => setDonationsSubTab('pending')}
-              >
-                Pending
-              </button>
-              <button
-                className={`donation-tab ${donationsSubTab === 'rejected' ? 'active' : ''}`}
-                onClick={() => setDonationsSubTab('rejected')}
-              >
-                Rejected
-              </button>
-              <button
-                className={`donation-tab ${donationsSubTab === 'completed' ? 'active' : ''}`}
-                onClick={() => setDonationsSubTab('completed')}
-              >
-                Completed
-              </button>
+          {donationLoading ? (
+            <div className="loading-indicator">
+              <span className="loading-spinner"></span>
+              <span>Loading donations...</span>
             </div>
+          ) : donationError ? (
+            <div className="error-message">
+              <AlertCircle className="h-5 w-5" />
+              <span>{donationError}</span>
+            </div>
+          ) : (
+            <div className="donations-grid">
+              {(() => {
+                // Determine which donations to display based on current tab
+                let displayDonations = [];
+                switch (donationsSubTab) {
+                  case 'active':
+                    displayDonations = merchantDonations;
+                    break;
+                  case 'pending':
+                    displayDonations = pendingDonations;
+                    break;
+                  case 'rejected':
+                    displayDonations = rejectedDonations;
+                    break;
+                  case 'completed':
+                    displayDonations = completedDonations;
+                    break;
+                  default:
+                    displayDonations = merchantDonations;
+                }
 
-            {donationLoading ? (
-              <div className="loading-indicator">
-                <span className="loading-spinner"></span>
-                <span>Loading donations...</span>
-              </div>
-            ) : donationError ? (
-              <div className="error-message">
-                <AlertCircle className="h-5 w-5" />
-                <span>{donationError}</span>
-              </div>
-            ) : (
-              <div className="donations-grid">
-                {(() => {
-                  // Determine which donations to display based on current tab
-                  let displayDonations = [];
-                  switch (donationsSubTab) {
-                    case 'active':
-                      displayDonations = merchantDonations;
-                      break;
-                    case 'pending':
-                      displayDonations = pendingDonations;
-                      break;
-                    case 'rejected':
-                      displayDonations = rejectedDonations;
-                      break;
-                    case 'completed':
-                      displayDonations = completedDonations;
-                      break;
-                    default:
-                      displayDonations = merchantDonations;
-                  }
+                if (displayDonations.length === 0) {
+                  return (
+                    <div className="no-donations-message">
+                      <Heart className="h-12 w-12 text-gray-300" />
+                      <h3>No {donationsSubTab} donations</h3>
+                      <p>Donations you make will appear here</p>
+                    </div>
+                  );
+                }
 
-                  if (displayDonations.length === 0) {
-                    return (
-                      <div className="no-donations-message">
-                        <Heart className="h-12 w-12 text-gray-300" />
-                        <h3>No {donationsSubTab} donations</h3>
-                        <p>Donations you make will appear here</p>
-                      </div>
-                    );
-                  }
-
-                  return displayDonations.map(donation => (
-                    <div key={donation.id} className="donation-card">
-                      <div className="donation-image">
-                        <img src={donation.imageUrl} alt={donation.foodName} />
-                        <div className={`status-badge ${donation.status.toLowerCase()}`}>
-                          {donation.status}
-                        </div>
-                      </div>
-
-                      <div className="donation-content">
-                        <h3 className="donation-title">{donation.foodName}</h3>
-
-                        <div className="donation-meta">
-                          <div className="meta-item">
-                            <Tag className="h-4 w-4" />
-                            <span>{donation.category}</span>
-                          </div>
-                          <div className="meta-item">
-                            <Package className="h-4 w-4" />
-                            <span>{donation.quantity}</span>
-                          </div>
-                        </div>
-
-                        <div className="donation-details">
-                          <div className="detail-item">
-                            <Clock className="h-4 w-4 text-blue-500" />
-                            <span>Expires: {new Date(donation.expiry).toLocaleDateString()}</span>
-                          </div>
-                          <div className="detail-item">
-                            <MapPin className="h-4 w-4 text-red-500" />
-                            <span>{donation.location}</span>
-                          </div>
-                        </div>
-
-                        <div className="donation-actions">
-                          {donationsSubTab === 'active' && (
-                            <>
-                              <button
-                                className="card-action-btn check-requests"
-                                onClick={() => handleCheckRequests(donation)}
-                              >
-                                <Users className="h-4 w-4" />
-                                <span>Requests</span>
-                              </button>
-
-                              {/* New View Button */}
-                              <button
-                                className="card-action-btn view"
-                                onClick={() => handleViewDonation(donation)}
-                              >
-                                <Eye className="h-4 w-4" />
-                                <span>View</span>
-                              </button>
-
-                              {/* New Edit Button */}
-                              <button
-                                className="card-action-btn edit"
-                                onClick={() => handleEditDonation(donation)}
-                              >
-                                <Edit className="h-4 w-4" />
-                                <span>Edit</span>
-                              </button>
-
-                              {/* New Delete Button */}
-                              <button
-                                className="card-action-btn delete"
-                                onClick={() => handleDeleteDonation(donation.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                                <span>Delete</span>
-                              </button>
-                            </>
-                          )}
-
-                          {/* Existing buttons for other tabs */}
-                          {donationsSubTab === 'pending' && (
-                            <button
-                              className="action-btn mark-complete"
-                              onClick={() => handleMarkAsCompleted(donation.id)}
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                              <span>Mark Complete</span>
-                            </button>
-                          )}
-                        </div>
+                return displayDonations.map(donation => (
+                  <div key={donation.id} className="donation-card">
+                    <div className="donation-image">
+                      <img src={donation.imageUrl} alt={donation.foodName} />
+                      <div className={`status-badge ${donation.status.toLowerCase()}`}>
+                        {donation.status}
                       </div>
                     </div>
-                  ));
-                })()}
-              </div>
-            )}
-          </div>
+
+                    <div className="donation-content">
+                      <h3 className="donation-title">{donation.foodName}</h3>
+
+                      <div className="donation-meta">
+                        <div className="meta-item">
+                          <Tag className="h-4 w-4" />
+                          <span>{donation.category}</span>
+                        </div>
+                        <div className="meta-item">
+                          <Package className="h-4 w-4" />
+                          <span>{donation.quantity}</span>
+                        </div>
+                      </div>
+
+                      <div className="donation-details">
+                        <div className="detail-item">
+                          <Clock className="h-4 w-4 text-blue-500" />
+                          <span>Expires: {new Date(donation.expiry).toLocaleDateString()}</span>
+                        </div>
+                        <div className="detail-item">
+                          <MapPin className="h-4 w-4 text-red-500" />
+                          <span>{donation.location}</span>
+                        </div>
+                      </div>
+
+                      {/* STEP 3: FIXED DONATION ACTIONS - Make sure this section renders properly */}
+                      <div className="donation-actions">
+                        {donationsSubTab === 'active' && (
+                          <>
+                            <button
+                              className="card-action-btn check-requests"
+                              onClick={() => handleCheckRequests(donation)}
+                            >
+                              <Users className="h-4 w-4" />
+                              <span>Requests</span>
+                            </button>
+
+                            <button
+                              className="card-action-btn view"
+                              onClick={() => handleViewDonation(donation)}
+                            >
+                              <Eye className="h-4 w-4" />
+                              <span>View</span>
+                            </button>
+
+                            <button
+                              className="card-action-btn edit"
+                              onClick={() => handleEditDonation(donation)}
+                            >
+                              <Edit className="h-4 w-4" />
+                              <span>Edit</span>
+                            </button>
+
+                            <button
+                              className="card-action-btn delete"
+                              onClick={() => handleDeleteDonation(donation.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              <span>Delete</span>
+                            </button>
+                          </>
+                        )}
+
+                        {/* Existing buttons for other tabs */}
+                        {donationsSubTab === 'pending' && (
+                          <button
+                            className="action-btn mark-complete"
+                            onClick={() => handleMarkAsCompleted(donation.id)}
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                            <span>Mark Complete</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ));
+              })()}
+            </div>
+          )}
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   const filteredItems = foodItems
     .filter(item => filterCategory === 'all' || item.foodCategory === filterCategory)
@@ -5148,6 +5149,9 @@ Best regards,
           donationError={donationError}
           handleCheckRequests={handleCheckRequests}
           handleMarkAsCompleted={handleMarkAsCompleted}
+            handleViewDonation={handleViewDonation}
+    handleEditDonation={handleEditDonation}
+    handleDeleteDonation={handleDeleteDonation}
 
         />
       )}

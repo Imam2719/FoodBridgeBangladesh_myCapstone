@@ -2875,40 +2875,26 @@
   opacity: 0.9;
 }
 
-/* RESPONSIVE: Enhanced Mobile Experience */
 @media (max-width: 640px) {
   .data-card {
     min-height: 260px;
     max-height: 300px;
   }
 
-  .user-avatar,
-  .admin-avatar {
-    width: 3rem;
-    height: 3rem;
+  /* Add this specific rule for merchant cards */
+  .merchant-card {
+    min-height: 470px;        /* ← Increase height for merchant cards */
+    max-height: 490px;        /* ← Increase max height */
   }
 
-  .merchant-logo {
-    width: 2.5rem;
-    height: 2.5rem;
+  .merchant-action-buttons {
+    grid-template-columns: repeat(3, 1fr);  /* 3 buttons per row on mobile */
+    gap: 0.5rem;
   }
 
-  .donation-image {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .action-buttons {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-  }
-
-  .action-button {
-    padding: 0.75rem 0.5rem;
-  }
-
-  .action-button span {
-    font-size: 0.7rem;
+  .merchant-action-btn {
+    padding: 0.75rem 0.25rem;   /* Smaller padding */
+    font-size: 0.65rem;         /* Smaller font */
   }
 }
 
