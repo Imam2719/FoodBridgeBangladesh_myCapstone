@@ -3676,84 +3676,86 @@ Best regards,
             {/* ========== COMPACT ACTION BUTTONS ========== */}
             <div className="compact-actions-layout">
 
-              {/* Main Action Buttons */}
-              <div className="compact-main-actions">
-                <button className="compact-action-btn fees-btn" onClick={handleFees}>
-                  <div className="compact-btn-icon">
-                    <Wallet size={18} />
-                  </div>
-                  <div className="compact-btn-text">
-                    <span className="btn-title">Pay Fees</span>
-                    <span className="btn-subtitle">Manage</span>
-                  </div>
-                </button>
+             {/* Updated JSX structure in MerchantDashboardPage.jsx */}
+<div className="compact-actions-layout">
+  {/* Main Action Buttons - 6 buttons total */}
+  <div className="compact-main-actions">
+    <button className="compact-action-btn fees-btn" onClick={handleFees}>
+      <div className="compact-btn-icon">
+        <Wallet size={18} />
+      </div>
+      <div className="compact-btn-text">
+        <span className="btn-title">Pay Fees</span>
+        <span className="btn-subtitle">Manage</span>
+      </div>
+    </button>
 
-                <button className="compact-action-btn donations-btn" onClick={() => setDonationsOpen(true)}>
-                  <div className="compact-btn-icon">
-                    <Heart size={18} />
-                  </div>
-                  <div className="compact-btn-text">
-                    <span className="btn-title">My Donations</span>
-                    <span className="btn-subtitle">Track</span>
-                  </div>
-                </button>
+    <button className="compact-action-btn donations-btn" onClick={() => setDonationsOpen(true)}>
+      <div className="compact-btn-icon">
+        <Heart size={18} />
+      </div>
+      <div className="compact-btn-text">
+        <span className="btn-title">My Donations</span>
+        <span className="btn-subtitle">Track</span>
+      </div>
+    </button>
 
-                <button className="compact-action-btn sales-btn" onClick={handleSalesHistory}>
-                  <div className="compact-btn-icon">
-                    <History size={18} />
-                  </div>
-                  <div className="compact-btn-text">
-                    <span className="btn-title">Sales History</span>
-                    <span className="btn-subtitle">Reports</span>
-                  </div>
-                </button>
+    <button className="compact-action-btn sales-btn" onClick={handleSalesHistory}>
+      <div className="compact-btn-icon">
+        <History size={18} />
+      </div>
+      <div className="compact-btn-text">
+        <span className="btn-title">Sales History</span>
+        <span className="btn-subtitle">Reports</span>
+      </div>
+    </button>
 
-                <button className="compact-action-btn messages-btn" onClick={handleMessages}>
-                  <div className="compact-btn-icon">
-                    <MessageSquare size={18} />
-                    {messageStats.unreadMessages > 0 && (
-                      <div className="compact-notification-badge">
-                        {messageStats.unreadMessages > 99 ? '99+' : messageStats.unreadMessages}
-                      </div>
-                    )}
-                  </div>
-                  <div className="compact-btn-text">
-                    <span className="btn-title">Messages</span>
-                    <span className="btn-subtitle">Communications</span>
-                  </div>
-                </button>
+    <button className="compact-action-btn messages-btn" onClick={handleMessages}>
+      <div className="compact-btn-icon">
+        <MessageSquare size={18} />
+        {messageStats.unreadMessages > 0 && (
+          <div className="compact-notification-badge">
+            {messageStats.unreadMessages > 99 ? '99+' : messageStats.unreadMessages}
+          </div>
+        )}
+      </div>
+      <div className="compact-btn-text">
+        <span className="btn-title">Messages</span>
+        <span className="btn-subtitle">Communications</span>
+      </div>
+    </button>
 
-                <button className="compact-action-btn profile-btn" onClick={handleProfileUpdate}>
-                  <div className="compact-btn-icon">
-                    <Settings size={18} />
-                  </div>
-                  <div className="compact-btn-text">
-                    <span className="btn-title">Profile</span>
-                    <span className="btn-subtitle">Settings</span>
-                  </div>
-                </button>
-              </div>
+    <button className="compact-action-btn profile-btn" onClick={handleProfileUpdate}>
+      <div className="compact-btn-icon">
+        <Settings size={18} />
+      </div>
+      <div className="compact-btn-text">
+        <span className="btn-title">Profile</span>
+        <span className="btn-subtitle">Settings</span>
+      </div>
+    </button>
 
-              {/* Special Actions */}
-              <div className="compact-special-actions">
-                <button className="compact-create-btn" onClick={() => handleOpenModal()}>
-                  <div className="create-btn-icon">
-                    <Plus size={20} />
-                  </div>
-                  <div className="create-btn-text">
-                    <span className="create-title">Create Listing</span>
-                    <span className="create-subtitle">Add new item</span>
-                  </div>
-                  <div className="create-arrow">
-                    <ArrowRight size={16} />
-                  </div>
-                </button>
+    <button className="compact-action-btn create-btn" onClick={() => handleOpenModal()}>
+      <div className="compact-btn-icon">
+        <Plus size={18} />
+      </div>
+      <div className="compact-btn-text">
+        <span className="btn-title">Create Listing</span>
+        <span className="btn-subtitle">Add new item</span>
+      </div>
+    </button>
+  </div>
 
-                <button className="compact-logout-btn" onClick={handleLogout}>
-                  <LogOut size={16} />
-                  <span>Logout</span>
-                </button>
-              </div>
+  {/* Logout moved to separate section */}
+  <div className="compact-logout-section">
+    <button className="compact-logout-btn" onClick={handleLogout}>
+      <LogOut size={16} />
+      <span>Logout</span>
+    </button>
+  </div>
+</div>
+
+
             </div>
           </div>
 

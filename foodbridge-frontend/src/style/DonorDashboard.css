@@ -688,47 +688,79 @@ body {
 /* ----------------------------------- */
 /* Stats Cards                        */
 /* ----------------------------------- */
+
 .stats-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 16px;
   width: 100%;
   padding: 16px;
 }
 
+
 .stats-card {
   flex: 1 1 220px;
   min-width: 220px;
   max-width: 280px;
-  margin: 0;
-  height: auto !important;
-  padding: 16px !important;
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  background-color: white;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px;
   border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  
-  /* FIX: Smooth, stable transition */
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* FIX: Prevent layout shifts */
-  will-change: transform;
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
 }
 
+/* Header Nav Buttons - Base */
+.header-navigation-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* Tablet View (≤ 768px) */
 @media (max-width: 768px) {
-  .stats-container {
+  .header-navigation-buttons {
+    flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .stats-card {
     flex: 0 0 calc(50% - 16px);
     max-width: calc(50% - 16px);
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-container {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    padding: 8px !important;
+    justify-content: space-between !important;
+  }
+  
+  .stats-card {
+    flex: 0 0 calc(50% - 4px) !important;
+    min-width: calc(50% - 4px) !important;
+    max-width: calc(50% - 4px) !important;
+    width: calc(50% - 4px) !important;
+    padding: 8px !important;
+    margin: 0 !important;
+  }
+  
+  .stats-icon {
+    width: 28px !important;
+    height: 28px !important;
+    margin-right: 8px !important;
+  }
+  
+  .stats-value {
+    font-size: 1.25rem !important;
+  }
+  
+  .stats-label {
+    font-size: 0.65rem !important;
   }
 }
 
@@ -3128,6 +3160,39 @@ body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+@media (max-width: 768px) {
+  .popup-header {
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 12px 16px !important;
+  }
+  
+  .popup-actions {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+  
+  .popup-tabs {
+    display: flex !important;
+    gap: 4px !important;
+    margin-right: 0 !important;
+    flex: 1 !important;
+  }
+  
+  .popup-tab-btn {
+    flex: 1 !important;
+    padding: 8px 4px !important;
+    font-size: 11px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+  
+  .popup-close-btn {
+    width: 32px !important;
+    height: 32px !important;
+    flex-shrink: 0 !important;
+  }
+}
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
@@ -3396,12 +3461,19 @@ body {
 }
 
 .popup-container.active-donations-popup {
-  width: 75%; /* Changed from 90% */
-  max-width: 1000px; /* Changed from 1200px */
+  width: 75%;
+  max-width: 1000px;
   height: 90vh;
   max-height: 800px;
-  display: flex;
-  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .popup-container.active-donations-popup {
+    width: 95% !important;
+    max-width: 95% !important;
+    height: 95vh !important;
+    margin: 0.5rem !important;
+  }
 }
 
 .popup-header {
@@ -3528,11 +3600,21 @@ body {
 }
 
 .donations-sidebar {
-  width: 180px; /* Reduced from 220px */
+  width: 180px;
   border-right: 1px solid #e5e7eb;
   height: 100%;
   overflow-y: auto;
   background-color: #f9fafb;
+}
+
+@media (max-width: 768px) {
+  .donations-sidebar {
+    width: 120px !important;
+  }
+  
+  .sidebar-item-name {
+    font-size: 10px !important;
+  }
 }
 
 
@@ -3598,6 +3680,13 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .donations-compact-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
 }
 
 .donation-compact-card {
@@ -5488,17 +5577,20 @@ body {
 }
 
 .stats-container {
-  display: flex !important; 
-  flex-wrap: nowrap !important;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  width: 100%;
+  padding: 16px;
 }
 
 @media (max-width: 480px) {
   .stats-container {
-    grid-template-columns: repeat(2, 1fr); /* 2x2 grid on very small screens */
-    gap: var(--spacing-2);
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 8px;
   }
 }
-
 /* Ensure cards don't stretch too wide */
 .stats-card {
   width: 100%;

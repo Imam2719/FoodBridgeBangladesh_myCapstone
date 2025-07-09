@@ -111,7 +111,7 @@ a:hover {
    ========================================== */
 
 .compact-premium-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #393a38 0%, #21e6f1 100%);
   border-radius: 20px;
   padding: 24px;
   margin-bottom: 24px;
@@ -350,103 +350,37 @@ a:hover {
   50% { transform: scale(1.1); }
 }
 
-/* ==========================================
-   COMPACT SPECIAL ACTIONS
-   ========================================== */
+/* Enhanced mobile-first responsive design */
 
-.compact-special-actions {
+/* Base layout for larger screens */
+.compact-main-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
 }
 
-/* Compact Create Button */
-.compact-create-btn {
+/* New logout section styling */
+.compact-logout-section {
+  margin-top: 16px;
   display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
-  border: none;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-  color: white;
-  min-height: 70px;
-  text-align: left;
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
-}
-
-.compact-create-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.35);
-}
-
-.create-btn-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
   justify-content: center;
-  flex-shrink: 0;
 }
 
-.create-btn-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.create-title {
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.create-subtitle {
-  font-size: 0.8rem;
-  opacity: 0.9;
-  font-weight: 500;
-}
-
-.create-arrow {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.7;
-  transition: all 0.3s ease;
-}
-
-.compact-create-btn:hover .create-arrow {
-  opacity: 1;
-  transform: translateX(2px);
-}
-
-/* Compact Logout Button */
 .compact-logout-btn {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 16px;
+  gap: 8px;
+  padding: 12px 24px;
   border: 2px solid rgba(239, 68, 68, 0.3);
   border-radius: 16px;
   background: rgba(254, 255, 255, 0.08);
   color: #dc2626;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-height: 70px;
-  text-align: center;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
+  min-width: 120px;
 }
 
 .compact-logout-btn:hover {
@@ -455,6 +389,137 @@ a:hover {
   transform: translateY(-2px);
 }
 
+/* Tablet responsive - 2 buttons per row */
+@media (max-width: 992px) {
+  .compact-main-actions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* Mobile responsive - 3 buttons per row */
+@media (max-width: 768px) {
+  .compact-premium-header {
+    padding: 20px;
+    min-height: 200px; /* Increase height for better spacing */
+  }
+  
+  .compact-main-actions {
+    grid-template-columns: repeat(3, 1fr); /* 3 buttons per row */
+    gap: 10px;
+  }
+  
+  .compact-action-btn {
+    padding: 14px 8px;
+    min-height: 75px;
+    border-radius: 12px;
+  }
+  
+  .compact-btn-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 4px;
+  }
+  
+  .btn-title {
+    font-size: 0.75rem;
+    line-height: 1.1;
+  }
+  
+  .btn-subtitle {
+    font-size: 0.65rem;
+  }
+  
+  /* Style the create button differently */
+  .compact-action-btn.create-btn {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    color: white;
+    grid-column: span 2; /* Takes up 2 columns */
+  }
+  
+  .compact-logout-section {
+    margin-top: 20px;
+  }
+  
+  .compact-logout-btn {
+    width: 100%;
+    max-width: 200px;
+    padding: 14px 20px;
+  }
+}
+
+/* Small mobile - stack in 3 columns but optimize spacing */
+@media (max-width: 480px) {
+  .compact-premium-header {
+    padding: 16px;
+    min-height: 220px;
+  }
+  
+  .compact-main-actions {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  
+  .compact-action-btn {
+    padding: 12px 6px;
+    min-height: 70px;
+    border-radius: 10px;
+  }
+  
+  .compact-btn-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .btn-title {
+    font-size: 0.7rem;
+  }
+  
+  .btn-subtitle {
+    font-size: 0.6rem;
+  }
+  
+  /* Create button spans full width on very small screens */
+  .compact-action-btn.create-btn {
+    grid-column: span 3;
+    padding: 16px;
+    min-height: 60px;
+  }
+  
+  .compact-logout-btn {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Enhanced create button styling */
+.compact-action-btn.create-btn {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  color: white;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.compact-action-btn.create-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.35);
+}
+
+.compact-action-btn.create-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.compact-action-btn.create-btn:hover::before {
+  left: 100%;
+}
 /* ==========================================
    COMPACT BUSINESS OVERVIEW SECTION
    ========================================== */
@@ -555,13 +620,6 @@ a:hover {
    COMPACT STATS GRID
    ========================================== */
 
-.compact-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  padding: 24px;
-  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-}
 
 .compact-stat-card {
   background: white;
@@ -788,113 +846,148 @@ a:hover {
 /* ==========================================
    RESPONSIVE DESIGN
    ========================================== */
+   /* Base layout for larger screens */
+.compact-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+}
 
+/* Tablet responsive */
 @media (max-width: 1200px) {
-  .compact-main-actions {
+  .compact-stats-grid {
     grid-template-columns: repeat(3, 1fr);
-  }
-  
-  .compact-special-actions {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 16px;
   }
 }
 
+/* Mobile responsive - 3 cards in one row */
 @media (max-width: 768px) {
-  .compact-premium-header {
-    padding: 20px;
-    min-height: 160px;
-  }
-  
-  .merchant-info-section {
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-  
-  .merchant-avatar {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .merchant-name {
-    font-size: 1.5rem;
-  }
-  
-  .compact-main-actions {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-  
-  .compact-action-btn {
-    padding: 14px 10px;
-    min-height: 70px;
-  }
-  
-  .btn-title {
-    font-size: 0.8rem;
-  }
-  
-  .btn-subtitle {
-    font-size: 0.65rem;
-  }
-  
-  .compact-create-btn {
-    padding: 16px;
-    min-height: 60px;
-  }
-  
-  .compact-logout-btn {
-    min-height: 60px;
-    padding: 12px;
-  }
-  
-  .compact-overview-header {
-    padding: 16px 20px;
-  }
-  
-  .overview-title {
-    font-size: 1.1rem;
-  }
-  
   .compact-stats-grid {
-    grid-template-columns: 1fr;
-    padding: 20px;
-    gap: 16px;
+    grid-template-columns: repeat(3, 1fr); /* 3 cards in one row */
+    padding: 16px 20px;
+    gap: 8px; /* Smaller gap for mobile */
   }
   
   .compact-stat-card {
-    padding: 16px;
+    padding: 12px 8px; /* Reduced padding */
+    min-height: 120px; /* Ensure consistent height */
+  }
+  
+  .compact-stat-header {
+    margin-bottom: 8px;
+    flex-direction: column; /* Stack icon and trend vertically */
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .compact-stat-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+  
+  .compact-trend {
+    padding: 2px 6px;
+    font-size: 10px;
+    border-radius: 6px;
+  }
+  
+  .compact-stat-content {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  
+  .compact-stat-number {
+    font-size: 1.25rem; /* Smaller number */
+    margin: 0 0 4px 0;
+    line-height: 1;
+  }
+  
+  .compact-stat-label {
+    font-size: 0.75rem; /* Smaller label */
+    margin: 0 0 2px 0;
+    line-height: 1.2;
+  }
+  
+  .compact-stat-sublabel {
+    font-size: 0.65rem; /* Even smaller sublabel */
+    line-height: 1.1;
+  }
+  
+  .compact-progress {
+    height: 3px; /* Thinner progress bar */
   }
 }
 
+/* Very small mobile - optimize further */
 @media (max-width: 480px) {
-  .compact-premium-header {
-    padding: 16px;
-  }
-  
-  .merchant-info-section {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
-  }
-  
-  .merchant-name {
-    font-size: 1.25rem;
-  }
-  
-  .compact-main-actions {
-    grid-template-columns: 1fr;
-  }
-  
-  .compact-action-btn {
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 12px;
-    text-align: left;
+  .compact-overview-container {
+    margin-bottom: 16px;
   }
   
   .compact-stats-grid {
-    padding: 16px;
+    padding: 12px 16px;
+    gap: 6px;
+  }
+  
+  .compact-stat-card {
+    padding: 10px 6px;
+    min-height: 110px;
+    border-radius: 8px;
+  }
+  
+  .compact-stat-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .compact-stat-number {
+    font-size: 1.1rem;
+  }
+  
+  .compact-stat-label {
+    font-size: 0.7rem;
+  }
+  
+  .compact-stat-sublabel {
+    font-size: 0.6rem;
+  }
+  
+  .compact-trend {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+}
+
+/* Enhanced mobile card styling */
+@media (max-width: 768px) {
+  .items-sold-card {
+    color: #667eea;
+    border-left: 3px solid #667eea;
+  }
+
+  .active-listings-card {
+    color: #f093fb;
+    border-left: 3px solid #f093fb;
+  }
+
+  .revenue-card {
+    color: #10b981;
+    border-left: 3px solid #10b981;
+  }
+  
+  .compact-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: currentColor;
+    opacity: 0.3;
   }
 }
 

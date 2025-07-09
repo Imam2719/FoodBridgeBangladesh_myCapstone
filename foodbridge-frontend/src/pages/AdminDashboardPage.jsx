@@ -157,78 +157,78 @@ const AdminDashboard = () => {
     overdueRequests: 0
   });
   const [availableDonors, setAvailableDonors] = useState([]);
-const [donorsLoading, setDonorsLoading] = useState(false);
+  const [donorsLoading, setDonorsLoading] = useState(false);
 
-const fetchAvailableDonors = async () => {
-  setDonorsLoading(true);
-  console.log('🔍 Fetching available donors...');
-  
-  try {
-    const response = await fetch(`${API_CONFIG.BASE_URL}/api/receiver/emergency-requests/admin/donors`);
-    console.log('📡 Donor API response status:', response.status);
-    
-    if (response.ok) {
-      const data = await response.json();
-      console.log('📋 Donor API response:', data);
-      
-      if (data.success) {
-        console.log(`✅ Successfully fetched ${data.donors.length} donors`);
-        setAvailableDonors(data.donors);
-      } else {
-        console.error('❌ API returned success: false -', data.message);
-        toast.error('Failed to fetch donors: ' + data.message);
-      }
-    } else {
-      console.error('❌ API request failed with status:', response.status);
-      const errorText = await response.text();
-      console.error('❌ Error response:', errorText);
-      toast.error('API request failed: ' + response.status);
-    }
-  } catch (error) {
-    console.error('❌ Error fetching donors:', error);
-    toast.error('Error fetching donors: ' + error.message);
-  } finally {
-    setDonorsLoading(false);
-  }
-};
+  const fetchAvailableDonors = async () => {
+    setDonorsLoading(true);
+    console.log('🔍 Fetching available donors...');
 
-const testDonorAPI = async () => {
-  console.log('🧪 Testing donor API manually...');
-  
-  try {
-    const response = await fetch(`${API_CONFIG.BASE_URL}/api/receiver/emergency-requests/admin/donors`);
-    console.log('Response status:', response.status);
-    console.log('Response headers:', response.headers);
-    
-    const text = await response.text();
-    console.log('Raw response:', text);
-    
     try {
-      const json = JSON.parse(text);
-      console.log('Parsed JSON:', json);
-    } catch (e) {
-      console.log('Failed to parse as JSON:', e);
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/receiver/emergency-requests/admin/donors`);
+      console.log('📡 Donor API response status:', response.status);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📋 Donor API response:', data);
+
+        if (data.success) {
+          console.log(`✅ Successfully fetched ${data.donors.length} donors`);
+          setAvailableDonors(data.donors);
+        } else {
+          console.error('❌ API returned success: false -', data.message);
+          toast.error('Failed to fetch donors: ' + data.message);
+        }
+      } else {
+        console.error('❌ API request failed with status:', response.status);
+        const errorText = await response.text();
+        console.error('❌ Error response:', errorText);
+        toast.error('API request failed: ' + response.status);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching donors:', error);
+      toast.error('Error fetching donors: ' + error.message);
+    } finally {
+      setDonorsLoading(false);
     }
-  } catch (error) {
-    console.error('Network error:', error);
-  }
-};
+  };
+
+  const testDonorAPI = async () => {
+    console.log('🧪 Testing donor API manually...');
+
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/receiver/emergency-requests/admin/donors`);
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      const text = await response.text();
+      console.log('Raw response:', text);
+
+      try {
+        const json = JSON.parse(text);
+        console.log('Parsed JSON:', json);
+      } catch (e) {
+        console.log('Failed to parse as JSON:', e);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
 
 
-const handleSendToDonors = async () => {
-  if (!selectedEmergencyRequest) return;
+  const handleSendToDonors = async () => {
+    if (!selectedEmergencyRequest) return;
 
-  setEmergencyActionLoading(true);
+    setEmergencyActionLoading(true);
 
-  try {
-    const authData = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser'));
-    
-    const formData = new FormData();
-    formData.append('emergencyRequestId', selectedEmergencyRequest.id);
-    formData.append('senderAdminId', authData?.id || '1');
-    formData.append('subject', `🚨 Urgent: Emergency Food Request - ${selectedEmergencyRequest.title}`);
-    
-    const defaultMessage = `
+    try {
+      const authData = JSON.parse(localStorage.getItem('authUser') || sessionStorage.getItem('authUser'));
+
+      const formData = new FormData();
+      formData.append('emergencyRequestId', selectedEmergencyRequest.id);
+      formData.append('senderAdminId', authData?.id || '1');
+      formData.append('subject', `🚨 Urgent: Emergency Food Request - ${selectedEmergencyRequest.title}`);
+
+      const defaultMessage = `
 EMERGENCY FOOD REQUEST ALERT
 
 Request Details:
@@ -252,315 +252,315 @@ Best regards,
 FoodBridge Bangladesh Admin Team
     `.trim();
 
-    formData.append('content', customMessage.trim() || defaultMessage);
-    formData.append('recipientType', donorSelectionType);
-    
-    if (donorSelectionType === 'custom' && selectedDonors.length > 0) {
-      formData.append('selectedDonors', JSON.stringify(selectedDonors));
-    }
+      formData.append('content', customMessage.trim() || defaultMessage);
+      formData.append('recipientType', donorSelectionType);
 
-    const response = await fetch(`${API_CONFIG.BASE_URL}/api/receiver/emergency-requests/admin/emergency/send-to-donors`, {
-      method: 'POST',
-      body: formData
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      toast.success(`Emergency request sent to ${result.emailsSent} donors successfully`);
-      if (result.emailsFailed > 0) {
-        toast.warning(`${result.emailsFailed} emails failed to send`);
-      }
-      
-      setShowEmergencySendToDonorModal(false);
-      setCustomMessage('');
-      setSelectedDonors([]);
-      
-      fetchEmergencyRequests();
-    } else {
-      throw new Error(result.message || 'Failed to send to donors');
-    }
-  } catch (error) {
-    console.error('Error sending to donors:', error);
-    toast.error(`Failed to send to donors: ${error.message}`);
-  } finally {
-    setEmergencyActionLoading(false);
-  }
-};
-
-useEffect(() => {
-  if (showEmergencySendToDonorModal) {
-    fetchAvailableDonors();
-  }
-}, [showEmergencySendToDonorModal]);
-
- const fetchEmergencyRequests = async () => {
-  setEmergencyRequestsLoading(true);
-  setEmergencyRequestsError(null);
-
-  try {
-    let endpoint = '/api/receiver/emergency-requests/pending';
-    
-    // Determine endpoint based on status filter
-    if (emergencyStatusFilter === 'approved') {
-      endpoint = '/api/receiver/emergency-requests/status/approved';
-    } else if (emergencyStatusFilter === 'rejected') {
-      endpoint = '/api/receiver/emergency-requests/status/rejected';
-    } else if (emergencyStatusFilter === 'pending' || emergencyStatusFilter === 'all') {
-      // Handle urgency-specific filtering for pending requests
-      if (emergencyFilter === 'urgent') {
-        endpoint = '/api/receiver/emergency-requests/urgent';
-      } else if (emergencyFilter === 'overdue') {
-        endpoint = '/api/receiver/emergency-requests/overdue';
-      } else if (emergencyFilter !== 'all') {
-        endpoint = `/api/receiver/emergency-requests/urgency/${emergencyFilter}`;
-      } else {
-        endpoint = '/api/receiver/emergency-requests/pending';
-      }
-    }
-
-    console.log(`🔄 Fetching emergency requests from: ${endpoint}`);
-    const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`);
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch emergency requests: ${response.status}`);
-    }
-
-    const data = await response.json();
-    
-    if (data.success) {
-      let requests = data.requests || [];
-      
-      // Apply additional status filtering if needed
-      if (emergencyStatusFilter === 'approved') {
-        requests = requests.filter(req => 
-          req.status === 'APPROVED' || req.status === 'IN_PROGRESS' || req.status === 'FULFILLED'
-        );
-      } else if (emergencyStatusFilter === 'rejected') {
-        requests = requests.filter(req => 
-          req.status === 'REJECTED' || req.status === 'CANCELLED'
-        );
-      } else if (emergencyStatusFilter === 'pending') {
-        requests = requests.filter(req => req.status === 'PENDING');
+      if (donorSelectionType === 'custom' && selectedDonors.length > 0) {
+        formData.append('selectedDonors', JSON.stringify(selectedDonors));
       }
 
-      // Apply category filter
-      if (emergencyRequestsCategory !== 'all') {
-        requests = requests.filter(req =>
-          req.category?.toLowerCase() === emergencyRequestsCategory.toLowerCase()
-        );
-      }
-
-      // Apply search filter
-      if (emergencySearchTerm.trim()) {
-        const searchLower = emergencySearchTerm.toLowerCase();
-        requests = requests.filter(req =>
-          req.title?.toLowerCase().includes(searchLower) ||
-          req.description?.toLowerCase().includes(searchLower) ||
-          req.location?.toLowerCase().includes(searchLower) ||
-          req.requesterName?.toLowerCase().includes(searchLower) ||
-          req.requesterEmail?.toLowerCase().includes(searchLower) ||
-          req.requesterPhone?.toLowerCase().includes(searchLower)
-        );
-      }
-
-      // Sort by newest first, but prioritize urgent requests
-      requests.sort((a, b) => {
-        // First sort by urgency (critical > high > medium)
-        const urgencyOrder = { 'CRITICAL': 3, 'HIGH': 2, 'MEDIUM': 1 };
-        const urgencyDiff = (urgencyOrder[b.urgency] || 0) - (urgencyOrder[a.urgency] || 0);
-        
-        if (urgencyDiff !== 0) return urgencyDiff;
-        
-        // Then by priority score
-        const priorityDiff = (b.priorityScore || 0) - (a.priorityScore || 0);
-        if (priorityDiff !== 0) return priorityDiff;
-        
-        // Finally by date (newest first)
-        return new Date(b.requestDate) - new Date(a.requestDate);
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/receiver/emergency-requests/admin/emergency/send-to-donors`, {
+        method: 'POST',
+        body: formData
       });
-      
-      setEmergencyRequests(requests);
-      console.log(`✅ Loaded ${requests.length} emergency requests for ${emergencyStatusFilter} status`);
-    } else {
-      throw new Error(data.message || 'Failed to fetch emergency requests');
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success(`Emergency request sent to ${result.emailsSent} donors successfully`);
+        if (result.emailsFailed > 0) {
+          toast.warning(`${result.emailsFailed} emails failed to send`);
+        }
+
+        setShowEmergencySendToDonorModal(false);
+        setCustomMessage('');
+        setSelectedDonors([]);
+
+        fetchEmergencyRequests();
+      } else {
+        throw new Error(result.message || 'Failed to send to donors');
+      }
+    } catch (error) {
+      console.error('Error sending to donors:', error);
+      toast.error(`Failed to send to donors: ${error.message}`);
+    } finally {
+      setEmergencyActionLoading(false);
     }
-  } catch (error) {
-    console.error('❌ Error fetching emergency requests:', error);
-    setEmergencyRequestsError(error.message);
-    setEmergencyRequests([]);
-  } finally {
-    setEmergencyRequestsLoading(false);
-  }
-};
+  };
+
+  useEffect(() => {
+    if (showEmergencySendToDonorModal) {
+      fetchAvailableDonors();
+    }
+  }, [showEmergencySendToDonorModal]);
+
+  const fetchEmergencyRequests = async () => {
+    setEmergencyRequestsLoading(true);
+    setEmergencyRequestsError(null);
+
+    try {
+      let endpoint = '/api/receiver/emergency-requests/pending';
+
+      // Determine endpoint based on status filter
+      if (emergencyStatusFilter === 'approved') {
+        endpoint = '/api/receiver/emergency-requests/status/approved';
+      } else if (emergencyStatusFilter === 'rejected') {
+        endpoint = '/api/receiver/emergency-requests/status/rejected';
+      } else if (emergencyStatusFilter === 'pending' || emergencyStatusFilter === 'all') {
+        // Handle urgency-specific filtering for pending requests
+        if (emergencyFilter === 'urgent') {
+          endpoint = '/api/receiver/emergency-requests/urgent';
+        } else if (emergencyFilter === 'overdue') {
+          endpoint = '/api/receiver/emergency-requests/overdue';
+        } else if (emergencyFilter !== 'all') {
+          endpoint = `/api/receiver/emergency-requests/urgency/${emergencyFilter}`;
+        } else {
+          endpoint = '/api/receiver/emergency-requests/pending';
+        }
+      }
+
+      console.log(`🔄 Fetching emergency requests from: ${endpoint}`);
+      const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch emergency requests: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        let requests = data.requests || [];
+
+        // Apply additional status filtering if needed
+        if (emergencyStatusFilter === 'approved') {
+          requests = requests.filter(req =>
+            req.status === 'APPROVED' || req.status === 'IN_PROGRESS' || req.status === 'FULFILLED'
+          );
+        } else if (emergencyStatusFilter === 'rejected') {
+          requests = requests.filter(req =>
+            req.status === 'REJECTED' || req.status === 'CANCELLED'
+          );
+        } else if (emergencyStatusFilter === 'pending') {
+          requests = requests.filter(req => req.status === 'PENDING');
+        }
+
+        // Apply category filter
+        if (emergencyRequestsCategory !== 'all') {
+          requests = requests.filter(req =>
+            req.category?.toLowerCase() === emergencyRequestsCategory.toLowerCase()
+          );
+        }
+
+        // Apply search filter
+        if (emergencySearchTerm.trim()) {
+          const searchLower = emergencySearchTerm.toLowerCase();
+          requests = requests.filter(req =>
+            req.title?.toLowerCase().includes(searchLower) ||
+            req.description?.toLowerCase().includes(searchLower) ||
+            req.location?.toLowerCase().includes(searchLower) ||
+            req.requesterName?.toLowerCase().includes(searchLower) ||
+            req.requesterEmail?.toLowerCase().includes(searchLower) ||
+            req.requesterPhone?.toLowerCase().includes(searchLower)
+          );
+        }
+
+        // Sort by newest first, but prioritize urgent requests
+        requests.sort((a, b) => {
+          // First sort by urgency (critical > high > medium)
+          const urgencyOrder = { 'CRITICAL': 3, 'HIGH': 2, 'MEDIUM': 1 };
+          const urgencyDiff = (urgencyOrder[b.urgency] || 0) - (urgencyOrder[a.urgency] || 0);
+
+          if (urgencyDiff !== 0) return urgencyDiff;
+
+          // Then by priority score
+          const priorityDiff = (b.priorityScore || 0) - (a.priorityScore || 0);
+          if (priorityDiff !== 0) return priorityDiff;
+
+          // Finally by date (newest first)
+          return new Date(b.requestDate) - new Date(a.requestDate);
+        });
+
+        setEmergencyRequests(requests);
+        console.log(`✅ Loaded ${requests.length} emergency requests for ${emergencyStatusFilter} status`);
+      } else {
+        throw new Error(data.message || 'Failed to fetch emergency requests');
+      }
+    } catch (error) {
+      console.error('❌ Error fetching emergency requests:', error);
+      setEmergencyRequestsError(error.message);
+      setEmergencyRequests([]);
+    } finally {
+      setEmergencyRequestsLoading(false);
+    }
+  };
 
   const fetchEmergencyStats = async () => {
-  try {
-    console.log('📊 Fetching emergency statistics...');
-    const response = await fetch(`${API_CONFIG.BASE_URL}/api/receiver/emergency-requests/admin/statistics`);
-    
-    if (response.ok) {
-      const data = await response.json();
-      if (data.success) {
-        setEmergencyStats(data.statistics);
-        console.log('📊 Emergency statistics updated:', data.statistics);
+    try {
+      console.log('📊 Fetching emergency statistics...');
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/receiver/emergency-requests/admin/statistics`);
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setEmergencyStats(data.statistics);
+          console.log('📊 Emergency statistics updated:', data.statistics);
+        }
       }
+    } catch (error) {
+      console.error('❌ Error fetching emergency statistics:', error);
     }
-  } catch (error) {
-    console.error('❌ Error fetching emergency statistics:', error);
-  }
-};
-const getUrgencyIcon = (urgency) => {
-  switch (urgency?.toUpperCase()) {
-    case 'CRITICAL': return '🚨';
-    case 'HIGH': return '🔴';
-    case 'MEDIUM': return '🟡';
-    default: return '⚪';
-  }
-};
-const handleEmergencyAction = async (action, requestId, additionalData = {}) => {
-  setEmergencyActionLoading(true);
-
-  try {
-    let endpoint, method, body;
-    let successMessage = '';
-
-    switch (action) {
-      case 'approve':
-        endpoint = `/api/receiver/emergency-requests/${requestId}/status`;
-        method = 'PUT';
-        body = new URLSearchParams({
-          status: 'APPROVED',
-          responseNote: additionalData.note || 'Request approved by admin - help is being arranged',
-          responderId: '1',
-          responderName: 'Admin',
-          responderContact: 'admin@foodbridge.com'
-        });
-        successMessage = 'Emergency request approved successfully! 🎉';
-        break;
-
-      case 'reject':
-        endpoint = `/api/receiver/emergency-requests/${requestId}/status`;
-        method = 'PUT';
-        body = new URLSearchParams({
-          status: 'REJECTED',
-          responseNote: additionalData.reason || 'Request rejected by admin',
-          responderId: '1',
-          responderName: 'Admin',
-          responderContact: 'admin@foodbridge.com'
-        });
-        successMessage = 'Emergency request rejected ❌';
-        break;
-
-      case 'in_progress':
-        endpoint = `/api/receiver/emergency-requests/${requestId}/status`;
-        method = 'PUT';
-        body = new URLSearchParams({
-          status: 'IN_PROGRESS',
-          responseNote: 'Help is on the way! Donors have been notified.',
-          responderId: '1',
-          responderName: 'Admin',
-          responderContact: 'admin@foodbridge.com'
-        });
-        successMessage = 'Request status updated to "In Progress" 🚀';
-        break;
-
-      case 'fulfill':
-        endpoint = `/api/receiver/emergency-requests/${requestId}/fulfill`;
-        method = 'PUT';
-        body = new URLSearchParams({
-          fulfillmentNote: additionalData.note || 'Emergency request fulfilled successfully'
-        });
-        successMessage = 'Emergency request marked as fulfilled! ✅';
-        break;
-
-      case 'delete':
-        endpoint = `/api/receiver/emergency-requests/${requestId}`;
-        method = 'DELETE';
-        successMessage = 'Emergency request deleted permanently 🗑️';
-        break;
-
-      default:
-        throw new Error('Invalid action');
+  };
+  const getUrgencyIcon = (urgency) => {
+    switch (urgency?.toUpperCase()) {
+      case 'CRITICAL': return '🚨';
+      case 'HIGH': return '🔴';
+      case 'MEDIUM': return '🟡';
+      default: return '⚪';
     }
+  };
+  const handleEmergencyAction = async (action, requestId, additionalData = {}) => {
+    setEmergencyActionLoading(true);
 
-    console.log(`🔄 Performing action: ${action} on request ${requestId}`);
-    const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
-      method,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: body
-    });
+    try {
+      let endpoint, method, body;
+      let successMessage = '';
 
-    const result = await response.json();
+      switch (action) {
+        case 'approve':
+          endpoint = `/api/receiver/emergency-requests/${requestId}/status`;
+          method = 'PUT';
+          body = new URLSearchParams({
+            status: 'APPROVED',
+            responseNote: additionalData.note || 'Request approved by admin - help is being arranged',
+            responderId: '1',
+            responderName: 'Admin',
+            responderContact: 'admin@foodbridge.com'
+          });
+          successMessage = 'Emergency request approved successfully! 🎉';
+          break;
 
-    if (result.success) {
-      // Show success notification with custom message
-      if (typeof toast !== 'undefined') {
-        toast.success(successMessage);
+        case 'reject':
+          endpoint = `/api/receiver/emergency-requests/${requestId}/status`;
+          method = 'PUT';
+          body = new URLSearchParams({
+            status: 'REJECTED',
+            responseNote: additionalData.reason || 'Request rejected by admin',
+            responderId: '1',
+            responderName: 'Admin',
+            responderContact: 'admin@foodbridge.com'
+          });
+          successMessage = 'Emergency request rejected ❌';
+          break;
+
+        case 'in_progress':
+          endpoint = `/api/receiver/emergency-requests/${requestId}/status`;
+          method = 'PUT';
+          body = new URLSearchParams({
+            status: 'IN_PROGRESS',
+            responseNote: 'Help is on the way! Donors have been notified.',
+            responderId: '1',
+            responderName: 'Admin',
+            responderContact: 'admin@foodbridge.com'
+          });
+          successMessage = 'Request status updated to "In Progress" 🚀';
+          break;
+
+        case 'fulfill':
+          endpoint = `/api/receiver/emergency-requests/${requestId}/fulfill`;
+          method = 'PUT';
+          body = new URLSearchParams({
+            fulfillmentNote: additionalData.note || 'Emergency request fulfilled successfully'
+          });
+          successMessage = 'Emergency request marked as fulfilled! ✅';
+          break;
+
+        case 'delete':
+          endpoint = `/api/receiver/emergency-requests/${requestId}`;
+          method = 'DELETE';
+          successMessage = 'Emergency request deleted permanently 🗑️';
+          break;
+
+        default:
+          throw new Error('Invalid action');
+      }
+
+      console.log(`🔄 Performing action: ${action} on request ${requestId}`);
+      const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
+        method,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Show success notification with custom message
+        if (typeof toast !== 'undefined') {
+          toast.success(successMessage);
+        } else {
+          alert(successMessage);
+        }
+
+        // Refresh the appropriate data
+        fetchEmergencyRequests();
+        fetchEmergencyStats();
+
+        // Close modals
+        setShowEmergencyModal(false);
+        setShowEmergencyRejectModal(false);
+
+        console.log(`✅ Action ${action} completed successfully`);
       } else {
-        alert(successMessage);
+        throw new Error(result.message || `Failed to ${action} request`);
       }
-      
-      // Refresh the appropriate data
+    } catch (error) {
+      console.error(`❌ Error ${action}ing emergency request:`, error);
+      const errorMessage = `Failed to ${action} request: ${error.message}`;
+
+      if (typeof toast !== 'undefined') {
+        toast.error(errorMessage);
+      } else {
+        alert(errorMessage);
+      }
+    } finally {
+      setEmergencyActionLoading(false);
+    }
+  };
+
+  // Enhanced useEffect for Emergency Requests with Status-based Fetching
+  useEffect(() => {
+    if (activeSection === 'emergencies') {
+      console.log(`🔄 Emergency section active, fetching data for status: ${emergencyStatusFilter}`);
       fetchEmergencyRequests();
       fetchEmergencyStats();
-      
-      // Close modals
-      setShowEmergencyModal(false);
-      setShowEmergencyRejectModal(false);
-      
-      console.log(`✅ Action ${action} completed successfully`);
-    } else {
-      throw new Error(result.message || `Failed to ${action} request`);
     }
-  } catch (error) {
-    console.error(`❌ Error ${action}ing emergency request:`, error);
-    const errorMessage = `Failed to ${action} request: ${error.message}`;
-    
-    if (typeof toast !== 'undefined') {
-      toast.error(errorMessage);
-    } else {
-      alert(errorMessage);
+  }, [activeSection, emergencyFilter, emergencyStatusFilter, emergencySearchTerm, emergencyRequestsCategory]);
+
+  // Enhanced Auto-refresh with Status Awareness
+  useEffect(() => {
+    if (activeSection === 'emergencies') {
+      const interval = setInterval(() => {
+        console.log('🔄 Auto-refreshing emergency data...');
+        fetchEmergencyRequests();
+        fetchEmergencyStats();
+      }, 30000); // Refresh every 30 seconds
+
+      return () => {
+        clearInterval(interval);
+        console.log('🛑 Emergency auto-refresh stopped');
+      };
     }
-  } finally {
-    setEmergencyActionLoading(false);
-  }
-};
+  }, [activeSection, emergencyStatusFilter]);
 
-// Enhanced useEffect for Emergency Requests with Status-based Fetching
-useEffect(() => {
-  if (activeSection === 'emergencies') {
-    console.log(`🔄 Emergency section active, fetching data for status: ${emergencyStatusFilter}`);
-    fetchEmergencyRequests();
-    fetchEmergencyStats();
-  }
-}, [activeSection, emergencyFilter, emergencyStatusFilter, emergencySearchTerm, emergencyRequestsCategory]);
-
-// Enhanced Auto-refresh with Status Awareness
-useEffect(() => {
-  if (activeSection === 'emergencies') {
-    const interval = setInterval(() => {
-      console.log('🔄 Auto-refreshing emergency data...');
-      fetchEmergencyRequests();
-      fetchEmergencyStats();
-    }, 30000); // Refresh every 30 seconds
-
-    return () => {
-      clearInterval(interval);
-      console.log('🛑 Emergency auto-refresh stopped');
-    };
-  }
-}, [activeSection, emergencyStatusFilter]);
-
-const switchEmergencyTab = (newStatus) => {
-  console.log(`📂 Switching to ${newStatus} tab`);
-  setEmergencyStatusFilter(newStatus);
-  setEmergencySearchTerm(''); // Clear search when switching tabs
-  setEmergencyFilter('all'); // Reset urgency filter
-  setEmergencyRequestsCategory('all'); // Reset category filter
-};
+  const switchEmergencyTab = (newStatus) => {
+    console.log(`📂 Switching to ${newStatus} tab`);
+    setEmergencyStatusFilter(newStatus);
+    setEmergencySearchTerm(''); // Clear search when switching tabs
+    setEmergencyFilter('all'); // Reset urgency filter
+    setEmergencyRequestsCategory('all'); // Reset category filter
+  };
 
 
   useEffect(() => {
@@ -4874,38 +4874,38 @@ FoodBridge Billing Team`
     );
   };
 
-const EnhancedEmergencyRequestCard = ({ request, onView, onAction, statusFilter }) => {
-  const getUrgencyColor = (urgency) => {
-    switch (urgency?.toUpperCase()) {
-      case 'CRITICAL':
-        return 'bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30 text-red-800 dark:text-red-300 border-red-300 dark:border-red-700';
-      case 'HIGH':
-        return 'bg-gradient-to-r from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-700';
-      case 'MEDIUM':
-        return 'bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900/30 dark:to-yellow-800/30 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700';
-      default:
-        return 'bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600';
-    }
-  };
+  const EnhancedEmergencyRequestCard = ({ request, onView, onAction, statusFilter }) => {
+    const getUrgencyColor = (urgency) => {
+      switch (urgency?.toUpperCase()) {
+        case 'CRITICAL':
+          return 'bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30 text-red-800 dark:text-red-300 border-red-300 dark:border-red-700';
+        case 'HIGH':
+          return 'bg-gradient-to-r from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-700';
+        case 'MEDIUM':
+          return 'bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900/30 dark:to-yellow-800/30 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700';
+        default:
+          return 'bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600';
+      }
+    };
 
-     const getStatusColor = (status) => {
-    switch (status?.toUpperCase()) {
-      case 'PENDING':
-        return 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white';
-      case 'APPROVED':
-        return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white';
-      case 'IN_PROGRESS':
-        return 'bg-gradient-to-r from-purple-500 to-purple-600 text-white';
-      case 'FULFILLED':
-        return 'bg-gradient-to-r from-green-500 to-green-600 text-white';
-      case 'REJECTED':
-        return 'bg-gradient-to-r from-red-500 to-red-600 text-white';
-      case 'CANCELLED':
-        return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white';
-      default:
-        return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white';
-    }
-  };
+    const getStatusColor = (status) => {
+      switch (status?.toUpperCase()) {
+        case 'PENDING':
+          return 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white';
+        case 'APPROVED':
+          return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white';
+        case 'IN_PROGRESS':
+          return 'bg-gradient-to-r from-purple-500 to-purple-600 text-white';
+        case 'FULFILLED':
+          return 'bg-gradient-to-r from-green-500 to-green-600 text-white';
+        case 'REJECTED':
+          return 'bg-gradient-to-r from-red-500 to-red-600 text-white';
+        case 'CANCELLED':
+          return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white';
+        default:
+          return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white';
+      }
+    };
 
     const getCategoryIcon = (category) => {
       switch (category?.toUpperCase()) {
@@ -4940,226 +4940,252 @@ const EnhancedEmergencyRequestCard = ({ request, onView, onAction, statusFilter 
     };
 
     const isOverdue = (request) => {
-    const now = new Date();
-    const requestDate = new Date(request.requestDate);
-    const hoursElapsed = (now - requestDate) / (1000 * 60 * 60);
-    
-    if (request.urgency === 'CRITICAL' && hoursElapsed > 2) return true;
-    if (request.urgency === 'HIGH' && hoursElapsed > 8) return true;
-    if (request.urgency === 'MEDIUM' && hoursElapsed > 24) return true;
-    return false;
-  };
+      const now = new Date();
+      const requestDate = new Date(request.requestDate);
+      const hoursElapsed = (now - requestDate) / (1000 * 60 * 60);
 
-   const getCardBorderColor = (request) => {
-    if (isOverdue(request) && request.status === 'PENDING') {
-      return 'border-red-500 dark:border-red-400 shadow-red-200 dark:shadow-red-900/30';
-    }
-    switch (request.urgency?.toUpperCase()) {
-      case 'CRITICAL':
-        return 'border-red-300 dark:border-red-700 shadow-red-100 dark:shadow-red-900/20';
-      case 'HIGH':
-        return 'border-orange-300 dark:border-orange-700 shadow-orange-100 dark:shadow-orange-900/20';
-      case 'MEDIUM':
-        return 'border-yellow-300 dark:border-yellow-700 shadow-yellow-100 dark:shadow-yellow-900/20';
-      default:
-        return 'border-gray-200 dark:border-gray-700 shadow-gray-100 dark:shadow-gray-900/20';
-    }
-  };
+      if (request.urgency === 'CRITICAL' && hoursElapsed > 2) return true;
+      if (request.urgency === 'HIGH' && hoursElapsed > 8) return true;
+      if (request.urgency === 'MEDIUM' && hoursElapsed > 24) return true;
+      return false;
+    };
+
+    const getCardBorderColor = (request) => {
+      if (isOverdue(request) && request.status === 'PENDING') {
+        return 'border-red-500 dark:border-red-400 shadow-red-200 dark:shadow-red-900/30';
+      }
+      switch (request.urgency?.toUpperCase()) {
+        case 'CRITICAL':
+          return 'border-red-300 dark:border-red-700 shadow-red-100 dark:shadow-red-900/20';
+        case 'HIGH':
+          return 'border-orange-300 dark:border-orange-700 shadow-orange-100 dark:shadow-orange-900/20';
+        case 'MEDIUM':
+          return 'border-yellow-300 dark:border-yellow-700 shadow-yellow-100 dark:shadow-yellow-900/20';
+        default:
+          return 'border-gray-200 dark:border-gray-700 shadow-gray-100 dark:shadow-gray-900/20';
+      }
+    };
 
     return (
-    <div className={`relative group bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 border-2 ${getCardBorderColor(request)} overflow-hidden hover:shadow-xl dark:hover:shadow-gray-900/70 transition-all duration-300 transform hover:scale-[1.02]`}>
-      {/* Gradient Header */}
-      <div className={`h-2 ${getUrgencyColor(request.urgency).includes('red') ? 'bg-gradient-to-r from-red-500 to-red-600' : 
-        getUrgencyColor(request.urgency).includes('orange') ? 'bg-gradient-to-r from-orange-500 to-orange-600' :
-        getUrgencyColor(request.urgency).includes('yellow') ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' :
-        'bg-gradient-to-r from-gray-500 to-gray-600'}`}>
-      </div>
+      <div className={`relative group bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 border-2 ${getCardBorderColor(request)} overflow-hidden hover:shadow-xl dark:hover:shadow-gray-900/70 transition-all duration-300 transform hover:scale-[1.02]`}>
+        {/* Gradient Header */}
+        <div className={`h-2 ${getUrgencyColor(request.urgency).includes('red') ? 'bg-gradient-to-r from-red-500 to-red-600' :
+          getUrgencyColor(request.urgency).includes('orange') ? 'bg-gradient-to-r from-orange-500 to-orange-600' :
+            getUrgencyColor(request.urgency).includes('yellow') ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' :
+              'bg-gradient-to-r from-gray-500 to-gray-600'}`}>
+        </div>
 
-      {/* Card Header */}
-      <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center space-x-3 mb-3">
-              <span className="text-2xl">{getCategoryIcon(request.category)}</span>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                {request.title}
-              </h3>
-              {isOverdue(request) && request.status === 'PENDING' && (
-                <div className="flex items-center">
-                  <span className="px-3 py-1 text-xs font-bold bg-red-600 text-white rounded-full animate-pulse shadow-lg">
-                    ⏰ OVERDUE
-                  </span>
+        {/* Card Header */}
+        <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="flex items-center space-x-3 mb-3">
+                <span className="text-2xl">{getCategoryIcon(request.category)}</span>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {request.title}
+                </h3>
+                {isOverdue(request) && request.status === 'PENDING' && (
+                  <div className="flex items-center">
+                    <span className="px-3 py-1 text-xs font-bold bg-red-600 text-white rounded-full animate-pulse shadow-lg">
+                      ⏰ OVERDUE
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center space-x-3 mb-2">
+                <span className={`px-3 py-1.5 text-sm font-semibold rounded-lg border-2 ${getUrgencyColor(request.urgency)}`}>
+                  {getUrgencyIcon(request.urgency)} {request.urgency}
+                </span>
+                <span className={`px-3 py-1.5 text-sm font-semibold rounded-lg ${getStatusColor(request.status)}`}>
+                  {request.status?.replace('_', ' ')}
+                </span>
+              </div>
+            </div>
+
+            <div className="text-right">
+              <div className="flex items-center justify-end space-x-2 mb-2">
+                <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">{timeAgo(request.requestDate)}</span>
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+              </div>
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-1 rounded-lg text-lg font-bold shadow-lg">
+                #{request.id}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Card Content */}
+        <div className="p-5 space-y-4">
+          {/* Location and People */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
+              <MapPin className="h-4 w-4 mr-2 text-blue-500" />
+              <span className="font-medium truncate max-w-32">{request.location}</span>
+            </div>
+            <div className="flex items-center text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
+              <Users className="h-4 w-4 mr-2 text-green-500" />
+              <span className="font-medium">{request.peopleCount} people</span>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-600/50 p-4 rounded-lg">
+            <p className="text-gray-700 dark:text-gray-300 line-clamp-2 font-medium">
+              {request.description}
+            </p>
+          </div>
+
+          {/* Requester Info */}
+          <div className="grid grid-cols-1 gap-3">
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center text-gray-600 dark:text-gray-400">
+                <User className="h-4 w-4 mr-2 text-purple-500" />
+                <span className="font-medium">{request.requesterName || 'Unknown'}</span>
+              </div>
+              {request.requesterPhone && (
+                <div className="flex items-center text-gray-600 dark:text-gray-400">
+                  <Phone className="h-4 w-4 mr-2 text-orange-500" />
+                  <span className="font-medium">{request.requesterPhone}</span>
                 </div>
               )}
             </div>
-            
-            <div className="flex items-center space-x-3 mb-2">
-              <span className={`px-3 py-1.5 text-sm font-semibold rounded-lg border-2 ${getUrgencyColor(request.urgency)}`}>
-                {getUrgencyIcon(request.urgency)} {request.urgency}
+          </div>
+
+          {/* Priority and Media */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center text-sm">
+              <TrendingUp className="h-4 w-4 mr-2 text-indigo-500" />
+              <span className="font-medium text-gray-600 dark:text-gray-400">
+                Priority:
+                <span className={`ml-1 font-bold ${request.priorityScore > 80 ? 'text-red-600 dark:text-red-400' :
+                  request.priorityScore > 60 ? 'text-orange-600 dark:text-orange-400' :
+                    'text-yellow-600 dark:text-yellow-400'
+                  }`}>
+                  {request.priorityScore || 0}
+                </span>
               </span>
-              <span className={`px-3 py-1.5 text-sm font-semibold rounded-lg ${getStatusColor(request.status)}`}>
-                {request.status?.replace('_', ' ')}
-              </span>
             </div>
-          </div>
-          
-          <div className="text-right">
-            <div className="flex items-center justify-end space-x-2 mb-2">
-              <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">{timeAgo(request.requestDate)}</span>
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-            </div>
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-1 rounded-lg text-lg font-bold shadow-lg">
-              #{request.id}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Card Content */}
-      <div className="p-5 space-y-4">
-        {/* Location and People */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
-            <MapPin className="h-4 w-4 mr-2 text-blue-500" />
-            <span className="font-medium truncate max-w-32">{request.location}</span>
-          </div>
-          <div className="flex items-center text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
-            <Users className="h-4 w-4 mr-2 text-green-500" />
-            <span className="font-medium">{request.peopleCount} people</span>
-          </div>
-        </div>
-
-        {/* Description */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-600/50 p-4 rounded-lg">
-          <p className="text-gray-700 dark:text-gray-300 line-clamp-2 font-medium">
-            {request.description}
-          </p>
-        </div>
-
-        {/* Requester Info */}
-        <div className="grid grid-cols-1 gap-3">
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center text-gray-600 dark:text-gray-400">
-              <User className="h-4 w-4 mr-2 text-purple-500" />
-              <span className="font-medium">{request.requesterName || 'Unknown'}</span>
-            </div>
-            {request.requesterPhone && (
-              <div className="flex items-center text-gray-600 dark:text-gray-400">
-                <Phone className="h-4 w-4 mr-2 text-orange-500" />
-                <span className="font-medium">{request.requesterPhone}</span>
+            {request.imageData && (
+              <div className="flex items-center text-sm text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
+                <Camera className="h-4 w-4 mr-1" />
+                Photo
               </div>
             )}
           </div>
-        </div>
 
-        {/* Priority and Media */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center text-sm">
-            <TrendingUp className="h-4 w-4 mr-2 text-indigo-500" />
-            <span className="font-medium text-gray-600 dark:text-gray-400">
-              Priority: 
-              <span className={`ml-1 font-bold ${
-                request.priorityScore > 80 ? 'text-red-600 dark:text-red-400' :
-                request.priorityScore > 60 ? 'text-orange-600 dark:text-orange-400' :
-                'text-yellow-600 dark:text-yellow-400'
-              }`}>
-                {request.priorityScore || 0}
-              </span>
-            </span>
-          </div>
-          {request.imageData && (
-            <div className="flex items-center text-sm text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
-              <Camera className="h-4 w-4 mr-1" />
-              Photo
+          {/* Response Information for Approved/Rejected */}
+          {(statusFilter === 'approved' || statusFilter === 'rejected') && request.responseNote && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">
+                Admin Response:
+              </div>
+              <p className="text-sm text-blue-700 dark:text-blue-300">{request.responseNote}</p>
+              {request.responseDate && (
+                <div className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                  {new Date(request.responseDate).toLocaleDateString()} at {new Date(request.responseDate).toLocaleTimeString()}
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Response Information for Approved/Rejected */}
-        {(statusFilter === 'approved' || statusFilter === 'rejected') && request.responseNote && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
-            <div className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">
-              Admin Response:
-            </div>
-            <p className="text-sm text-blue-700 dark:text-blue-300">{request.responseNote}</p>
-            {request.responseDate && (
-              <div className="text-xs text-blue-600 dark:text-blue-400 mt-2">
-                {new Date(request.responseDate).toLocaleDateString()} at {new Date(request.responseDate).toLocaleTimeString()}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+        {/* Enhanced Action Buttons */}
+        <div className="p-5 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-600/50 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-wrap gap-2">
+            {/* View Button - Always Available */}
+            <button
+              onClick={onView}
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 text-white text-sm rounded-lg hover:from-blue-700 hover:to-blue-800 dark:hover:from-blue-600 dark:hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+            >
+              <Eye className="h-3 w-3 mr-1" />
+              View Details
+            </button>
 
-      {/* Enhanced Action Buttons */}
-      <div className="p-5 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-600/50 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex flex-wrap gap-2">
-          {/* View Button - Always Available */}
-          <button
-            onClick={onView}
-            className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 text-white text-sm rounded-lg hover:from-blue-700 hover:to-blue-800 dark:hover:from-blue-600 dark:hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
-          >
-            <Eye className="h-3 w-3 mr-1" />
-            View Details
-          </button>
-          
-          {/* Status-specific Actions */}
-          {statusFilter === 'pending' && (
-            <>
+            {/* Status-specific Actions */}
+            {statusFilter === 'pending' && (
+              <>
+                <button
+                  onClick={() => onAction('approve')}
+                  className="flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 dark:from-green-700 dark:to-green-800 text-white text-sm rounded-lg hover:from-green-700 hover:to-green-800 dark:hover:from-green-600 dark:hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+                >
+                  <Check className="h-3 w-3 mr-1" />
+                  Approve
+                </button>
+
+                <button
+                  onClick={() => onAction('sendToDonor')}
+                  className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 dark:from-purple-700 dark:to-purple-800 text-white text-sm rounded-lg hover:from-purple-700 hover:to-purple-800 dark:hover:from-purple-600 dark:hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+                >
+                  <Send className="h-3 w-3 mr-1" />
+                  Send to Donors
+                </button>
+
+                <button
+                  onClick={() => onAction('reject')}
+                  className="flex items-center px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white text-sm rounded-lg hover:from-red-700 hover:to-red-800 dark:hover:from-red-600 dark:hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+                >
+                  <X className="h-3 w-3 mr-1" />
+                  Reject
+                </button>
+              </>
+            )}
+
+            {(statusFilter === 'approved' && (request.status === 'APPROVED' || request.status === 'IN_PROGRESS')) && (
               <button
-                onClick={() => onAction('approve')}
+                onClick={() => onAction('fulfill')}
                 className="flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 dark:from-green-700 dark:to-green-800 text-white text-sm rounded-lg hover:from-green-700 hover:to-green-800 dark:hover:from-green-600 dark:hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
               >
-                <Check className="h-3 w-3 mr-1" />
-                Approve
+                <PackageCheck className="h-3 w-3 mr-1" />
+                Mark Fulfilled
               </button>
-              
-              <button
-                onClick={() => onAction('sendToDonor')}
-                className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 dark:from-purple-700 dark:to-purple-800 text-white text-sm rounded-lg hover:from-purple-700 hover:to-purple-800 dark:hover:from-purple-600 dark:hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
-              >
-                <Send className="h-3 w-3 mr-1" />
-                Send to Donors
-              </button>
-              
-              <button
-                onClick={() => onAction('reject')}
-                className="flex items-center px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white text-sm rounded-lg hover:from-red-700 hover:to-red-800 dark:hover:from-red-600 dark:hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
-              >
-                <X className="h-3 w-3 mr-1" />
-                Reject
-              </button>
-            </>
-          )}
-          
-          {(statusFilter === 'approved' && (request.status === 'APPROVED' || request.status === 'IN_PROGRESS')) && (
-            <button
-              onClick={() => onAction('fulfill')}
-              className="flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 dark:from-green-700 dark:to-green-800 text-white text-sm rounded-lg hover:from-green-700 hover:to-green-800 dark:hover:from-green-600 dark:hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
-            >
-              <PackageCheck className="h-3 w-3 mr-1" />
-              Mark Fulfilled
-            </button>
-          )}
-          
-          {/* Delete Button - Always Available */}
-          <button
-            onClick={() => onAction('delete')}
-            className="flex items-center px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-700 dark:from-gray-700 dark:to-gray-800 text-white text-sm rounded-lg hover:from-red-600 hover:to-red-700 dark:hover:from-red-700 dark:hover:to-red-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
-          >
-            <Trash2 className="h-3 w-3 mr-1" />
-            Delete
-          </button>
-        </div>
-      </div>
+            )}
 
-      {/* Urgent Request Pulse Effect */}
-      {request.urgency === 'CRITICAL' && request.status === 'PENDING' && (
-        <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-red-400 rounded-xl blur opacity-25 animate-pulse"></div>
-      )}
-    </div>
-  );
-};
+            {/* Delete Button - Always Available */}
+            <button
+              onClick={() => onAction('delete')}
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-700 dark:from-gray-700 dark:to-gray-800 text-white text-sm rounded-lg hover:from-red-600 hover:to-red-700 dark:hover:from-red-700 dark:hover:to-red-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+            >
+              <Trash2 className="h-3 w-3 mr-1" />
+              Delete
+            </button>
+          </div>
+        </div>
+
+        {/* Urgent Request Pulse Effect */}
+        {request.urgency === 'CRITICAL' && request.status === 'PENDING' && (
+          <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-red-400 rounded-xl blur opacity-25 animate-pulse"></div>
+        )}
+      </div>
+    );
+  };
+  useEffect(() => {
+    if (isSidebarOpen && window.innerWidth < 1024) {
+      document.body.classList.add('sidebar-open');
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('sidebar-open');
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('sidebar-open');
+      document.body.style.overflow = 'unset';
+    };
+  }, [isSidebarOpen]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      // Auto-close sidebar on desktop
+      if (window.innerWidth >= 1024 && isSidebarOpen) {
+        setIsSidebarOpen(true); // Keep open on desktop
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isSidebarOpen]);
 
   const ProfileModal = () => {
 
@@ -6563,20 +6589,42 @@ const EnhancedEmergencyRequestCard = ({ request, onView, onAction, statusFilter 
       {/* ============== SIDEBAR COMPONENT ============== */}
       <aside
         className={`fixed top-16 left-0 h-full w-64 transition-all duration-300 transform z-20
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
-        ${darkMode
+  ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
+  ${darkMode
             ? 'bg-gray-800 border-gray-700 shadow-xl'
             : 'bg-white border-gray-200 shadow-lg'
           } border-r`}
       >
+        {/* ADD THIS: Mobile Close Button Header */}
+        <div className={`lg:hidden flex items-center justify-between p-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <h2 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            FoodBridge Admin
+          </h2>
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className={`p-2 rounded-lg transition-colors ${darkMode
+              ? 'hover:bg-gray-700 text-gray-300 hover:text-white'
+              : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+              }`}
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
 
-       <nav className="p-4 space-y-1 flex-1 overflow-y-auto max-h-[calc(100vh-180px)] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+        {/* Navigation Menu - UPDATE the className */}
+        <nav className="p-4 space-y-1 flex-1 overflow-y-auto max-h-[calc(100vh-240px)] lg:max-h-[calc(100vh-180px)] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
           {menuItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveSection(item.id)}
+              onClick={() => {
+                setActiveSection(item.id);
+                // ADD THIS: Auto-close sidebar on mobile when menu item is clicked
+                if (window.innerWidth < 1024) {
+                  setIsSidebarOpen(false);
+                }
+              }}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200
-                ${activeSection === item.id
+          ${activeSection === item.id
                   ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md'
                   : darkMode
                     ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
@@ -6590,11 +6638,11 @@ const EnhancedEmergencyRequestCard = ({ request, onView, onAction, statusFilter 
           ))}
         </nav>
 
-        {/* Sidebar Footer */}
+        {/* Sidebar Footer - Keep existing */}
         <div className={`p-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
           <button
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200
-              ${darkMode
+        ${darkMode
                 ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
                 : 'text-gray-600 hover:bg-gray-100'
               }`}
@@ -6606,8 +6654,16 @@ const EnhancedEmergencyRequestCard = ({ request, onView, onAction, statusFilter 
         </div>
       </aside>
 
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden backdrop-blur-sm"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* ============== MAIN CONTENT AREA ============== */}
       <div className={`transition-all duration-300 ${isSidebarOpen ? 'lg:ml-64' : ''}`}>
+
         {/* Header with toggle button */}
         <header className={`sticky top-0 z-10 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b shadow-sm px-6 py-4`}>
           <div className="flex items-center justify-between">
@@ -6627,342 +6683,342 @@ const EnhancedEmergencyRequestCard = ({ request, onView, onAction, statusFilter 
           {/* ============== OVERVIEW SECTION ============== */}
 
           {activeSection === 'overview' && (
-  <div className="premium-overview-container space-y-8 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
-    {/* Premium Welcome Hero Section */}
-    <div className="premium-hero-banner relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="hero-bg-pattern"></div>
-      <div className="hero-floating-elements">
-        <div className="floating-circle circle-1"></div>
-        <div className="floating-circle circle-2"></div>
-        <div className="floating-circle circle-3"></div>
-      </div>
-
-      <div className="relative z-10 hero-content">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center">
-          <div className="hero-text-section">
-            <div className="flex items-center mb-4">
-              <div className="hero-icon-container">
-                <BarChart3 className="h-10 w-10 text-white" />
-              </div>
-              <div className="ml-4">
-                <h1 className="hero-title">
-                  Welcome to FoodBridge
-                  <span className="hero-subtitle-accent">Admin Control Center</span>
-                </h1>
-              </div>
-            </div>
-          </div>
-
-          <div className="hero-action-section">
-            <button
-              onClick={() => window.location.reload()}
-              className="hero-action-btn"
-            >
-              <RefreshCw className="h-5 w-5 mr-2" />
-              Refresh Dashboard
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {/* Premium Stats Grid - Square Frame Design */}
-    <div className="premium-stats-section">
-      <div className="section-header-premium">
-        <h2 className="section-title-premium">Platform Analytics</h2>
-        <p className="section-subtitle-premium">Real-time platform statistics and performance metrics</p>
-      </div>
-
-      <div className="premium-stats-grid">
-        {/* Total Users - Premium Square Card */}
-        <div className="premium-stat-card stat-card-primary">
-          <div className="stat-card-glow glow-blue"></div>
-          <div className="stat-card-inner">
-            <div className="stat-header">
-              <div className="stat-icon-premium stat-icon-blue">
-                <Users className="h-8 w-8" />
-              </div>
-            </div>
-            <div className="stat-content">
-              <div className="stat-value-premium">
-                {usersLoading ? (
-                  <div className="stat-loading-skeleton"></div>
-                ) : (
-                  <div className="stat-number-animated" data-value={usersData?.length || 0}>
-                    {usersData?.length || 0}
-                  </div>
-                )}
-              </div>
-              <div className="stat-label-premium">Total Users</div>
-              <div className="stat-description">Registered platform members</div>
-            </div>
-            <div className="stat-footer">
-              <div className="stat-breakdown">
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-green"></div>
-                  {usersData?.filter(user => user.userType?.toLowerCase() === 'donor').length || 0} Donors
-                </span>
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-purple"></div>
-                  {usersData?.filter(user => user.userType?.toLowerCase() === 'receiver').length || 0} Receivers
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Total Merchants - Premium Square Card */}
-        <div className="premium-stat-card stat-card-secondary">
-          <div className="stat-card-glow glow-orange"></div>
-          <div className="stat-card-inner">
-            <div className="stat-header">
-              <div className="stat-icon-premium stat-icon-orange">
-                <Store className="h-8 w-8" />
-              </div>
-              <div className="stat-trend-indicator positive">
-                <TrendingUp className="h-4 w-4" />
-                <span>+8%</span>
-              </div>
-            </div>
-            <div className="stat-content">
-              <div className="stat-value-premium">
-                {merchantsLoading ? (
-                  <div className="stat-loading-skeleton"></div>
-                ) : (
-                  <div className="stat-number-animated" data-value={merchantsData?.length || 0}>
-                    {merchantsData?.length || 0}
-                  </div>
-                )}
-              </div>
-              <div className="stat-label-premium">Total Merchants</div>
-              <div className="stat-description">Business partners</div>
-            </div>
-            <div className="stat-footer">
-              <div className="stat-breakdown">
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-green"></div>
-                  {merchantsData?.filter(m => m.status === 'Active').length || 0} Active
-                </span>
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-yellow"></div>
-                  {merchantsData?.filter(m => m.status === 'Pending').length || 0} Pending
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Active Donations - Premium Square Card */}
-        <div className="premium-stat-card stat-card-tertiary">
-          <div className="stat-card-glow glow-green"></div>
-          <div className="stat-card-inner">
-            <div className="stat-header">
-              <div className="stat-icon-premium stat-icon-green">
-                <Package className="h-8 w-8" />
-              </div>
-              <div className="stat-trend-indicator positive">
-                <TrendingUp className="h-4 w-4" />
-                <span>+15%</span>
-              </div>
-            </div>
-            <div className="stat-content">
-              <div className="stat-value-premium">
-                {donationsLoading ? (
-                  <div className="stat-loading-skeleton"></div>
-                ) : (
-                  <div className="stat-number-animated" data-value={donationsStats?.active || 0}>
-                    {donationsStats?.active || 0}
-                  </div>
-                )}
-              </div>
-              <div className="stat-label-premium">Active Donations</div>
-              <div className="stat-description">Available for pickup</div>
-            </div>
-            <div className="stat-footer">
-              <div className="stat-breakdown">
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-blue"></div>
-                  {donationsStats?.completed || 0} Completed
-                </span>
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-red"></div>
-                  {donationsStats?.expired || 0} Expired
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Emergency Requests - Premium Square Card */}
-        <div className="premium-stat-card stat-card-emergency">
-          <div className="stat-card-glow glow-red"></div>
-          <div className="stat-card-inner">
-            <div className="stat-header">
-              <div className="stat-icon-premium stat-icon-red">
-                <AlertTriangle className="h-8 w-8" />
-              </div>
-              {emergencyStats.urgentRequests > 0 && (
-                <div className="stat-trend-indicator attention">
-                  <Bell className="h-4 w-4" />
-                  <span>Urgent</span>
+            <div className="premium-overview-container space-y-8 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
+              {/* Premium Welcome Hero Section */}
+              <div className="premium-hero-banner relative overflow-hidden">
+                {/* Animated Background Elements */}
+                <div className="hero-bg-pattern"></div>
+                <div className="hero-floating-elements">
+                  <div className="floating-circle circle-1"></div>
+                  <div className="floating-circle circle-2"></div>
+                  <div className="floating-circle circle-3"></div>
                 </div>
-              )}
-            </div>
-            <div className="stat-content">
-              <div className="stat-value-premium">
-                {emergencyRequestsLoading ? (
-                  <div className="stat-loading-skeleton"></div>
-                ) : (
-                  <div className="stat-number-animated" data-value={emergencyStats.pendingRequests || 0}>
-                    {emergencyStats.pendingRequests || 0}
-                  </div>
-                )}
-              </div>
-              <div className="stat-label-premium">Emergency Requests</div>
-              <div className="stat-description">Urgent food assistance</div>
-            </div>
-            <div className="stat-footer">
-              <div className="stat-breakdown">
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-red"></div>
-                  {emergencyStats.urgentRequests || 0} Urgent
-                </span>
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-gray"></div>
-                  {emergencyStats.totalRequests || 0} Total
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Total Messages - Premium Square Card */}
-        <div className="premium-stat-card stat-card-quaternary">
-          <div className="stat-card-glow glow-purple"></div>
-          <div className="stat-card-inner">
-            <div className="stat-header">
-              <div className="stat-icon-premium stat-icon-purple">
-                <Mail className="h-8 w-8" />
-              </div>
-              <div className="stat-trend-indicator neutral">
-                <Activity className="h-4 w-4" />
-                <span>0%</span>
-              </div>
-            </div>
-            <div className="stat-content">
-              <div className="stat-value-premium">
-                {messagesLoading ? (
-                  <div className="stat-loading-skeleton"></div>
-                ) : (
-                  <div className="stat-number-animated" data-value={messageStats?.totalMessages || 0}>
-                    {messageStats?.totalMessages || 0}
-                  </div>
-                )}
-              </div>
-              <div className="stat-label-premium">Total Messages</div>
-              <div className="stat-description">Platform communications</div>
-            </div>
-            <div className="stat-footer">
-              <div className="stat-breakdown">
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-red"></div>
-                  {messageStats?.unreadMessages || 0} Unread
-                </span>
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-green"></div>
-                  {messageStats?.readMessages || 0} Read
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+                <div className="relative z-10 hero-content">
+                  <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center">
+                    <div className="hero-text-section">
+                      <div className="flex items-center mb-4">
+                        <div className="hero-icon-container">
+                          <BarChart3 className="h-10 w-10 text-white" />
+                        </div>
+                        <div className="ml-4">
+                          <h1 className="hero-title">
+                            Welcome to FoodBridge
+                            <span className="hero-subtitle-accent">Admin Control Center</span>
+                          </h1>
+                        </div>
+                      </div>
+                    </div>
 
-        {/* Total Admins - Premium Square Card */}
-        <div className="premium-stat-card stat-card-accent">
-          <div className="stat-card-glow glow-indigo"></div>
-          <div className="stat-card-inner">
-            <div className="stat-header">
-              <div className="stat-icon-premium stat-icon-indigo">
-                <Shield className="h-8 w-8" />
-              </div>
-              <div className="stat-trend-indicator positive">
-                <Users className="h-4 w-4" />
-                <span>+2</span>
-              </div>
-            </div>
-            <div className="stat-content">
-              <div className="stat-value-premium">
-                {adminsLoading ? (
-                  <div className="stat-loading-skeleton"></div>
-                ) : (
-                  <div className="stat-number-animated" data-value={adminsData?.length || 0}>
-                    {adminsData?.length || 0}
+                    <div className="hero-action-section">
+                      <button
+                        onClick={() => window.location.reload()}
+                        className="hero-action-btn"
+                      >
+                        <RefreshCw className="h-5 w-5 mr-2" />
+                        Refresh Dashboard
+                      </button>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
-              <div className="stat-label-premium">System Admins</div>
-              <div className="stat-description">Platform administrators</div>
-            </div>
-            <div className="stat-footer">
-              <div className="stat-breakdown">
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-green"></div>
-                  {adminsData?.filter(admin => admin.status === 'Active').length || 0} Active
-                </span>
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-gray"></div>
-                  {adminsData?.filter(admin => admin.status !== 'Active').length || 0} Inactive
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Food Reports - Premium Square Card */}
-        <div className="premium-stat-card stat-card-warning">
-          <div className="stat-card-glow glow-red"></div>
-          <div className="stat-card-inner">
-            <div className="stat-header">
-              <div className="stat-icon-premium stat-icon-red">
-                <AlertTriangle className="h-8 w-8" />
-              </div>
-              <div className="stat-trend-indicator attention">
-                <Bell className="h-4 w-4" />
-                <span>Alert</span>
-              </div>
-            </div>
-            <div className="stat-content">
-              <div className="stat-value-premium">
-                {foodReportsLoading ? (
-                  <div className="stat-loading-skeleton"></div>
-                ) : (
-                  <div className="stat-number-animated" data-value={foodReportsStats?.totalReports || 0}>
-                    {foodReportsStats?.totalReports || 0}
+              {/* Premium Stats Grid - Square Frame Design */}
+              <div className="premium-stats-section">
+                <div className="section-header-premium">
+                  <h2 className="section-title-premium">Platform Analytics</h2>
+                  <p className="section-subtitle-premium">Real-time platform statistics and performance metrics</p>
+                </div>
+
+                <div className="premium-stats-grid">
+                  {/* Total Users - Premium Square Card */}
+                  <div className="premium-stat-card stat-card-primary">
+                    <div className="stat-card-glow glow-blue"></div>
+                    <div className="stat-card-inner">
+                      <div className="stat-header">
+                        <div className="stat-icon-premium stat-icon-blue">
+                          <Users className="h-8 w-8" />
+                        </div>
+                      </div>
+                      <div className="stat-content">
+                        <div className="stat-value-premium">
+                          {usersLoading ? (
+                            <div className="stat-loading-skeleton"></div>
+                          ) : (
+                            <div className="stat-number-animated" data-value={usersData?.length || 0}>
+                              {usersData?.length || 0}
+                            </div>
+                          )}
+                        </div>
+                        <div className="stat-label-premium">Total Users</div>
+                        <div className="stat-description">Registered platform members</div>
+                      </div>
+                      <div className="stat-footer">
+                        <div className="stat-breakdown">
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-green"></div>
+                            {usersData?.filter(user => user.userType?.toLowerCase() === 'donor').length || 0} Donors
+                          </span>
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-purple"></div>
+                            {usersData?.filter(user => user.userType?.toLowerCase() === 'receiver').length || 0} Receivers
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                )}
+
+                  {/* Total Merchants - Premium Square Card */}
+                  <div className="premium-stat-card stat-card-secondary">
+                    <div className="stat-card-glow glow-orange"></div>
+                    <div className="stat-card-inner">
+                      <div className="stat-header">
+                        <div className="stat-icon-premium stat-icon-orange">
+                          <Store className="h-8 w-8" />
+                        </div>
+                        <div className="stat-trend-indicator positive">
+                          <TrendingUp className="h-4 w-4" />
+                          <span>+8%</span>
+                        </div>
+                      </div>
+                      <div className="stat-content">
+                        <div className="stat-value-premium">
+                          {merchantsLoading ? (
+                            <div className="stat-loading-skeleton"></div>
+                          ) : (
+                            <div className="stat-number-animated" data-value={merchantsData?.length || 0}>
+                              {merchantsData?.length || 0}
+                            </div>
+                          )}
+                        </div>
+                        <div className="stat-label-premium">Total Merchants</div>
+                        <div className="stat-description">Business partners</div>
+                      </div>
+                      <div className="stat-footer">
+                        <div className="stat-breakdown">
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-green"></div>
+                            {merchantsData?.filter(m => m.status === 'Active').length || 0} Active
+                          </span>
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-yellow"></div>
+                            {merchantsData?.filter(m => m.status === 'Pending').length || 0} Pending
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Active Donations - Premium Square Card */}
+                  <div className="premium-stat-card stat-card-tertiary">
+                    <div className="stat-card-glow glow-green"></div>
+                    <div className="stat-card-inner">
+                      <div className="stat-header">
+                        <div className="stat-icon-premium stat-icon-green">
+                          <Package className="h-8 w-8" />
+                        </div>
+                        <div className="stat-trend-indicator positive">
+                          <TrendingUp className="h-4 w-4" />
+                          <span>+15%</span>
+                        </div>
+                      </div>
+                      <div className="stat-content">
+                        <div className="stat-value-premium">
+                          {donationsLoading ? (
+                            <div className="stat-loading-skeleton"></div>
+                          ) : (
+                            <div className="stat-number-animated" data-value={donationsStats?.active || 0}>
+                              {donationsStats?.active || 0}
+                            </div>
+                          )}
+                        </div>
+                        <div className="stat-label-premium">Active Donations</div>
+                        <div className="stat-description">Available for pickup</div>
+                      </div>
+                      <div className="stat-footer">
+                        <div className="stat-breakdown">
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-blue"></div>
+                            {donationsStats?.completed || 0} Completed
+                          </span>
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-red"></div>
+                            {donationsStats?.expired || 0} Expired
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Emergency Requests - Premium Square Card */}
+                  <div className="premium-stat-card stat-card-emergency">
+                    <div className="stat-card-glow glow-red"></div>
+                    <div className="stat-card-inner">
+                      <div className="stat-header">
+                        <div className="stat-icon-premium stat-icon-red">
+                          <AlertTriangle className="h-8 w-8" />
+                        </div>
+                        {emergencyStats.urgentRequests > 0 && (
+                          <div className="stat-trend-indicator attention">
+                            <Bell className="h-4 w-4" />
+                            <span>Urgent</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="stat-content">
+                        <div className="stat-value-premium">
+                          {emergencyRequestsLoading ? (
+                            <div className="stat-loading-skeleton"></div>
+                          ) : (
+                            <div className="stat-number-animated" data-value={emergencyStats.pendingRequests || 0}>
+                              {emergencyStats.pendingRequests || 0}
+                            </div>
+                          )}
+                        </div>
+                        <div className="stat-label-premium">Emergency Requests</div>
+                        <div className="stat-description">Urgent food assistance</div>
+                      </div>
+                      <div className="stat-footer">
+                        <div className="stat-breakdown">
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-red"></div>
+                            {emergencyStats.urgentRequests || 0} Urgent
+                          </span>
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-gray"></div>
+                            {emergencyStats.totalRequests || 0} Total
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Total Messages - Premium Square Card */}
+                  <div className="premium-stat-card stat-card-quaternary">
+                    <div className="stat-card-glow glow-purple"></div>
+                    <div className="stat-card-inner">
+                      <div className="stat-header">
+                        <div className="stat-icon-premium stat-icon-purple">
+                          <Mail className="h-8 w-8" />
+                        </div>
+                        <div className="stat-trend-indicator neutral">
+                          <Activity className="h-4 w-4" />
+                          <span>0%</span>
+                        </div>
+                      </div>
+                      <div className="stat-content">
+                        <div className="stat-value-premium">
+                          {messagesLoading ? (
+                            <div className="stat-loading-skeleton"></div>
+                          ) : (
+                            <div className="stat-number-animated" data-value={messageStats?.totalMessages || 0}>
+                              {messageStats?.totalMessages || 0}
+                            </div>
+                          )}
+                        </div>
+                        <div className="stat-label-premium">Total Messages</div>
+                        <div className="stat-description">Platform communications</div>
+                      </div>
+                      <div className="stat-footer">
+                        <div className="stat-breakdown">
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-red"></div>
+                            {messageStats?.unreadMessages || 0} Unread
+                          </span>
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-green"></div>
+                            {messageStats?.readMessages || 0} Read
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Total Admins - Premium Square Card */}
+                  <div className="premium-stat-card stat-card-accent">
+                    <div className="stat-card-glow glow-indigo"></div>
+                    <div className="stat-card-inner">
+                      <div className="stat-header">
+                        <div className="stat-icon-premium stat-icon-indigo">
+                          <Shield className="h-8 w-8" />
+                        </div>
+                        <div className="stat-trend-indicator positive">
+                          <Users className="h-4 w-4" />
+                          <span>+2</span>
+                        </div>
+                      </div>
+                      <div className="stat-content">
+                        <div className="stat-value-premium">
+                          {adminsLoading ? (
+                            <div className="stat-loading-skeleton"></div>
+                          ) : (
+                            <div className="stat-number-animated" data-value={adminsData?.length || 0}>
+                              {adminsData?.length || 0}
+                            </div>
+                          )}
+                        </div>
+                        <div className="stat-label-premium">System Admins</div>
+                        <div className="stat-description">Platform administrators</div>
+                      </div>
+                      <div className="stat-footer">
+                        <div className="stat-breakdown">
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-green"></div>
+                            {adminsData?.filter(admin => admin.status === 'Active').length || 0} Active
+                          </span>
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-gray"></div>
+                            {adminsData?.filter(admin => admin.status !== 'Active').length || 0} Inactive
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Food Reports - Premium Square Card */}
+                  <div className="premium-stat-card stat-card-warning">
+                    <div className="stat-card-glow glow-red"></div>
+                    <div className="stat-card-inner">
+                      <div className="stat-header">
+                        <div className="stat-icon-premium stat-icon-red">
+                          <AlertTriangle className="h-8 w-8" />
+                        </div>
+                        <div className="stat-trend-indicator attention">
+                          <Bell className="h-4 w-4" />
+                          <span>Alert</span>
+                        </div>
+                      </div>
+                      <div className="stat-content">
+                        <div className="stat-value-premium">
+                          {foodReportsLoading ? (
+                            <div className="stat-loading-skeleton"></div>
+                          ) : (
+                            <div className="stat-number-animated" data-value={foodReportsStats?.totalReports || 0}>
+                              {foodReportsStats?.totalReports || 0}
+                            </div>
+                          )}
+                        </div>
+                        <div className="stat-label-premium">Food Reports</div>
+                        <div className="stat-description">Safety & quality reports</div>
+                      </div>
+                      <div className="stat-footer">
+                        <div className="stat-breakdown">
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-yellow"></div>
+                            {foodReportsStats?.pendingReports || 0} Pending
+                          </span>
+                          <span className="breakdown-item">
+                            <div className="breakdown-dot dot-green"></div>
+                            {foodReportsStats?.resolvedReports || 0} Resolved
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="stat-label-premium">Food Reports</div>
-              <div className="stat-description">Safety & quality reports</div>
             </div>
-            <div className="stat-footer">
-              <div className="stat-breakdown">
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-yellow"></div>
-                  {foodReportsStats?.pendingReports || 0} Pending
-                </span>
-                <span className="breakdown-item">
-                  <div className="breakdown-dot dot-green"></div>
-                  {foodReportsStats?.resolvedReports || 0} Resolved
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
+          )}
 
           {/* ============== USER MANAGEMENT SECTION ============== */}
           {activeSection === 'users' && (
@@ -8109,16 +8165,6 @@ const EnhancedEmergencyRequestCard = ({ request, onView, onAction, statusFilter 
                 <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Donations</h2>
-                    <div className="flex space-x-2">
-                      <button className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
-                        <Filter className="h-4 w-4 inline mr-1" />
-                        Filter
-                      </button>
-                      <button className="px-3 py-1.5 text-sm bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200">
-                        <Plus className="h-4 w-4 inline mr-1" />
-                        Add New
-                      </button>
-                    </div>
                   </div>
                 </div>
 
@@ -8664,332 +8710,322 @@ const EnhancedEmergencyRequestCard = ({ request, onView, onAction, statusFilter 
           )}
 
           {/* Enhanced Emergency Requests Section */}
-{activeSection === 'emergencies' && (
-  <div className="space-y-6">
-    {/* Animated Header */}
-    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
-      <div className="relative">
-        <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-orange-600 rounded-lg blur opacity-25"></div>
-        <div className="relative bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
-            <div className="relative mr-4">
-              <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400 animate-pulse" />
-              <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-ping"></div>
-            </div>
-            Emergency Response Center
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">
-            Real-time emergency food assistance management
-          </p>
-        </div>
-      </div>
-      
-      <div className="flex flex-wrap gap-3">
-        <button
-          onClick={() => fetchEmergencyRequests()}
-          className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-600 dark:hover:to-indigo-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh Data
-        </button>
-        
-        <button
-          onClick={() => setShowComposeModal(true)}
-          className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-700 dark:to-pink-700 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 dark:hover:from-purple-600 dark:hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Broadcast Alert
-        </button>
-      </div>
-    </div>
+          {activeSection === 'emergencies' && (
+            <div className="space-y-6">
+              {/* Animated Header */}
+              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+                <div className="relative">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-orange-600 rounded-lg blur opacity-25"></div>
+                  <div className="relative bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+                      <div className="relative mr-4">
+                        <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400 animate-pulse" />
+                        <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-ping"></div>
+                      </div>
+                      Emergency Response Center
+                    </h1>
+                    <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">
+                      Real-time emergency food assistance management
+                    </p>
+                  </div>
+                </div>
 
-    {/* Enhanced Statistics Dashboard */}
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {/* Pending Requests */}
-      <div className="relative group">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
-        <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900/50 p-6 border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center">
-            <div className="p-3 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-xl">
-              <Clock className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending Requests</p>
-              <div className="flex items-center space-x-2">
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                  {emergencyStats.pendingRequests || 0}
-                </p>
-                {emergencyStats.urgentRequests > 0 && (
-                  <span className="px-2 py-1 text-xs font-medium bg-red-600 text-white rounded-full animate-pulse">
-                    {emergencyStats.urgentRequests} urgent
-                  </span>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={() => fetchEmergencyRequests()}
+                    className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-600 dark:hover:to-indigo-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Refresh Data
+                  </button>
+                </div>
+              </div>
+
+              {/* Enhanced Statistics Dashboard */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Pending Requests */}
+                <div className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+                  <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900/50 p-6 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center">
+                      <div className="p-3 bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-xl">
+                        <Clock className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending Requests</p>
+                        <div className="flex items-center space-x-2">
+                          <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                            {emergencyStats.pendingRequests || 0}
+                          </p>
+                          {emergencyStats.urgentRequests > 0 && (
+                            <span className="px-2 py-1 text-xs font-medium bg-red-600 text-white rounded-full animate-pulse">
+                              {emergencyStats.urgentRequests} urgent
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Needs immediate attention
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Approved Requests */}
+                <div className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+                  <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900/50 p-6 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center">
+                      <div className="p-3 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-xl">
+                        <Check className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Approved Requests</p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                          {emergencyStats.approvedRequests || 0}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Help is on the way
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Fulfilled Requests */}
+                <div className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+                  <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900/50 p-6 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center">
+                      <div className="p-3 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-xl">
+                        <PackageCheck className="h-6 w-6 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Fulfilled</p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                          {emergencyStats.fulfilledRequests || 0}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Successfully completed
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Rejected Requests */}
+                <div className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600 to-rose-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+                  <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900/50 p-6 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center">
+                      <div className="p-3 bg-gradient-to-br from-red-100 to-rose-100 dark:from-red-900/30 dark:to-rose-900/30 rounded-xl">
+                        <X className="h-6 w-6 text-red-600 dark:text-red-400" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Rejected</p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                          {emergencyStats.rejectedRequests || 0}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Could not fulfill
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Enhanced Tab Navigation */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="flex flex-wrap border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
+                  {[
+                    { id: 'pending', label: 'New Requests', icon: Clock, color: 'yellow', count: emergencyStats.pendingRequests },
+                    { id: 'approved', label: 'Approved', icon: Check, color: 'blue', count: emergencyStats.approvedRequests },
+                    { id: 'rejected', label: 'Rejected', icon: X, color: 'red', count: emergencyStats.rejectedRequests },
+                  ].map((tab) => {
+                    const Icon = tab.icon;
+                    const isActive = emergencyStatusFilter === tab.id || (emergencyStatusFilter === 'all' && tab.id === 'pending');
+
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setEmergencyStatusFilter(tab.id)}
+                        className={`flex items-center px-6 py-4 text-sm font-medium transition-all duration-200 relative group ${isActive
+                          ? `text-${tab.color}-600 dark:text-${tab.color}-400 bg-white dark:bg-gray-800 border-b-2 border-${tab.color}-600`
+                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                          }`}
+                      >
+                        <Icon className={`h-4 w-4 mr-2 ${isActive ? `text-${tab.color}-600 dark:text-${tab.color}-400` : ''}`} />
+                        {tab.label}
+                        {tab.count > 0 && (
+                          <span className={`ml-2 px-2 py-1 text-xs rounded-full ${isActive
+                            ? `bg-${tab.color}-100 dark:bg-${tab.color}-900/30 text-${tab.color}-600 dark:text-${tab.color}-400`
+                            : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
+                            }`}>
+                            {tab.count}
+                          </span>
+                        )}
+                        {isActive && (
+                          <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-${tab.color}-500 to-${tab.color}-600`}></div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Enhanced Search and Filters */}
+                <div className="p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-800/50">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {/* Global Search */}
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                      <input
+                        type="text"
+                        placeholder="Search requests, locations, or names..."
+                        value={emergencySearchTerm}
+                        onChange={(e) => setEmergencySearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                      />
+                    </div>
+
+                    {/* Urgency Filter */}
+                    <div>
+                      <select
+                        value={emergencyFilter}
+                        onChange={(e) => setEmergencyFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                      >
+                        <option value="all">All Urgency Levels</option>
+                        <option value="urgent">🚨 Urgent Only</option>
+                        <option value="critical">🔴 Critical</option>
+                        <option value="high">🟠 High</option>
+                        <option value="medium">🟡 Medium</option>
+                        <option value="overdue">⏰ Overdue</option>
+                      </select>
+                    </div>
+
+                    {/* Category Filter */}
+                    <div>
+                      <select
+                        value={emergencyRequestsCategory}
+                        onChange={(e) => setEmergencyRequestsCategory(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                      >
+                        <option value="all">All Categories</option>
+                        <option value="meal">🍽️ Complete Meals</option>
+                        <option value="water">💧 Drinking Water</option>
+                        <option value="dry">🥫 Dry Rations</option>
+                        <option value="baby">🍼 Baby Food</option>
+                        <option value="mixed">🛒 Mixed Food Items</option>
+                      </select>
+                    </div>
+
+                    {/* Clear Filters */}
+                    <div>
+                      <button
+                        onClick={() => {
+                          setEmergencySearchTerm('');
+                          setEmergencyFilter('all');
+                          setEmergencyRequestsCategory('all');
+                        }}
+                        className="w-full px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 dark:from-gray-600 dark:to-gray-700 text-white rounded-lg hover:from-gray-600 hover:to-gray-700 dark:hover:from-gray-500 dark:hover:to-gray-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                      >
+                        Clear All Filters
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Enhanced Emergency Requests Display */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 overflow-hidden">
+                {emergencyRequestsLoading ? (
+                  <div className="flex flex-col items-center justify-center py-16">
+                    <div className="relative">
+                      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 dark:border-blue-400"></div>
+                      <div className="absolute inset-0 animate-ping rounded-full h-16 w-16 border-b-4 border-blue-600 dark:border-blue-400 opacity-25"></div>
+                    </div>
+                    <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">Loading emergency requests...</p>
+                  </div>
+                ) : emergencyRequestsError ? (
+                  <div className="text-center py-16">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full mb-4">
+                      <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400" />
+                    </div>
+                    <div className="text-red-600 dark:text-red-400 mb-2 font-semibold">Error Loading Emergency Requests</div>
+                    <p className="text-gray-600 dark:text-gray-400">{emergencyRequestsError}</p>
+                    <button
+                      onClick={() => fetchEmergencyRequests()}
+                      className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                      Try Again
+                    </button>
+                  </div>
+                ) : emergencyRequests.length === 0 ? (
+                  <div className="text-center py-16">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full mb-4">
+                      <AlertTriangle className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+                    </div>
+                    <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">
+                      No {emergencyStatusFilter === 'pending' ? 'new' : emergencyStatusFilter} emergency requests found
+                    </p>
+                    <p className="text-gray-500 dark:text-gray-500 mt-2">
+                      {emergencyStatusFilter === 'pending'
+                        ? 'All emergency requests have been processed.'
+                        : `No ${emergencyStatusFilter} requests match your current filters.`
+                      }
+                    </p>
+                  </div>
+                ) : (
+                  <div className="p-6">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {emergencyStatusFilter === 'pending' && 'New Emergency Requests'}
+                        {emergencyStatusFilter === 'approved' && 'Approved Emergency Requests'}
+                        {emergencyStatusFilter === 'rejected' && 'Rejected Emergency Requests'}
+                        <span className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">
+                          ({emergencyRequests.length} requests)
+                        </span>
+                      </h3>
+
+                      <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                        <Clock className="h-4 w-4" />
+                        <span>Last updated: {new Date().toLocaleTimeString()}</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {emergencyRequests.map((request) => (
+                        <EnhancedEmergencyRequestCard
+                          key={request.id}
+                          request={request}
+                          onView={() => {
+                            setSelectedEmergencyRequest(request);
+                            setShowEmergencyModal(true);
+                          }}
+                          onAction={(action) => {
+                            setSelectedEmergencyRequest(request);
+                            if (action === 'reject') {
+                              setShowEmergencyRejectModal(true);
+                            } else if (action === 'sendToDonor') {
+                              setShowEmergencySendToDonorModal(true);
+                            } else if (action === 'delete') {
+                              if (window.confirm('⚠️ Are you sure you want to permanently delete this emergency request?\n\nThis action cannot be undone and will remove all associated data.')) {
+                                handleEmergencyAction('delete', request.id);
+                              }
+                            } else {
+                              handleEmergencyAction(action, request.id);
+                            }
+                          }}
+                          statusFilter={emergencyStatusFilter}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Needs immediate attention
-              </p>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Approved Requests */}
-      <div className="relative group">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
-        <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900/50 p-6 border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center">
-            <div className="p-3 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-xl">
-              <Check className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Approved Requests</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                {emergencyStats.approvedRequests || 0}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Help is on the way
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Fulfilled Requests */}
-      <div className="relative group">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
-        <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900/50 p-6 border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center">
-            <div className="p-3 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-xl">
-              <PackageCheck className="h-6 w-6 text-green-600 dark:text-green-400" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Fulfilled</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                {emergencyStats.fulfilledRequests || 0}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Successfully completed
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Rejected Requests */}
-      <div className="relative group">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600 to-rose-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
-        <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900/50 p-6 border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center">
-            <div className="p-3 bg-gradient-to-br from-red-100 to-rose-100 dark:from-red-900/30 dark:to-rose-900/30 rounded-xl">
-              <X className="h-6 w-6 text-red-600 dark:text-red-400" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Rejected</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                {emergencyStats.rejectedRequests || 0}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Could not fulfill
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {/* Enhanced Tab Navigation */}
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div className="flex flex-wrap border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
-        {[
-          { id: 'pending', label: 'New Requests', icon: Clock, color: 'yellow', count: emergencyStats.pendingRequests },
-          { id: 'approved', label: 'Approved', icon: Check, color: 'blue', count: emergencyStats.approvedRequests },
-          { id: 'rejected', label: 'Rejected', icon: X, color: 'red', count: emergencyStats.rejectedRequests },
-        ].map((tab) => {
-          const Icon = tab.icon;
-          const isActive = emergencyStatusFilter === tab.id || (emergencyStatusFilter === 'all' && tab.id === 'pending');
-          
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setEmergencyStatusFilter(tab.id)}
-              className={`flex items-center px-6 py-4 text-sm font-medium transition-all duration-200 relative group ${
-                isActive
-                  ? `text-${tab.color}-600 dark:text-${tab.color}-400 bg-white dark:bg-gray-800 border-b-2 border-${tab.color}-600`
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
-            >
-              <Icon className={`h-4 w-4 mr-2 ${isActive ? `text-${tab.color}-600 dark:text-${tab.color}-400` : ''}`} />
-              {tab.label}
-              {tab.count > 0 && (
-                <span className={`ml-2 px-2 py-1 text-xs rounded-full ${
-                  isActive 
-                    ? `bg-${tab.color}-100 dark:bg-${tab.color}-900/30 text-${tab.color}-600 dark:text-${tab.color}-400`
-                    : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
-                }`}>
-                  {tab.count}
-                </span>
-              )}
-              {isActive && (
-                <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-${tab.color}-500 to-${tab.color}-600`}></div>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Enhanced Search and Filters */}
-      <div className="p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-800/50">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Global Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400 dark:text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search requests, locations, or names..."
-              value={emergencySearchTerm}
-              onChange={(e) => setEmergencySearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-            />
-          </div>
-
-          {/* Urgency Filter */}
-          <div>
-            <select
-              value={emergencyFilter}
-              onChange={(e) => setEmergencyFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-            >
-              <option value="all">All Urgency Levels</option>
-              <option value="urgent">🚨 Urgent Only</option>
-              <option value="critical">🔴 Critical</option>
-              <option value="high">🟠 High</option>
-              <option value="medium">🟡 Medium</option>
-              <option value="overdue">⏰ Overdue</option>
-            </select>
-          </div>
-
-          {/* Category Filter */}
-          <div>
-            <select
-              value={emergencyRequestsCategory}
-              onChange={(e) => setEmergencyRequestsCategory(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-            >
-              <option value="all">All Categories</option>
-              <option value="meal">🍽️ Complete Meals</option>
-              <option value="water">💧 Drinking Water</option>
-              <option value="dry">🥫 Dry Rations</option>
-              <option value="baby">🍼 Baby Food</option>
-              <option value="mixed">🛒 Mixed Food Items</option>
-            </select>
-          </div>
-
-          {/* Clear Filters */}
-          <div>
-            <button
-              onClick={() => {
-                setEmergencySearchTerm('');
-                setEmergencyFilter('all');
-                setEmergencyRequestsCategory('all');
-              }}
-              className="w-full px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 dark:from-gray-600 dark:to-gray-700 text-white rounded-lg hover:from-gray-600 hover:to-gray-700 dark:hover:from-gray-500 dark:hover:to-gray-600 transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              Clear All Filters
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {/* Enhanced Emergency Requests Display */}
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 overflow-hidden">
-      {emergencyRequestsLoading ? (
-        <div className="flex flex-col items-center justify-center py-16">
-          <div className="relative">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 dark:border-blue-400"></div>
-            <div className="absolute inset-0 animate-ping rounded-full h-16 w-16 border-b-4 border-blue-600 dark:border-blue-400 opacity-25"></div>
-          </div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">Loading emergency requests...</p>
-        </div>
-      ) : emergencyRequestsError ? (
-        <div className="text-center py-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full mb-4">
-            <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400" />
-          </div>
-          <div className="text-red-600 dark:text-red-400 mb-2 font-semibold">Error Loading Emergency Requests</div>
-          <p className="text-gray-600 dark:text-gray-400">{emergencyRequestsError}</p>
-          <button
-            onClick={() => fetchEmergencyRequests()}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      ) : emergencyRequests.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full mb-4">
-            <AlertTriangle className="h-8 w-8 text-gray-400 dark:text-gray-500" />
-          </div>
-          <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">
-            No {emergencyStatusFilter === 'pending' ? 'new' : emergencyStatusFilter} emergency requests found
-          </p>
-          <p className="text-gray-500 dark:text-gray-500 mt-2">
-            {emergencyStatusFilter === 'pending' 
-              ? 'All emergency requests have been processed.'
-              : `No ${emergencyStatusFilter} requests match your current filters.`
-            }
-          </p>
-        </div>
-      ) : (
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {emergencyStatusFilter === 'pending' && 'New Emergency Requests'}
-              {emergencyStatusFilter === 'approved' && 'Approved Emergency Requests'}
-              {emergencyStatusFilter === 'rejected' && 'Rejected Emergency Requests'}
-              <span className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">
-                ({emergencyRequests.length} requests)
-              </span>
-            </h3>
-            
-            <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-              <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleTimeString()}</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {emergencyRequests.map((request) => (
-              <EnhancedEmergencyRequestCard
-                key={request.id}
-                request={request}
-                onView={() => {
-                  setSelectedEmergencyRequest(request);
-                  setShowEmergencyModal(true);
-                }}
-                onAction={(action) => {
-                  setSelectedEmergencyRequest(request);
-                  if (action === 'reject') {
-                    setShowEmergencyRejectModal(true);
-                  } else if (action === 'sendToDonor') {
-                    setShowEmergencySendToDonorModal(true);
-                  } else if (action === 'delete') {
-                    if (window.confirm('⚠️ Are you sure you want to permanently delete this emergency request?\n\nThis action cannot be undone and will remove all associated data.')) {
-                      handleEmergencyAction('delete', request.id);
-                    }
-                  } else {
-                    handleEmergencyAction(action, request.id);
-                  }
-                }}
-                statusFilter={emergencyStatusFilter}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-)}
+          )}
 
           {/* ============== MESSAGES SECTION ============== */}
           {activeSection === 'messages' && (
@@ -10398,222 +10434,222 @@ const EnhancedEmergencyRequestCard = ({ request, onView, onAction, statusFilter 
           )}
 
           {showEmergencySendToDonorModal && selectedEmergencyRequest && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 overflow-y-auto backdrop-blur-sm">
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden m-4">
-      <div className="border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Send Emergency Request to Donors
-        </h3>
-        <button
-          onClick={() => setShowEmergencySendToDonorModal(false)}
-          className="hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 rounded-full transition-colors"
-        >
-          <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-        </button>
-      </div>
+            <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 overflow-y-auto backdrop-blur-sm">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden m-4">
+                <div className="border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Send Emergency Request to Donors
+                  </h3>
+                  <button
+                    onClick={() => setShowEmergencySendToDonorModal(false)}
+                    className="hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 rounded-full transition-colors"
+                  >
+                    <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                  </button>
+                </div>
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        {/* Emergency Request Summary */}
-        <div className="bg-red-50 dark:bg-red-900/10 p-4 rounded-lg border border-red-200 dark:border-red-800">
-          <h4 className="font-medium text-red-800 dark:text-red-300 mb-3 flex items-center">
-            <AlertTriangle className="h-4 w-4 mr-2" />
-            Emergency Request Summary
-          </h4>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="font-medium text-gray-600 dark:text-gray-400">Title:</span>
-              <p className="text-gray-900 dark:text-white">{selectedEmergencyRequest.title}</p>
-            </div>
-            <div>
-              <span className="font-medium text-gray-600 dark:text-gray-400">Location:</span>
-              <p className="text-gray-900 dark:text-white">{selectedEmergencyRequest.location}</p>
-            </div>
-            <div>
-              <span className="font-medium text-gray-600 dark:text-gray-400">People Affected:</span>
-              <p className="text-gray-900 dark:text-white">{selectedEmergencyRequest.peopleCount}</p>
-            </div>
-            <div>
-              <span className="font-medium text-gray-600 dark:text-gray-400">Urgency:</span>
-              <span className={`px-2 py-1 text-xs font-medium rounded-full ${getUrgencyColor(selectedEmergencyRequest.urgency)}`}>
-                {selectedEmergencyRequest.urgency}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Donor Selection */}
-        <div className="bg-purple-50 dark:bg-purple-900/10 p-4 rounded-lg">
-          <h4 className="font-medium text-purple-800 dark:text-purple-300 mb-3 flex items-center">
-            <Users className="h-4 w-4 mr-2" />
-            Select Recipients
-          </h4>
-          
-          <div className="space-y-4">
-            {/* Recipient Type Selection */}
-            <div className="space-y-2">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="donorSelection"
-                  value="all"
-                  checked={donorSelectionType === 'all'}
-                  onChange={(e) => setDonorSelectionType(e.target.value)}
-                  className="mr-3 h-4 w-4 text-purple-600 dark:text-purple-500"
-                />
-                <span className="text-gray-700 dark:text-gray-300">
-                  Send to All Active Donors ({availableDonors.length} donors)
-                </span>
-              </label>
-              
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="donorSelection"
-                  value="custom"
-                  checked={donorSelectionType === 'custom'}
-                  onChange={(e) => setDonorSelectionType(e.target.value)}
-                  className="mr-3 h-4 w-4 text-purple-600 dark:text-purple-500"
-                />
-                <span className="text-gray-700 dark:text-gray-300">
-                  Select Specific Donors
-                </span>
-              </label>
-            </div>
-
-            {/* Custom Donor Selection */}
-            {donorSelectionType === 'custom' && (
-              <div className="mt-4 p-4 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-3">
-                  Select Donors ({selectedDonors.length} selected)
-                </h5>
-                
-                {donorsLoading ? (
-                  <div className="flex justify-center py-4">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600 dark:border-purple-400"></div>
+                <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                  {/* Emergency Request Summary */}
+                  <div className="bg-red-50 dark:bg-red-900/10 p-4 rounded-lg border border-red-200 dark:border-red-800">
+                    <h4 className="font-medium text-red-800 dark:text-red-300 mb-3 flex items-center">
+                      <AlertTriangle className="h-4 w-4 mr-2" />
+                      Emergency Request Summary
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium text-gray-600 dark:text-gray-400">Title:</span>
+                        <p className="text-gray-900 dark:text-white">{selectedEmergencyRequest.title}</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600 dark:text-gray-400">Location:</span>
+                        <p className="text-gray-900 dark:text-white">{selectedEmergencyRequest.location}</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600 dark:text-gray-400">People Affected:</span>
+                        <p className="text-gray-900 dark:text-white">{selectedEmergencyRequest.peopleCount}</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600 dark:text-gray-400">Urgency:</span>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getUrgencyColor(selectedEmergencyRequest.urgency)}`}>
+                          {selectedEmergencyRequest.urgency}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  <div className="max-h-40 overflow-y-auto space-y-2">
-                    {availableDonors.map((donor) => (
-                      <label key={donor.id} className="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-600 rounded cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedDonors.includes(donor.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedDonors([...selectedDonors, donor.id]);
-                            } else {
-                              setSelectedDonors(selectedDonors.filter(id => id !== donor.id));
-                            }
-                          }}
-                          className="mr-3 h-4 w-4 text-purple-600 dark:text-purple-500"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">
-                              {donor.name}
-                            </span>
-                            {donor.verified && (
-                              <span className="px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-full">
-                                Verified
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {donor.email} • {donor.phone}
+
+                  {/* Donor Selection */}
+                  <div className="bg-purple-50 dark:bg-purple-900/10 p-4 rounded-lg">
+                    <h4 className="font-medium text-purple-800 dark:text-purple-300 mb-3 flex items-center">
+                      <Users className="h-4 w-4 mr-2" />
+                      Select Recipients
+                    </h4>
+
+                    <div className="space-y-4">
+                      {/* Recipient Type Selection */}
+                      <div className="space-y-2">
+                        <label className="flex items-center">
+                          <input
+                            type="radio"
+                            name="donorSelection"
+                            value="all"
+                            checked={donorSelectionType === 'all'}
+                            onChange={(e) => setDonorSelectionType(e.target.value)}
+                            className="mr-3 h-4 w-4 text-purple-600 dark:text-purple-500"
+                          />
+                          <span className="text-gray-700 dark:text-gray-300">
+                            Send to All Active Donors ({availableDonors.length} donors)
                           </span>
+                        </label>
+
+                        <label className="flex items-center">
+                          <input
+                            type="radio"
+                            name="donorSelection"
+                            value="custom"
+                            checked={donorSelectionType === 'custom'}
+                            onChange={(e) => setDonorSelectionType(e.target.value)}
+                            className="mr-3 h-4 w-4 text-purple-600 dark:text-purple-500"
+                          />
+                          <span className="text-gray-700 dark:text-gray-300">
+                            Select Specific Donors
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* Custom Donor Selection */}
+                      {donorSelectionType === 'custom' && (
+                        <div className="mt-4 p-4 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                          <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-3">
+                            Select Donors ({selectedDonors.length} selected)
+                          </h5>
+
+                          {donorsLoading ? (
+                            <div className="flex justify-center py-4">
+                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600 dark:border-purple-400"></div>
+                            </div>
+                          ) : (
+                            <div className="max-h-40 overflow-y-auto space-y-2">
+                              {availableDonors.map((donor) => (
+                                <label key={donor.id} className="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-600 rounded cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedDonors.includes(donor.id)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setSelectedDonors([...selectedDonors, donor.id]);
+                                      } else {
+                                        setSelectedDonors(selectedDonors.filter(id => id !== donor.id));
+                                      }
+                                    }}
+                                    className="mr-3 h-4 w-4 text-purple-600 dark:text-purple-500"
+                                  />
+                                  <div className="flex-1">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                        {donor.name}
+                                      </span>
+                                      {donor.verified && (
+                                        <span className="px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-full">
+                                          Verified
+                                        </span>
+                                      )}
+                                    </div>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                      {donor.email} • {donor.phone}
+                                    </span>
+                                  </div>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Select All / Deselect All */}
+                          {!donorsLoading && availableDonors.length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600 flex space-x-2">
+                              <button
+                                onClick={() => setSelectedDonors(availableDonors.map(d => d.id))}
+                                className="px-3 py-1 text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+                              >
+                                Select All
+                              </button>
+                              <button
+                                onClick={() => setSelectedDonors([])}
+                                className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                              >
+                                Deselect All
+                              </button>
+                            </div>
+                          )}
                         </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Custom Message */}
+                  <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg">
+                    <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-3 flex items-center">
+                      <Mail className="h-4 w-4 mr-2" />
+                      Message Content
+                    </h4>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Custom Message (Optional):
                       </label>
-                    ))}
+                      <textarea
+                        value={customMessage}
+                        onChange={(e) => setCustomMessage(e.target.value)}
+                        placeholder="Leave empty to use default emergency message template..."
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        rows={6}
+                      />
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        If left empty, a default template with emergency details will be used.
+                      </p>
+                    </div>
                   </div>
-                )}
-                
-                {/* Select All / Deselect All */}
-                {!donorsLoading && availableDonors.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600 flex space-x-2">
-                    <button
-                      onClick={() => setSelectedDonors(availableDonors.map(d => d.id))}
-                      className="px-3 py-1 text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
-                    >
-                      Select All
-                    </button>
-                    <button
-                      onClick={() => setSelectedDonors([])}
-                      className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                    >
-                      Deselect All
-                    </button>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="border-t border-gray-200 dark:border-gray-700 p-6 bg-gray-50 dark:bg-gray-700/50">
+                  <div className="flex justify-between">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      {donorSelectionType === 'all'
+                        ? `Will send to ${availableDonors.length} donors`
+                        : `Will send to ${selectedDonors.length} selected donors`
+                      }
+                    </div>
+
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={() => setShowEmergencySendToDonorModal(false)}
+                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        Cancel
+                      </button>
+
+                      <button
+                        onClick={handleSendToDonors}
+                        disabled={emergencyActionLoading || (donorSelectionType === 'custom' && selectedDonors.length === 0)}
+                        className="px-6 py-2 bg-purple-600 dark:bg-purple-700 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                      >
+                        {emergencyActionLoading ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            <Send className="h-4 w-4 mr-2" />
+                            Send Emergency Alert
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Custom Message */}
-        <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg">
-          <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-3 flex items-center">
-            <Mail className="h-4 w-4 mr-2" />
-            Message Content
-          </h4>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Custom Message (Optional):
-            </label>
-            <textarea
-              value={customMessage}
-              onChange={(e) => setCustomMessage(e.target.value)}
-              placeholder="Leave empty to use default emergency message template..."
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              rows={6}
-            />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              If left empty, a default template with emergency details will be used.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="border-t border-gray-200 dark:border-gray-700 p-6 bg-gray-50 dark:bg-gray-700/50">
-        <div className="flex justify-between">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {donorSelectionType === 'all' 
-              ? `Will send to ${availableDonors.length} donors`
-              : `Will send to ${selectedDonors.length} selected donors`
-            }
-          </div>
-          
-          <div className="flex space-x-3">
-            <button
-              onClick={() => setShowEmergencySendToDonorModal(false)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              Cancel
-            </button>
-            
-            <button
-              onClick={handleSendToDonors}
-              disabled={emergencyActionLoading || (donorSelectionType === 'custom' && selectedDonors.length === 0)}
-              className="px-6 py-2 bg-purple-600 dark:bg-purple-700 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-            >
-              {emergencyActionLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Send className="h-4 w-4 mr-2" />
-                  Send Emergency Alert
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+            </div>
           )}
 
         </main>
@@ -10631,7 +10667,7 @@ const EnhancedEmergencyRequestCard = ({ request, onView, onAction, statusFilter 
       {UserEmailModal()}
       {MerchantEmailModal()}
       {AdminEmailModal()}
-   
+
       <ViewMerchantDetailsModal
         isOpen={showViewMerchantModal}
         onClose={() => setShowViewMerchantModal(false)}

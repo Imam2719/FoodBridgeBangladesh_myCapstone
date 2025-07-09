@@ -11,9 +11,9 @@ import {
 
 import '../style/DonorDashboard.css';
 
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-    ? 'https://viewlive.onrender.com' 
-    : 'http://localhost:8080';
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? 'https://viewlive.onrender.com'
+  : 'http://localhost:8080';
 
 
 const DonorDashboard = () => {
@@ -122,7 +122,7 @@ const DonorDashboard = () => {
               ...specificRequest,
               imageUrl: specificRequest.imageData
                 ? `data:${specificRequest.imageContentType || 'image/jpeg'};base64,${specificRequest.imageData}`
-                : null,          
+                : null,
               receiverName: specificRequest.receiverName || specificRequest.requesterName || 'Anonymous',
               requestDate: specificRequest.requestDate || new Date(specificRequest.createdAt || Date.now()).toLocaleString(),
               status: specificRequest.status || 'PENDING',
@@ -851,7 +851,7 @@ const DonorDashboard = () => {
     }
     const formData = {
       foodName: donation.foodName || '',
-      category: donation.category || '', 
+      category: donation.category || '',
       quantity: donation.quantity || '',
       expiry: donation.expiry || '',
       location: donation.location || '',
@@ -911,9 +911,9 @@ const DonorDashboard = () => {
             });
           }
         }
-        
-        else if (key === 'category') {     
-          let categoryValue = formToUse[key];   
+
+        else if (key === 'category') {
+          let categoryValue = formToUse[key];
           if (categoryValue && !categoryValue.includes('_')) {
             const categoryMap = {
               "Homemade Food": "HOMEMADE_FOOD",
@@ -997,7 +997,7 @@ const DonorDashboard = () => {
     setShowEditModal(false);
     setEditingDonation(null);
   };
-  
+
   const handleCheckPendingRequests = async (donation) => {
     try {
       setRequestsLoading(true);
@@ -2380,7 +2380,7 @@ const DonorDashboard = () => {
       [field]: value
     });
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setApiLoading(true);
@@ -2395,27 +2395,27 @@ const DonorDashboard = () => {
 
     Object.keys(donationForm).forEach(key => {
       if (donationForm[key] !== null && donationForm[key] !== undefined) {
-       
+
         if (key === 'expiry' || key === 'preparation') {
-        
+
           if (donationForm[key] && donationForm[key].includes('T')) {
-           
+
             const dateValue = donationForm[key].split('T')[0];
             formData.append(fieldMapping[key] || key, dateValue);
           } else if (donationForm[key]) {
-           
+
             formData.append(fieldMapping[key] || key, donationForm[key]);
           }
         }
-  
+
         else if (key === 'dietaryInfo' && Array.isArray(donationForm[key])) {
           donationForm[key].forEach(item => {
             formData.append('dietaryInfo', item);
           });
         }
-      
+
         else if (key !== 'image') {
-         
+
           const backendKey = fieldMapping[key] || key;
           formData.append(backendKey, donationForm[key]);
         }
@@ -2475,13 +2475,13 @@ const DonorDashboard = () => {
   };
   //
   const startDonation = () => {
-    setDonationStep(3); 
+    setDonationStep(3);
     setShowDonationForm(true);
     setShouldShowFoodItems(false);
 
     setDonationForm({
       foodName: '',
-      category: '', 
+      category: '',
       quantity: '',
       expiry: '',
       location: '',
@@ -2813,7 +2813,7 @@ const DonorDashboard = () => {
     setDonationStep(3);
 
     try {
-      
+
       const response = await fetch(`${API_BASE_URL}/api/donor/food-items/${food.id}`);
 
       if (!response.ok) {
@@ -2827,7 +2827,7 @@ const DonorDashboard = () => {
         foodName: itemData.name,
         quantity: itemData.quantity.toString(),
         category: selectedCategory === 'restaurant'
-          ? 'RESTAURANT_SURPLUS'  
+          ? 'RESTAURANT_SURPLUS'
           : 'GROCERY_EXCESS',
         donorType: selectedCategory === 'restaurant' ? 'Restaurant' : 'Grocery Store',
         cuisineType: itemData.foodType || '',
@@ -3723,7 +3723,7 @@ const DonorDashboard = () => {
           console.log('Food item remaining quantity data:', data);
           const remaining = data.remainingQuantity || data.foodItem?.remainingQuantity || 1;
           setMaxQuantity(remaining);
-         
+
           setQuantity(Math.max(1, Math.min(remaining, 1)));
           setDeliveryAddress(food.location || '');
 
@@ -4122,52 +4122,64 @@ const DonorDashboard = () => {
               </button>
             </div>
           </div>
-          <div className="stats-container">
-            <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-blue-500 dark:border-blue-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:transform hover:-translate-y-1">
-              <div className="stats-icon stats-blue bg-blue-500 dark:bg-blue-400 text-white dark:text-gray-900 shadow-lg dark:shadow-blue-500/30">
-                <Package className="h-5 w-5" />
-              </div>
-              <div className="stats-content">
-                <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
-                  {activeDonations.length}
-                </div>
-                <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">ACTIVE DONATIONS</div>
-              </div>
-            </div>
-            <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-green-500 dark:border-green-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:transform hover:-translate-y-1">
-              <div className="stats-icon stats-green bg-green-500 dark:bg-green-400 text-white dark:text-gray-900 shadow-lg dark:shadow-green-500/30">
-                <CheckCircle className="h-5 w-5" />
-              </div>
-              <div className="stats-content">
-                <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
-                  {completedDonations.length}
-                </div>
-                <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">COMPLETED</div>
-              </div>
-            </div>
-            <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-orange-500 dark:border-orange-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:transform hover:-translate-y-1">
-              <div className="stats-icon stats-orange bg-orange-500 dark:bg-orange-400 text-white dark:text-gray-900 shadow-lg dark:shadow-orange-500/30">
-                <Clock3 className="h-5 w-5" />
-              </div>
-              <div className="stats-content">
-                <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
-                  {pendingDonations.length}
-                </div>
-                <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">PENDING</div>
-              </div>
-            </div>
-            <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-purple-500 dark:border-purple-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:transform hover:-translate-y-1">
-              <div className="stats-icon stats-purple bg-purple-500 dark:bg-purple-400 text-white dark:text-gray-900 shadow-lg dark:shadow-purple-500/30">
-                <Users className="h-5 w-5" />
-              </div>
-              <div className="stats-content">
-                <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
-                  {foodRequests.length}
-                </div>
-                <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">FOOD NEED REQUESTS</div>
-              </div>
-            </div>
-          </div>
+      <div className="stats-container">
+  <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-blue-500 dark:border-blue-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:-translate-y-1">
+    <div className="stats-icon stats-blue bg-blue-500 dark:bg-blue-400 text-white dark:text-gray-900 shadow-lg dark:shadow-blue-500/30">
+      <Package className="h-5 w-5" />
+    </div>
+    <div className="stats-content">
+      <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
+        {activeDonations.length}
+      </div>
+      <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">
+        ACTIVE DONATIONS
+      </div>
+    </div>
+  </div>
+
+  <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-green-500 dark:border-green-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:-translate-y-1">
+    <div className="stats-icon stats-green bg-green-500 dark:bg-green-400 text-white dark:text-gray-900 shadow-lg dark:shadow-green-500/30">
+      <CheckCircle className="h-5 w-5" />
+    </div>
+    <div className="stats-content">
+      <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
+        {completedDonations.length}
+      </div>
+      <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">
+        COMPLETED
+      </div>
+    </div>
+  </div>
+
+  <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-orange-500 dark:border-orange-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:-translate-y-1">
+    <div className="stats-icon stats-orange bg-orange-500 dark:bg-orange-400 text-white dark:text-gray-900 shadow-lg dark:shadow-orange-500/30">
+      <Clock3 className="h-5 w-5" />
+    </div>
+    <div className="stats-content">
+      <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
+        {pendingDonations.length}
+      </div>
+      <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">
+        PENDING
+      </div>
+    </div>
+  </div>
+
+  <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-purple-500 dark:border-purple-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:-translate-y-1">
+    <div className="stats-icon stats-purple bg-purple-500 dark:bg-purple-400 text-white dark:text-gray-900 shadow-lg dark:shadow-purple-500/30">
+      <Users className="h-5 w-5" />
+    </div>
+    <div className="stats-content">
+      <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
+        {foodRequests.length}
+      </div>
+      <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">
+        FOOD NEED REQUESTS
+      </div>
+    </div>
+  </div>
+</div>
+
         </div>
 
         {showDonationForm && donationStep > 0 && (
@@ -6521,7 +6533,7 @@ ${donorProfile?.firstName} ${donorProfile?.lastName}`;
                   )}
                 </div>
 
-                <div className="popup-actions flex items-center gap-3">     
+                <div className="popup-actions flex items-center gap-3">
                   {notificationToast.show && (
                     <div className="toast-notification fixed top-4 right-4 bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-6 py-4 rounded-lg shadow-xl dark:shadow-black/30 border border-gray-200 dark:border-gray-700 z-[60] animate-slideIn">
                       <div className="flex items-center gap-3">
@@ -6575,10 +6587,10 @@ ${donorProfile?.firstName} ${donorProfile?.lastName}`;
                             <div className="notification-card-header flex justify-between items-start mb-4">
                               <div className="notification-type-info flex items-center">
                                 <div className={`notification-icon p-2 rounded-full mr-3 ${notification.type === 'PICKUP_REQUEST'
-                                    ? 'bg-blue-100 dark:bg-blue-900/30'
-                                    : notification.type === 'FOOD_REQUEST'
-                                      ? 'bg-green-100 dark:bg-green-900/30'
-                                      : 'bg-purple-100 dark:bg-purple-900/30'
+                                  ? 'bg-blue-100 dark:bg-blue-900/30'
+                                  : notification.type === 'FOOD_REQUEST'
+                                    ? 'bg-green-100 dark:bg-green-900/30'
+                                    : 'bg-purple-100 dark:bg-purple-900/30'
                                   }`}>
                                   {notification.type === 'PICKUP_REQUEST' ? (
                                     <Truck className="h-5 w-5 text-blue-500 dark:text-blue-400" />
@@ -6612,10 +6624,10 @@ ${donorProfile?.firstName} ${donorProfile?.lastName}`;
                                   </span>
                                 )}
                                 <span className={`type-badge px-2 py-1 rounded-full text-xs font-medium uppercase tracking-wide ${notification.type === 'PICKUP_REQUEST'
-                                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
-                                    : notification.type === 'FOOD_REQUEST'
-                                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800'
-                                      : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800'
+                                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
+                                  : notification.type === 'FOOD_REQUEST'
+                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800'
+                                    : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800'
                                   }`}>
                                   {notification.type.replace('_', ' ')}
                                 </span>
