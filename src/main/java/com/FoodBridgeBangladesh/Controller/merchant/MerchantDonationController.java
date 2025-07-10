@@ -245,9 +245,8 @@ public class MerchantDonationController {
         logger.info("Deleting donation with ID: {} by merchant ID: {}", id, merchantId);
 
         try {
-            // Call the donation service to handle the deletion
-            // We'll reuse existing service functionality but authenticate as merchant
-            donationService.deleteDonation(id, merchantId);
+            // Use MerchantDonationService instead of DonationService
+            merchantDonationService.deleteDonation(id, merchantId);  // ✅
 
             return ResponseEntity.noContent().build();
         } catch (IllegalStateException e) {
