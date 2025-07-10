@@ -126,13 +126,19 @@ public class MerchantDonationService {
     }
 
     /**
-     * Get merchant donations by status
+     * Get merchant donations by status (excluding deleted ones)
      */
     @Transactional
     public List<Donation> getMerchantDonationsByStatus(Long merchantId, String status) {
         try {
             logger.info("Querying with new method for merchantId={} with status={}", merchantId, status);
-            return donationRepository.findByDonorIdAndStatusCaseInsensitive(merchantId, status);
+            List<Donation> donations = donationRepository.findByDonorIdAndStatusCaseInsensitive(merchantId, status);
+
+            // ✅ Filter out soft-deleted donations
+            return donations.stream()
+                    .filter(donation -> !"DELETED".equals(donation.getStatus()))
+                    .collect(java.util.stream.Collectors.toList());
+
         } catch (Exception e) {
             logger.error("Error in getMerchantDonationsByStatus: ", e);
             return new ArrayList<>();
