@@ -4,6 +4,7 @@ import com.FoodBridgeBangladesh.Model.donor.Donation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -68,4 +69,5 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     // Method to get all categories with their counts
     @Query("SELECT CAST(d.category AS string) as categoryName, COUNT(d) as count FROM Donation d WHERE d.status = :status GROUP BY d.category ORDER BY COUNT(d) DESC")
     List<Object[]> getCategoriesWithCounts(@Param("status") String status);
+
 }

@@ -361,7 +361,7 @@ public class MerchantDonationService {
         }
     }
     /**
-     * Delete a donation created by a merchant
+     * Delete a donation created by a merchant with safe approach
      */
     @Transactional
     public void deleteDonation(Long donationId, Long merchantId) {
@@ -377,41 +377,46 @@ public class MerchantDonationService {
                 throw new IllegalStateException("This donation does not belong to the merchant");
             }
 
-            // Check if donation has any active requests
-            // If you have a request repository, check for active requests
-            // List<DonationRequest> activeRequests = requestRepository.findByDonationIdAndStatus(donationId, "PENDING");
-            // if (!activeRequests.isEmpty()) {
-            //     throw new IllegalStateException("Cannot delete donation with pending requests");
-            // }
-
-            // Restore quantity to original food item if needed
-            if (donation.getOriginalFoodItemId() != null) {
-                try {
-                    FoodItem foodItem = foodItemRepository.findById(donation.getOriginalFoodItemId())
-                            .orElse(null);
-                    if (foodItem != null) {
-                        // Parse donation quantity and add it back to food item
-                        String quantityStr = donation.getQuantity();
-                        if (quantityStr != null && !quantityStr.isEmpty()) {
-                            String numericPart = quantityStr.replaceAll("[^0-9]", "");
-                            if (!numericPart.isEmpty()) {
-                                int donationQuantity = Integer.parseInt(numericPart);
-                                foodItem.setQuantity(foodItem.getQuantity() + donationQuantity);
-                                foodItemRepository.save(foodItem);
-                                logger.info("Restored {} quantity to food item ID: {}",
-                                        donationQuantity, foodItem.getId());
+            // ✅ SAFE APPROACH: Try soft delete first, then hard delete
+            try {
+                // Restore quantity to original food item if needed
+                if (donation.getOriginalFoodItemId() != null) {
+                    try {
+                        FoodItem foodItem = foodItemRepository.findById(donation.getOriginalFoodItemId())
+                                .orElse(null);
+                        if (foodItem != null) {
+                            // Parse donation quantity and add it back to food item
+                            String quantityStr = donation.getQuantity();
+                            if (quantityStr != null && !quantityStr.isEmpty()) {
+                                String numericPart = quantityStr.replaceAll("[^0-9]", "");
+                                if (!numericPart.isEmpty()) {
+                                    int donationQuantity = Integer.parseInt(numericPart);
+                                    foodItem.setQuantity(foodItem.getQuantity() + donationQuantity);
+                                    foodItemRepository.save(foodItem);
+                                    logger.info("Restored {} quantity to food item ID: {}",
+                                            donationQuantity, foodItem.getId());
+                                }
                             }
                         }
+                    } catch (Exception e) {
+                        logger.warn("Could not restore quantity to food item: {}", e.getMessage());
+                        // Don't fail the deletion for this
                     }
-                } catch (Exception e) {
-                    logger.warn("Could not restore quantity to food item: {}", e.getMessage());
-                    // Don't fail the deletion for this
                 }
-            }
 
-            // Delete the donation
-            donationRepository.delete(donation);
-            logger.info("Successfully deleted donation ID: {}", donationId);
+                // Try hard delete first
+                donationRepository.deleteById(donationId);
+                logger.info("Successfully hard deleted donation ID: {}", donationId);
+
+            } catch (org.springframework.dao.DataIntegrityViolationException e) {
+                // If hard delete fails due to foreign key constraints, use soft delete
+                logger.warn("Hard delete failed due to constraints, using soft delete: {}", e.getMessage());
+
+                donation.setStatus("DELETED");
+                donation.setUpdatedAt(LocalDate.now());
+                donationRepository.save(donation);
+                logger.info("Successfully soft deleted donation ID: {}", donationId);
+            }
 
         } catch (IllegalStateException e) {
             logger.warn("Business rule violation: {}", e.getMessage());
@@ -421,4 +426,5 @@ public class MerchantDonationService {
             throw new RuntimeException("Error deleting donation: " + e.getMessage(), e);
         }
     }
+
 }
