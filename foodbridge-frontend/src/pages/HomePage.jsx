@@ -381,7 +381,7 @@ const HomePage = () => {
      <div
   className="relative px-4 md:px-6 py-8 md:py-16 max-w-7xl mx-auto transition-all duration-300 min-h-screen hero-mobile-bg flex items-center"
   style={{
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/4.png')`,
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/3.png')`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
