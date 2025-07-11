@@ -7,6 +7,7 @@ import com.FoodBridgeBangladesh.Model.merchant.FoodItem;
 import com.FoodBridgeBangladesh.Repository.donor.DonationRepository;
 import com.FoodBridgeBangladesh.Repository.merchant.FoodItemRepository;
 import com.FoodBridgeBangladesh.Service.donor.DonationService;
+import com.FoodBridgeBangladesh.Service.receiver.Receiver_ActiveFood_Request_Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ public class DonationController {
     private final DonationRepository donationRepository;
     private final FoodItemRepository foodItemRepository;
 
+    @Autowired
+    private Receiver_ActiveFood_Request_Service receiverActiveRequestService;
     @Autowired
     public DonationController(
             DonationService donationService,
@@ -456,77 +459,51 @@ public class DonationController {
         }
     }
 
-    /**
-     * Mark donation as completed
-     */
-    @GetMapping("/{id}/mark-completed")
-    public ResponseEntity<?> markDonationAsCompleted(
-            @PathVariable Long id,
-            @RequestParam Long donorId) {
-
-        logger.info("Marking donation as completed for ID: {} by donor ID: {}", id, donorId);
-
-        try {
-            Donation donation = donationService.markDonationAsCompleted(id, donorId);
-            return ResponseEntity.ok(donation);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "success", false,
-                    "message", e.getMessage()
-            ));
-        } catch (Exception e) {
-            logger.error("Error marking donation as completed: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of(
-                            "success", false,
-                            "message", "Error marking donation as completed: " + e.getMessage()
-                    ));
-        }
-    }
 
     /**
      * Get pending donations for a donor
      */
     @GetMapping("/pending")
     public ResponseEntity<?> getPendingDonations(@RequestParam Long donorId) {
-        logger.info("Getting pending donations for donor ID: {}", donorId);
+        logger.info("Getting donations with accepted requests for donor ID: {}", donorId);
 
         try {
-            List<Donation> donations = donationService.getPendingDonations(donorId);
+            List<Donation> donations = donationService.getAcceptedRequestDonations(donorId);
             return ResponseEntity.ok(donations);
         } catch (Exception e) {
-            logger.error("Error getting pending donations: {}", e.getMessage(), e);
+            logger.error("Error getting donations with accepted requests: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error getting pending donations: " + e.getMessage());
+                    .body("Error getting donations with accepted requests: " + e.getMessage());
         }
     }
-
     /**
      * Get rejected donations for a donor
      */
     @GetMapping("/rejected")
     public ResponseEntity<?> getRejectedDonations(@RequestParam Long donorId) {
-        logger.info("Getting rejected donations for donor ID: {}", donorId);
+        logger.info("Getting donations with rejected requests for donor ID: {}", donorId);
 
         try {
-            List<Donation> donations = donationRepository.findByDonorIdAndStatus(donorId, "Rejected");
+            List<Donation> donations = donationService.getRejectedRequestDonations(donorId);
             return ResponseEntity.ok(donations);
         } catch (Exception e) {
-            logger.error("Error getting rejected donations: {}", e.getMessage(), e);
+            logger.error("Error getting donations with rejected requests: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error getting rejected donations: " + e.getMessage());
+                    .body("Error getting donations with rejected requests: " + e.getMessage());
         }
     }
 
+    // Update these methods in DonationController.java
+
     /**
-     * Get completed donations for a donor
+     * Get donations with completed pickup requests for a donor
      */
     @GetMapping("/completed")
     public ResponseEntity<?> getCompletedDonations(@RequestParam Long donorId) {
-        logger.info("Getting completed donations for donor ID: {}", donorId);
+        logger.info("Getting donations with completed requests for donor ID: {}", donorId);
 
         try {
-            List<Donation> donations = donationService.getCompletedDonations(donorId);
+            List<Donation> donations = donationService.getCompletedRequestDonations(donorId);
 
             // Optional: Convert to DTO for more controlled response
             List<DonationDTO> donationDTOs = donations.stream()
@@ -535,11 +512,48 @@ public class DonationController {
 
             return ResponseEntity.ok(donationDTOs);
         } catch (Exception e) {
-            logger.error("Error getting completed donations: {}", e.getMessage(), e);
+            logger.error("Error getting donations with completed requests: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of(
-                            "error", "Failed to retrieve completed donations",
+                            "error", "Failed to retrieve donations with completed requests",
                             "message", e.getMessage()
+                    ));
+        }
+    }
+
+    /**
+     * Mark pickup request as completed (updates receiver_food_requests table)
+     */
+    @GetMapping("/{id}/mark-completed")
+    public ResponseEntity<?> markDonationAsCompleted(
+            @PathVariable Long id,
+            @RequestParam Long donorId) {
+
+        logger.info("Marking pickup request as completed for donation ID: {} by donor ID: {}", id, donorId);
+
+        try {
+            // Inject the receiver service
+            receiverActiveRequestService.markRequestAsCompletedByDonor(id, donorId);
+
+            // Return the donation for consistency
+            Donation donation = donationService.getDonationById(id, donorId);
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Pickup request marked as completed successfully",
+                    "donation", donation
+            ));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            logger.error("Error marking pickup request as completed: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "success", false,
+                            "message", "Error marking pickup request as completed: " + e.getMessage()
                     ));
         }
     }

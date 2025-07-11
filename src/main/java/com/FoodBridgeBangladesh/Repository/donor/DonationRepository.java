@@ -70,4 +70,20 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("SELECT CAST(d.category AS string) as categoryName, COUNT(d) as count FROM Donation d WHERE d.status = :status GROUP BY d.category ORDER BY COUNT(d) DESC")
     List<Object[]> getCategoriesWithCounts(@Param("status") String status);
 
+    @Query("SELECT DISTINCT d FROM Donation d " +
+            "JOIN Receiver_ActiveFood_Request_Model r ON d.id = r.donationId " +
+            "WHERE d.donorId = :donorId AND r.status = 'REJECTED'")
+    List<Donation> findDonationsWithRejectedRequests(@Param("donorId") Long donorId);
+
+    @Query("SELECT DISTINCT d FROM Donation d " +
+            "JOIN Receiver_ActiveFood_Request_Model r ON d.id = r.donationId " +
+            "WHERE d.donorId = :donorId AND r.status = 'ACCEPTED'")
+    List<Donation> findDonationsWithAcceptedRequests(@Param("donorId") Long donorId);
+
+
+
+    @Query("SELECT DISTINCT d FROM Donation d " +
+            "JOIN Receiver_ActiveFood_Request_Model r ON d.id = r.donationId " +
+            "WHERE d.donorId = :donorId AND r.status = 'COMPLETED'")
+    List<Donation> findDonationsWithCompletedRequests(@Param("donorId") Long donorId);
 }

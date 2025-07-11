@@ -26,9 +26,19 @@ public class DonorNoticationService {
     /**
      * Create a new notification for pickup request
      */
+
     public DonorNotication createPickupRequestNotification(Long donorId, Long requestId, Long donationId,
                                                            String requesterName, Long requesterId,
                                                            String donationName, String quantity) {
+        // Check if notification already exists
+        Optional<DonorNotication> existingNotification =
+                notificationRepository.findByDonorIdAndRequestId(donorId, requestId);
+
+        if (existingNotification.isPresent()) {
+            // Return existing notification instead of creating duplicate
+            return existingNotification.get();
+        }
+
         DonorNotication notification = new DonorNotication();
         notification.setDonorId(donorId);
         notification.setType(NotificationType.PICKUP_REQUEST);
@@ -49,7 +59,6 @@ public class DonorNoticationService {
 
         return notificationRepository.save(notification);
     }
-
     /**
      * Create a new notification for food request
      */

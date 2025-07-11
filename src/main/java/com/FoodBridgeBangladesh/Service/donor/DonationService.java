@@ -43,9 +43,6 @@ public class DonationService {
     /**
      * Create a new donation from a merchant food item
      */
-    /**
-     * Create a new donation with enhanced image handling
-     */
     @Transactional
     public Donation createDonation(DonationFormDTO donationForm, MultipartFile imageFile, FoodItem originalFoodItem) throws IOException {
         logger.info("Creating new donation with enhanced image handling");
@@ -825,6 +822,96 @@ public class DonationService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "You do not have permission to access this donation");
         }
+
+        return donation;
+    }
+
+    // Add these methods to DonationService.java
+
+    /**
+     * Get donations with rejected requests for a donor
+     */
+    @Transactional(readOnly = true)
+    public List<Donation> getRejectedRequestDonations(Long donorId) {
+        logger.info("Getting donations with rejected requests for donor ID: {}", donorId);
+
+        if (donorId == null) {
+            throw new IllegalArgumentException("Donor ID cannot be null");
+        }
+
+        List<Donation> donations = donationRepository.findDonationsWithRejectedRequests(donorId);
+
+        // Force loading of LOB data while within the transaction
+        donations.forEach(donation -> {
+            if (donation.getImageData() != null) {
+                donation.getImageData().length();
+            }
+        });
+
+        return donations;
+    }
+
+    /**
+     * Get donations with accepted requests for a donor (these are pending pickup)
+     */
+    @Transactional(readOnly = true)
+    public List<Donation> getAcceptedRequestDonations(Long donorId) {
+        logger.info("Getting donations with accepted requests for donor ID: {}", donorId);
+
+        if (donorId == null) {
+            throw new IllegalArgumentException("Donor ID cannot be null");
+        }
+
+        List<Donation> donations = donationRepository.findDonationsWithAcceptedRequests(donorId);
+
+        // Force loading of LOB data while within the transaction
+        donations.forEach(donation -> {
+            if (donation.getImageData() != null) {
+                donation.getImageData().length();
+            }
+        });
+
+        return donations;
+    }
+
+    // Add these methods to DonationService.java
+
+    /**
+     * Get donations with completed requests for a donor
+     */
+    @Transactional(readOnly = true)
+    public List<Donation> getCompletedRequestDonations(Long donorId) {
+        logger.info("Getting donations with completed requests for donor ID: {}", donorId);
+
+        if (donorId == null) {
+            throw new IllegalArgumentException("Donor ID cannot be null");
+        }
+
+        List<Donation> donations = donationRepository.findDonationsWithCompletedRequests(donorId);
+
+        // Force loading of LOB data while within the transaction
+        donations.forEach(donation -> {
+            if (donation.getImageData() != null) {
+                donation.getImageData().length();
+            }
+        });
+
+        return donations;
+    }
+
+    /**
+     * Mark pickup request as completed (updates receiver_food_requests table)
+     */
+    @Transactional
+    public Donation markPickupRequestAsCompleted(Long donationId, Long donorId) {
+        logger.info("Marking pickup request as completed for donation ID: {} by donor ID: {}", donationId, donorId);
+
+        // Verify ownership before status update
+        Donation donation = getDonationById(donationId, donorId);
+
+        // Find the accepted request for this donation
+        // Note: You'll need to inject Receiver_ActiveFood_Request_Repository here
+        // or call the service method through the receiver service
 
         return donation;
     }

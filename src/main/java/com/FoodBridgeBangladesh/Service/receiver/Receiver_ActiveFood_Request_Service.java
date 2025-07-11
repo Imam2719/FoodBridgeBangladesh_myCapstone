@@ -511,4 +511,62 @@ public class Receiver_ActiveFood_Request_Service {
             return new ArrayList<>(); // Return empty list on error
         }
     }
+
+    /**
+     * Mark pickup request as completed by donor
+     */
+    @Transactional
+    public void markRequestAsCompletedByDonor(Long donationId, Long donorId) {
+        logger.info("Marking pickup request as completed for donation ID: {} by donor ID: {}", donationId, donorId);
+
+        // Verify that the donor owns the donation
+        Donation donation = donationService.getDonationById(donationId, donorId);
+
+        // Find the accepted request for this donation
+        List<Receiver_ActiveFood_Request_Model> acceptedRequests =
+                requestRepository.findByDonationIdAndStatusOrderByRequestDateDesc(donationId, "ACCEPTED");
+
+        if (acceptedRequests.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "No accepted requests found for this donation");
+        }
+
+        // Update all accepted requests to completed (in case there are multiple)
+        for (Receiver_ActiveFood_Request_Model request : acceptedRequests) {
+            request.setStatus("COMPLETED");
+            request.setResponseDate(LocalDateTime.now());
+            requestRepository.save(request);
+        }
+
+        logger.info("Successfully marked {} pickup requests as completed for donation ID: {}",
+                acceptedRequests.size(), donationId);
+    }
+
+    /**
+     * Delete all rejected requests for a donation
+     */
+    @Transactional
+    public void deleteRejectedRequestsForDonation(Long donationId, Long donorId) {
+        logger.info("Deleting rejected requests for donation ID: {} by donor ID: {}", donationId, donorId);
+
+        // Verify that the donor owns the donation
+        Donation donation = donationService.getDonationById(donationId, donorId);
+
+        // Find all rejected requests for this donation
+        List<Receiver_ActiveFood_Request_Model> rejectedRequests =
+                requestRepository.findByDonationIdAndStatusOrderByRequestDateDesc(donationId, "REJECTED");
+
+        if (rejectedRequests.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "No rejected requests found for this donation");
+        }
+
+        // Delete all rejected requests
+        for (Receiver_ActiveFood_Request_Model request : rejectedRequests) {
+            requestRepository.delete(request);
+        }
+
+        logger.info("Successfully deleted {} rejected requests for donation ID: {}",
+                rejectedRequests.size(), donationId);
+    }
 }

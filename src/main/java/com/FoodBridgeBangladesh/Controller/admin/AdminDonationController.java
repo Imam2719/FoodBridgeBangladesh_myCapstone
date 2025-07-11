@@ -194,4 +194,60 @@ public class AdminDonationController {
                     .body(Map.of("error", "Failed to fetch expired donations", "details", e.getMessage()));
         }
     }
+
+    /**
+     * Pause/Unpause a donation (Admin only)
+     */
+    @PutMapping("/{id}/pause")
+    public ResponseEntity<?> pauseDonation(@PathVariable Long id) {
+        logger.info("Admin pausing/unpausing donation with ID: {}", id);
+        try {
+            Donation donation = donationService.getDonationById(id);
+
+            // Toggle between Active and Paused
+            String newStatus = "Active".equals(donation.getStatus()) ? "Paused" : "Active";
+
+            Donation updatedDonation = donationService.updateDonationStatus(id, newStatus);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Donation " + newStatus.toLowerCase() + " successfully");
+            response.put("donation", updatedDonation);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error pausing/unpausing donation: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to pause/unpause donation: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Permanently delete a donation (Admin only)
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteDonation(@PathVariable Long id) {
+        logger.info("Admin deleting donation with ID: {}", id);
+        try {
+            // Check if donation exists
+            Donation donation = donationService.getDonationById(id);
+
+            // Permanently delete the donation
+            donationService.deleteDonation(id);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Donation deleted successfully");
+
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            logger.error("Error deleting donation: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Donation not found with ID: " + id));
+        } catch (Exception e) {
+            logger.error("Error deleting donation: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to delete donation: " + e.getMessage()));
+        }
+    }
 }

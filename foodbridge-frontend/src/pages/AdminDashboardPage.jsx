@@ -11,7 +11,7 @@ import {
   Store, ShoppingBag, UserPlus, FileText, User,
   Award, Trophy, Zap, Heart, Download, PieChart,
   PlusCircle, Phone, Lock, Shield, Laptop, DollarSign,
-  LifeBuoy, Camera, Check, Pause, PackageCheck, TrendingUp, ChevronLeft, Paperclip, Send
+  LifeBuoy, Camera, Check, Pause, PackageCheck, TrendingUp, ChevronLeft, Paperclip, Send, Play
 } from 'lucide-react';
 import API_CONFIG from '../config/api';
 
@@ -1824,54 +1824,57 @@ FoodBridge Billing Team`
     alert(`Sending email for donation ${donationId} to donor ${donorId}`);
   };
 
+const handlePauseDonation = async (donationId) => {
+  const currentDonation = donations.find(d => d.id === donationId);
+  const currentStatus = currentDonation?.status;
+  const actionText = currentStatus === 'Active' ? 'pause' : 'resume';
+  const actionTextPast = currentStatus === 'Active' ? 'paused' : 'resumed';
 
-  const handlePauseDonation = (donationId) => {
-    // Implement donation pause logic
-    // This might involve an API call to update donation status
-    try {
-      fetch(`${API_CONFIG.BASE_URL}/api/admin/donations/${donationId}/pause`, {
-        method: 'PUT'
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to pause donation');
-          }
-          return response.json();
-        })
-        .then(data => {
-          toast.success('Donation paused successfully');
-          fetchDonations(); // Refresh donations list
-        })
-        .catch(error => {
-          console.error('Error pausing donation:', error);
-          toast.error('Failed to pause donation');
-        });
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      toast.error('An unexpected error occurred');
-    }
-  };
+  try {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/donations/${donationId}/pause`, {
+      method: 'PUT'
+    });
 
-  const handleDeleteDonation = async (donationId) => {
-    if (window.confirm('Are you sure you want to delete this donation? This action cannot be undone.')) {
-      try {
-        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/donations/${donationId}`, {
-          method: 'DELETE'
-        });
+    const result = await response.json();
 
-        if (!response.ok) {
-          throw new Error(`Error deleting donation: ${response.status}`);
-        }
-
-        // Refresh donations after deletion
-        fetchDonations();
-        toast.success('Donation deleted successfully');
-      } catch (error) {
-        console.error('Error deleting donation:', error);
-        toast.error('Failed to delete donation. Please try again.');
+    if (response.ok && result.success) {
+      // Show specific success message based on action
+      if (currentStatus === 'Active') {
+        toast.success('Donation paused successfully! It will no longer be visible to receivers.');
+      } else {
+        toast.success('Donation resumed successfully! It is now active and visible to receivers.');
       }
+      fetchDonations(); // Refresh donations list
+    } else {
+      toast.error(result.error || `Failed to ${actionText} donation`);
     }
-  };
+  } catch (error) {
+    console.error(`Error ${actionText}ing donation:`, error);
+    toast.error(`An unexpected error occurred while ${actionText}ing donation`);
+  }
+};
+
+const handleDeleteDonation = async (donationId) => {
+  if (window.confirm('Are you sure you want to permanently delete this donation? This action cannot be undone.')) {
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/donations/${donationId}`, {
+        method: 'DELETE'
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        toast.success('Donation deleted successfully');
+        fetchDonations(); // Refresh donations list
+      } else {
+        toast.error(result.error || 'Failed to delete donation');
+      }
+    } catch (error) {
+      console.error('Error deleting donation:', error);
+      toast.error('An unexpected error occurred while deleting donation');
+    }
+  }
+};
 
   const fetchUsers = async () => {
     setUsersLoading(true);
@@ -8194,26 +8197,31 @@ FoodBridge Billing Team`
                             <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                               <div className="flex justify-between items-center">
                                 <span className="font-medium text-blue-600 dark:text-blue-400">#{donation.id}</span>
-                                <span className={`px-2 py-1 text-xs rounded-full flex items-center
-                                  ${donation.status === 'Active'
-                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                                    : donation.status === 'Completed'
-                                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
-                                      : donation.status === 'Expired'
-                                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                                        : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'}`}
-                                >
-                                  <div className={`w-2 h-2 rounded-full mr-1
-                                    ${donation.status === 'Active'
-                                      ? 'bg-green-500'
-                                      : donation.status === 'Completed'
-                                        ? 'bg-blue-500'
-                                        : donation.status === 'Expired'
-                                          ? 'bg-gray-500'
-                                          : 'bg-yellow-500'}`}
-                                  ></div>
-                                  {donation.status}
-                                </span>
+                             
+<span className={`px-2 py-1 text-xs rounded-full flex items-center
+  ${donation.status === 'Active'
+    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+    : donation.status === 'Completed'
+      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+      : donation.status === 'Paused'
+        ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
+        : donation.status === 'Expired'
+          ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+          : 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300'}`}
+>
+  <div className={`w-2 h-2 rounded-full mr-1
+    ${donation.status === 'Active'
+      ? 'bg-green-500'
+      : donation.status === 'Completed'
+        ? 'bg-blue-500'
+        : donation.status === 'Paused'
+          ? 'bg-yellow-500'
+          : donation.status === 'Expired'
+            ? 'bg-gray-500'
+            : 'bg-orange-500'}`}
+  ></div>
+  {donation.status}
+</span>
                               </div>
                             </div>
                             <div className="p-4">
@@ -8265,20 +8273,24 @@ FoodBridge Billing Team`
                                 >
                                   <Eye className="h-4 w-4" />
                                 </button>
-                                <button
-                                  className="p-1.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded hover:bg-indigo-100 dark:hover:bg-indigo-800/30 transition-colors duration-200"
-                                  onClick={() => handleEmailDonor(donation.donorId, donation.id)}
-                                >
-                                  <Mail className="h-4 w-4" />
-                                </button>
-                                {donation.status === 'Active' && (
-                                  <button
-                                    className="p-1.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 rounded hover:bg-yellow-100 dark:hover:bg-yellow-800/30 transition-colors duration-200"
-                                    onClick={() => handlePauseDonation(donation.id)}
-                                  >
-                                    <Pause className="h-4 w-4" />
-                                  </button>
-                                )}
+                               
+{(donation.status === 'Active' || donation.status === 'Paused') && (
+  <button
+    className={`p-1.5 rounded transition-colors duration-200 ${
+      donation.status === 'Active'
+        ? 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-800/30'
+        : 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-800/30'
+    }`}
+    onClick={() => handlePauseDonation(donation.id)}
+    title={donation.status === 'Active' ? 'Pause Donation' : 'Resume Donation'}
+  >
+    {donation.status === 'Active' ? (
+      <Pause className="h-4 w-4" />
+    ) : (
+      <Play className="h-4 w-4" />
+    )}
+  </button>
+)}
                                 <button
                                   className="p-1.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded hover:bg-red-100 dark:hover:bg-red-800/30 transition-colors duration-200"
                                   onClick={() => handleDeleteDonation(donation.id)}

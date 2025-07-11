@@ -105,100 +105,33 @@ const DonorDashboard = () => {
     pickupRequests: 0,
     foodRequests: 0
   });
+  const [showNotificationDetails, setShowNotificationDetails] = useState(false);
+  const [selectedNotificationForDetails, setSelectedNotificationForDetails] = useState(null);
+  const [processedRequestIds, setProcessedRequestIds] = useState(new Set());
+  const [processedFoodRequestIds, setProcessedFoodRequestIds] = useState(new Set());
+
 
   const handleViewNotificationDetails = async (notification) => {
     try {
       if (!notification.isRead) {
         await handleMarkNotificationAsRead(notification.id);
       }
-      if (notification.type === 'PICKUP_REQUEST' && notification.requestId) {
-        const response = await fetch(`${API_BASE_URL}/api/donor/donations/${notification.donationId}/requests?donorId=${donorId}`);
-        if (response.ok) {
-          const requestsData = await response.json();
-          const specificRequest = requestsData.find(req => req.id === notification.requestId);
 
-          if (specificRequest) {
-            const enhancedRequest = {
-              ...specificRequest,
-              imageUrl: specificRequest.imageData
-                ? `data:${specificRequest.imageContentType || 'image/jpeg'};base64,${specificRequest.imageData}`
-                : null,
-              receiverName: specificRequest.receiverName || specificRequest.requesterName || 'Anonymous',
-              requestDate: specificRequest.requestDate || new Date(specificRequest.createdAt || Date.now()).toLocaleString(),
-              status: specificRequest.status || 'PENDING',
-              quantity: specificRequest.quantity || 'Not specified',
-              pickupMethod: specificRequest.pickupMethod || 'Self Pickup',
-              location: specificRequest.location || 'No location specified',
-              note: specificRequest.note || specificRequest.notes || ''
-            };
-            let donationImageUrl = null;
-            try {
-              const donationResponse = await fetch(`${API_BASE_URL}/api/donor/donations/${notification.donationId}?donorId=${donorId}`);
-              if (donationResponse.ok) {
-                const donationData = await donationResponse.json();
-                donationImageUrl = donationData.imageData
-                  ? `data:${donationData.imageContentType || 'image/jpeg'};base64,${donationData.imageData}`
-                  : null;
-              }
-            } catch (error) {
-              console.warn('Could not fetch donation image:', error);
-            }
-            setSelectedDonationForRequests({
-              id: notification.donationId,
-              foodName: notification.additionalData ?
-                (() => {
-                  try {
-                    return JSON.parse(notification.additionalData).donationName;
-                  } catch {
-                    return 'Food Item';
-                  }
-                })() : 'Food Item',
-              imageUrl: donationImageUrl, // **FIX: Add donation image as fallback**
-              quantity: notification.additionalData ?
-                (() => {
-                  try {
-                    return JSON.parse(notification.additionalData).quantity;
-                  } catch {
-                    return 'Unknown quantity';
-                  }
-                })() : 'Unknown quantity'
-            });
+      // Create a copy for details instead of mutating original
+      const notificationForDetails = {
+        ...notification,
+        isRead: true,
+        readAt: notification.readAt || new Date().toISOString()
+      };
 
-            setDonationRequests([enhancedRequest]); // **FIX: Use enhanced request with proper image mapping**
-            setShowRequestsModal(true);
-            setShowNotificationsModal(false);
-          } else {
-            alert('Request not found or has been removed');
-          }
-        } else {
-          throw new Error('Failed to fetch request details');
-        }
-      } else if (notification.type === 'FOOD_REQUEST' && notification.foodRequestId) {
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/donor/food-requests/${notification.foodRequestId}`);
-          if (response.ok) {
-            const requestData = await response.json();
-            const enhancedFoodRequest = {
-              ...requestData,
-              imageUrl: requestData.imageData
-                ? `data:${requestData.imageContentType || 'image/jpeg'};base64,${requestData.imageData}`
-                : '/api/placeholder/400/200'
-            };
-
-            alert(`Food request from ${requestData.receiverName || 'Anonymous'} - ${requestData.foodTypes?.join(', ') || 'Food needed'}`);
-          }
-        } catch (error) {
-          console.error('Error fetching food request details:', error);
-          alert('Failed to load food request details');
-        }
-      } else {
-        alert(notification.message);
-      }
+      setSelectedNotificationForDetails(notificationForDetails);
+      setShowNotificationDetails(true);
     } catch (error) {
       console.error('Error viewing notification details:', error);
-      alert('Failed to load request details');
+      alert('Failed to load notification details');
     }
   };
+
   const handleDeleteNotification = async (notificationId) => {
     if (!window.confirm('Are you sure you want to delete this notification?')) {
       return;
@@ -224,6 +157,16 @@ const DonorDashboard = () => {
 
   const createPickupRequestNotification = async (donorId, requestId, donationId, requesterName, requesterId, donationName, quantity) => {
     try {
+      // Check if notification already exists in current state
+      const existingNotification = notifications.find(
+        n => n.type === 'PICKUP_REQUEST' && n.requestId === requestId
+      );
+
+      if (existingNotification) {
+        console.log('Notification already exists for request:', requestId);
+        return;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/donor/notifications/pickup-request`, {
         method: 'POST',
         headers: {
@@ -242,8 +185,11 @@ const DonorDashboard = () => {
 
       if (response.ok) {
         console.log('✅ Pickup request notification created');
+        // Refresh notifications only once
         await fetchNotifications();
         await fetchNotificationStats();
+
+        // Show toast only for new notifications
         setNotificationToast({
           type: 'pickup',
           message: `New pickup request from ${requesterName} for ${donationName}`,
@@ -260,6 +206,16 @@ const DonorDashboard = () => {
 
   const createFoodRequestNotification = async (donorId, foodRequestId, requesterName, requesterId, foodType, peopleCount) => {
     try {
+      // Check if notification already exists in current state
+      const existingNotification = notifications.find(
+        n => n.type === 'FOOD_REQUEST' && n.foodRequestId === foodRequestId
+      );
+
+      if (existingNotification) {
+        console.log('Notification already exists for food request:', foodRequestId);
+        return;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/donor/notifications/food-request`, {
         method: 'POST',
         headers: {
@@ -277,8 +233,9 @@ const DonorDashboard = () => {
 
       if (response.ok) {
         console.log('✅ Food request notification created');
-        fetchNotifications();
-        fetchNotificationStats();
+        // Refresh notifications only once
+        await fetchNotifications();
+        await fetchNotificationStats();
       }
     } catch (error) {
       console.error('💥 Error creating food request notification:', error);
@@ -306,10 +263,20 @@ const DonorDashboard = () => {
         throw new Error('Failed to fetch notifications');
       }
       const data = await response.json();
-      setNotifications(data);
-      const unreadCount = data.filter(notification => !notification.isRead).length;
+
+      // Deduplicate notifications by ID
+      const uniqueNotifications = data.reduce((acc, current) => {
+        const exists = acc.find(item => item.id === current.id);
+        if (!exists) {
+          acc.push(current);
+        }
+        return acc;
+      }, []);
+
+      setNotifications(uniqueNotifications);
+      const unreadCount = uniqueNotifications.filter(notification => !notification.isRead).length;
       setUnreadNotifications(unreadCount);
-      console.log('✅ Notifications fetched:', data);
+      console.log('✅ Notifications fetched:', uniqueNotifications);
     } catch (error) {
       console.error('💥 Error fetching notifications:', error);
       setNotificationsError('Failed to load notifications');
@@ -334,19 +301,25 @@ const DonorDashboard = () => {
 
   const handleMarkNotificationAsRead = async (notificationId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/donor/notifications/${notificationId}/mark-read`, {
+      const response = await fetch(`${API_BASE_URL}/api/donor/notifications/${notificationId}/mark-read?donorId=${donorId}`, {
         method: 'PUT'
       });
 
       if (response.ok) {
+        // Update notifications state immediately
         setNotifications(prev =>
           prev.map(notification =>
-            notification.id === notificationId ? { ...notification, read: true } : notification
+            notification.id === notificationId
+              ? { ...notification, isRead: true, readAt: new Date().toISOString() }
+              : notification
           )
         );
 
+        // Update unread count
         setUnreadNotifications(prev => Math.max(0, prev - 1));
-        fetchNotificationStats();
+
+        // Refresh stats
+        await fetchNotificationStats();
         console.log('✅ Notification marked as read:', notificationId);
       }
     } catch (error) {
@@ -356,15 +329,14 @@ const DonorDashboard = () => {
 
   const handleMarkAllNotificationsAsRead = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/donor/notifications/mark-all-read`, {
+      const response = await fetch(`${API_BASE_URL}/api/donor/notifications/mark-all-read?donorId=${donorId}`, {
         method: 'PUT'
       });
       if (response.ok) {
         setNotifications(prev =>
-          prev.map(notification => ({ ...notification, read: true }))
+          prev.map(notification => ({ ...notification, isRead: true, readAt: new Date().toISOString() }))
         );
         setUnreadNotifications(0);
-
         fetchNotificationStats();
         console.log('✅ All notifications marked as read');
       }
@@ -372,18 +344,29 @@ const DonorDashboard = () => {
       console.error('💥 Error marking all notifications as read:', error);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      setProcessedRequestIds(new Set());
+      setProcessedFoodRequestIds(new Set());
+    };
+  }, []);
+
+
   useEffect(() => {
     if (donorId) {
       fetchNotifications();
       fetchNotificationStats();
+
       const notificationInterval = setInterval(() => {
         fetchNotifications();
         fetchNotificationStats();
-      }, 1500000);
+      }, 300000); // 5 minutes instead of 25 minutes
 
       return () => clearInterval(notificationInterval);
     }
   }, [donorId, selectedNotificationTab]);
+
 
   const fetchReceivedMessages = async () => {
     setMessagesLoading(true);
@@ -623,27 +606,56 @@ const DonorDashboard = () => {
   }, [donorId]);
 
   const handleDeleteDonation = async (donationId) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this donation?');
+    const confirmDelete = window.confirm('Are you sure you want to delete this item?');
 
     if (confirmDelete) {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/donor/donations/${donationId}?donorId=${donorId}`, {
-          method: 'DELETE',
-        });
+        let response;
+
+        // Use different endpoints based on current tab
+        if (selectedSubTab === 'rejected') {
+          // Delete rejected requests from receiver_food_requests table
+          response = await fetch(`${API_BASE_URL}/api/donor/donations/${donationId}/rejected-requests?donorId=${donorId}`, {
+            method: 'DELETE',
+          });
+        } else {
+          // Delete donation from donations table (for other tabs)
+          response = await fetch(`${API_BASE_URL}/api/donor/donations/${donationId}?donorId=${donorId}`, {
+            method: 'DELETE',
+          });
+        }
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(errorText || 'Failed to delete donation');
+          throw new Error(errorText || 'Failed to delete item');
         }
 
-        setActiveDonations(prevDonations =>
-          prevDonations.filter(donation => donation.id !== donationId)
-        );
+        // Update the appropriate state based on current tab
+        if (selectedSubTab === 'active') {
+          setActiveDonations(prevDonations =>
+            prevDonations.filter(donation => donation.id !== donationId)
+          );
+        } else if (selectedSubTab === 'rejected') {
+          setRejectedDonations(prevDonations =>
+            prevDonations.filter(donation => donation.id !== donationId)
+          );
+        } else if (selectedSubTab === 'pending') {
+          setPendingDonations(prevDonations =>
+            prevDonations.filter(donation => donation.id !== donationId)
+          );
+        } else if (selectedSubTab === 'completed') {
+          setCompletedDonations(prevDonations =>
+            prevDonations.filter(donation => donation.id !== donationId)
+          );
+        }
 
-        alert('Donation marked as deleted successfully');
+        alert(selectedSubTab === 'rejected' ?
+          'Rejected requests deleted successfully' :
+          'Donation deleted successfully'
+        );
       } catch (error) {
-        console.error('Error deleting donation:', error);
-        alert(error.message || 'Failed to delete donation');
+        console.error('Error deleting item:', error);
+        alert(error.message || 'Failed to delete item');
       }
     }
   };
@@ -734,7 +746,6 @@ const DonorDashboard = () => {
     try {
       setRequestsLoading(true);
       setSelectedDonationForRequests(donation);
-
       setSelectedMainTab('donations');
 
       console.log(`Checking requests for donation ID: ${donation.id}`);
@@ -750,11 +761,12 @@ const DonorDashboard = () => {
       }
       const data = await response.json();
       console.log('Requests data:', data);
+
       const enhancedRequests = data.map(request => ({
         ...request,
         imageUrl: request.imageData
           ? `data:${request.imageContentType || 'image/jpeg'};base64,${request.imageData}`
-          : donation.imageUrl || '/api/placeholder/400/200', // Use donation image as fallback
+          : donation.imageUrl || '/api/placeholder/400/200',
         receiverName: request.receiverName || request.requesterName || 'Anonymous',
         requestDate: request.requestDate || new Date(request.createdAt || Date.now()).toLocaleString(),
         status: request.status || 'PENDING',
@@ -765,25 +777,8 @@ const DonorDashboard = () => {
       }));
 
       const pendingRequests = enhancedRequests.filter(request => request.status === 'PENDING');
-      pendingRequests.forEach(request => {
-        const existingNotification = notifications.find(
-          notif => notif.type === 'PICKUP_REQUEST' &&
-            notif.requestId === request.id &&
-            notif.donationId === donation.id
-        );
 
-        if (!existingNotification) {
-          createPickupRequestNotification(
-            donorId,
-            request.id,
-            donation.id,
-            request.receiverName || 'Anonymous',
-            request.receiverId || request.userId,
-            donation.foodName,
-            request.quantity || 'Not specified'
-          );
-        }
-      });
+      // Remove the notification creation logic from here - it should only happen in polling
 
       setDonationRequests(pendingRequests);
       setShowRequestsModal(true);
@@ -1275,7 +1270,167 @@ const DonorDashboard = () => {
       </div>
     );
   };
-  //
+
+  const NotificationDetailsModal = ({ notification, onClose }) => {
+    if (!notification) return null;
+
+    const formatDate = (dateString) => {
+      return new Date(dateString).toLocaleString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+
+    const getAdditionalData = () => {
+      try {
+        return JSON.parse(notification.additionalData || '{}');
+      } catch {
+        return {};
+      }
+    };
+
+    const additionalData = getAdditionalData();
+
+    return (
+      <div className="modal-overlay fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm z-[80] flex items-center justify-center">
+        <div className="notification-details-modal bg-white dark:bg-gray-900 rounded-xl shadow-xl dark:shadow-black/30 w-11/12 max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+          <div className="modal-header bg-gradient-to-r from-yellow-600 to-yellow-400 dark:from-yellow-800 dark:to-yellow-600 p-4 flex justify-between items-center">
+            <h3 className="modal-title text-white font-semibold text-lg flex items-center">
+              <Bell className="h-5 w-5 mr-2" />
+              Notification Details
+            </h3>
+            <button
+              className="close-btn w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-colors"
+              onClick={onClose}
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="modal-body p-6 overflow-y-auto flex-1">
+            <div className="notification-details-container space-y-6">
+              {/* Notification Header */}
+              <div className="notification-header bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  {notification.title}
+                </h2>
+                <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center">
+                    <Clock className="h-4 w-4 mr-1" />
+                    <span>{formatDate(notification.createdAt)}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${notification.isRead
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                        : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
+                      }`}>
+                      {notification.isRead ? 'Read' : 'Unread'}
+                    </span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${notification.type === 'PICKUP_REQUEST'
+                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                        : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                      }`}>
+                      {notification.type.replace('_', ' ')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Message Content */}
+              <div className="message-content bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Message</h3>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {notification.message}
+                </p>
+              </div>
+
+              {/* Additional Details */}
+              {Object.keys(additionalData).length > 0 && (
+                <div className="additional-details bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-3 flex items-center">
+                    <Package className="h-5 w-5 mr-2" />
+                    Request Details
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {additionalData.donationName && (
+                      <div>
+                        <span className="text-blue-700 dark:text-blue-300 font-medium">Item:</span>
+                        <span className="ml-2 text-blue-900 dark:text-blue-100">{additionalData.donationName}</span>
+                      </div>
+                    )}
+                    {additionalData.quantity && (
+                      <div>
+                        <span className="text-blue-700 dark:text-blue-300 font-medium">Quantity:</span>
+                        <span className="ml-2 text-blue-900 dark:text-blue-100">{additionalData.quantity}</span>
+                      </div>
+                    )}
+                    {additionalData.foodType && (
+                      <div>
+                        <span className="text-blue-700 dark:text-blue-300 font-medium">Food Type:</span>
+                        <span className="ml-2 text-blue-900 dark:text-blue-100">{additionalData.foodType}</span>
+                      </div>
+                    )}
+                    {additionalData.peopleCount && (
+                      <div>
+                        <span className="text-blue-700 dark:text-blue-300 font-medium">People Count:</span>
+                        <span className="ml-2 text-blue-900 dark:text-blue-100">{additionalData.peopleCount}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Requester Information */}
+              {notification.requesterName && (
+                <div className="requester-info bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-200 mb-3 flex items-center">
+                    <User className="h-5 w-5 mr-2" />
+                    Requester Information
+                  </h3>
+                  <p className="text-purple-700 dark:text-purple-300">
+                    <strong>Name:</strong> {notification.requesterName}
+                  </p>
+                  {notification.requesterId && (
+                    <p className="text-purple-700 dark:text-purple-300 mt-1">
+                      <strong>ID:</strong> {notification.requesterId}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="modal-footer bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 flex justify-end gap-3">
+            {!notification.isRead && (
+              <button
+                className="btn-mark-read bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                onClick={() => {
+                  handleMarkNotificationAsRead(notification.id);
+                  onClose();
+                }}
+              >
+                <CheckCircle className="h-4 w-4" />
+                Mark as Read
+              </button>
+            )}
+            <button
+              className="btn-close bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg transition-colors"
+              onClick={onClose}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const EditDonationModal = ({ donation, onClose, onSubmit, loading, error }) => {
     const [localForm, setLocalForm] = useState({
       foodName: donation?.foodName || '',
@@ -2995,71 +3150,123 @@ const DonorDashboard = () => {
   useEffect(() => {
     if (!donorId) return;
 
+    let isMounted = true;
+
     const pollForNewRequests = async () => {
+      if (!isMounted) return;
+
       try {
+        // Get current notifications to check what already exists
+        const notificationsResponse = await fetch(`${API_BASE_URL}/api/donor/notifications?donorId=${donorId}`);
+        if (!notificationsResponse.ok || !isMounted) return;
+
+        const currentNotifications = await notificationsResponse.json();
+
+        // Extract existing request IDs to prevent duplicates
+        const existingPickupRequestIds = new Set(
+          currentNotifications
+            .filter(n => n.type === 'PICKUP_REQUEST' && n.requestId)
+            .map(n => n.requestId)
+        );
+
+        const existingFoodRequestIds = new Set(
+          currentNotifications
+            .filter(n => n.type === 'FOOD_REQUEST' && n.foodRequestId)
+            .map(n => n.foodRequestId)
+        );
+
+        // Check for new pickup requests
         if (activeDonations.length > 0) {
           for (const donation of activeDonations) {
+            if (!isMounted) return;
+
             const response = await fetch(`${API_BASE_URL}/api/donor/donations/${donation.id}/requests?donorId=${donorId}`, {
               credentials: 'include'
             });
 
-            if (response.ok) {
+            if (response.ok && isMounted) {
               const requests = await response.json();
               const newPendingRequests = requests.filter(request =>
                 request.status === 'PENDING' &&
-                !notifications.find(notif =>
-                  notif.type === 'PICKUP_REQUEST' &&
-                  notif.requestId === request.id
-                )
+                !existingPickupRequestIds.has(request.id) &&
+                !processedRequestIds.has(request.id)
               );
-              newPendingRequests.forEach(request => {
-                createPickupRequestNotification(
-                  donorId,
-                  request.id,
-                  donation.id,
-                  request.receiverName || 'Anonymous',
-                  request.receiverId || request.userId,
-                  donation.foodName,
-                  request.quantity || 'Not specified'
-                );
-              });
+
+              // Create notifications only for truly new requests
+              for (const request of newPendingRequests) {
+                if (!isMounted) return;
+
+                try {
+                  await createPickupRequestNotification(
+                    donorId,
+                    request.id,
+                    donation.id,
+                    request.receiverName || 'Anonymous',
+                    request.receiverId || request.userId,
+                    donation.foodName,
+                    request.quantity || 'Not specified'
+                  );
+
+                  // Track this request as processed
+                  setProcessedRequestIds(prev => new Set([...prev, request.id]));
+                } catch (error) {
+                  console.error('Error creating pickup request notification:', error);
+                }
+              }
             }
           }
         }
 
+        // Check for new food requests
         const foodRequestsResponse = await fetch(`${API_BASE_URL}/api/donor/food-requests`);
-        if (foodRequestsResponse.ok) {
+        if (foodRequestsResponse.ok && isMounted) {
           const allFoodRequests = await foodRequestsResponse.json();
           const newFoodRequests = allFoodRequests.filter(request =>
             request.requestStatus === 'PENDING' &&
-            !notifications.find(notif =>
-              notif.type === 'FOOD_REQUEST' &&
-              notif.foodRequestId === request.id
-            )
+            !existingFoodRequestIds.has(request.id) &&
+            !processedFoodRequestIds.has(request.id)
           );
 
-          newFoodRequests.forEach(request => {
-            createFoodRequestNotification(
-              donorId,
-              request.id,
-              request.receiverName || 'Anonymous',
-              request.userId,
-              request.foodTypes.length > 0 ? request.foodTypes[0] : 'Food Request',
-              request.peopleCount
-            );
-          });
+          // Create notifications only for truly new food requests
+          for (const request of newFoodRequests) {
+            if (!isMounted) return;
+
+            try {
+              await createFoodRequestNotification(
+                donorId,
+                request.id,
+                request.receiverName || 'Anonymous',
+                request.userId,
+                request.foodTypes.length > 0 ? request.foodTypes[0] : 'Food Request',
+                request.peopleCount
+              );
+
+              // Track this request as processed
+              setProcessedFoodRequestIds(prev => new Set([...prev, request.id]));
+            } catch (error) {
+              console.error('Error creating food request notification:', error);
+            }
+          }
         }
       } catch (error) {
-        console.error('Error polling for new requests:', error);
+        if (isMounted) {
+          console.error('Error polling for new requests:', error);
+        }
       }
     };
 
+    // Initial poll
     pollForNewRequests();
 
-    const pollInterval = setInterval(pollForNewRequests, 30000); // Poll every 30 seconds
+    // Set up interval - reduced frequency to prevent spam
+    const pollInterval = setInterval(pollForNewRequests, 60000); // 1 minute instead of 30 seconds
 
-    return () => clearInterval(pollInterval);
-  }, [donorId, activeDonations, notifications]);
+    return () => {
+      isMounted = false;
+      clearInterval(pollInterval);
+    };
+  }, [donorId, activeDonations]);
+
 
   const RequestCard = ({ request }) => (
     <div className="request-card">
@@ -4122,63 +4329,63 @@ const DonorDashboard = () => {
               </button>
             </div>
           </div>
-      <div className="stats-container">
-  <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-blue-500 dark:border-blue-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:-translate-y-1">
-    <div className="stats-icon stats-blue bg-blue-500 dark:bg-blue-400 text-white dark:text-gray-900 shadow-lg dark:shadow-blue-500/30">
-      <Package className="h-5 w-5" />
-    </div>
-    <div className="stats-content">
-      <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
-        {activeDonations.length}
-      </div>
-      <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">
-        ACTIVE DONATIONS
-      </div>
-    </div>
-  </div>
+          <div className="stats-container">
+            <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-blue-500 dark:border-blue-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:-translate-y-1">
+              <div className="stats-icon stats-blue bg-blue-500 dark:bg-blue-400 text-white dark:text-gray-900 shadow-lg dark:shadow-blue-500/30">
+                <Package className="h-5 w-5" />
+              </div>
+              <div className="stats-content">
+                <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
+                  {activeDonations.length}
+                </div>
+                <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">
+                  ACTIVE DONATIONS
+                </div>
+              </div>
+            </div>
 
-  <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-green-500 dark:border-green-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:-translate-y-1">
-    <div className="stats-icon stats-green bg-green-500 dark:bg-green-400 text-white dark:text-gray-900 shadow-lg dark:shadow-green-500/30">
-      <CheckCircle className="h-5 w-5" />
-    </div>
-    <div className="stats-content">
-      <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
-        {completedDonations.length}
-      </div>
-      <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">
-        COMPLETED
-      </div>
-    </div>
-  </div>
+            <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-green-500 dark:border-green-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:-translate-y-1">
+              <div className="stats-icon stats-green bg-green-500 dark:bg-green-400 text-white dark:text-gray-900 shadow-lg dark:shadow-green-500/30">
+                <CheckCircle className="h-5 w-5" />
+              </div>
+              <div className="stats-content">
+                <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
+                  {completedDonations.length}
+                </div>
+                <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">
+                  COMPLETED
+                </div>
+              </div>
+            </div>
 
-  <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-orange-500 dark:border-orange-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:-translate-y-1">
-    <div className="stats-icon stats-orange bg-orange-500 dark:bg-orange-400 text-white dark:text-gray-900 shadow-lg dark:shadow-orange-500/30">
-      <Clock3 className="h-5 w-5" />
-    </div>
-    <div className="stats-content">
-      <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
-        {pendingDonations.length}
-      </div>
-      <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">
-        PENDING
-      </div>
-    </div>
-  </div>
+            <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-orange-500 dark:border-orange-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:-translate-y-1">
+              <div className="stats-icon stats-orange bg-orange-500 dark:bg-orange-400 text-white dark:text-gray-900 shadow-lg dark:shadow-orange-500/30">
+                <Clock3 className="h-5 w-5" />
+              </div>
+              <div className="stats-content">
+                <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
+                  {pendingDonations.length}
+                </div>
+                <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">
+                  Accepted request but donation not yet delivered
+                </div>
+              </div>
+            </div>
 
-  <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-purple-500 dark:border-purple-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:-translate-y-1">
-    <div className="stats-icon stats-purple bg-purple-500 dark:bg-purple-400 text-white dark:text-gray-900 shadow-lg dark:shadow-purple-500/30">
-      <Users className="h-5 w-5" />
-    </div>
-    <div className="stats-content">
-      <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
-        {foodRequests.length}
-      </div>
-      <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">
-        FOOD NEED REQUESTS
-      </div>
-    </div>
-  </div>
-</div>
+            <div className="stats-card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-l-4 border-purple-500 dark:border-purple-400 shadow-md dark:shadow-gray-950/30 rounded-r-lg transition-transform duration-300 hover:-translate-y-1">
+              <div className="stats-icon stats-purple bg-purple-500 dark:bg-purple-400 text-white dark:text-gray-900 shadow-lg dark:shadow-purple-500/30">
+                <Users className="h-5 w-5" />
+              </div>
+              <div className="stats-content">
+                <div className="stats-value text-gray-900 dark:text-white font-bold text-2xl">
+                  {foodRequests.length}
+                </div>
+                <div className="stats-label text-gray-600 dark:text-gray-300 text-xs tracking-wider">
+                  FOOD NEED REQUESTS
+                </div>
+              </div>
+            </div>
+          </div>
 
         </div>
 
@@ -4442,7 +4649,7 @@ const DonorDashboard = () => {
                         }`}
                       onClick={() => setSelectedSubTab('pending')}
                     >
-                      Pending
+                      Accepted
                     </button>
                     <button
                       className={`popup-tab-btn px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedSubTab === 'rejected'
@@ -6695,7 +6902,7 @@ ${donorProfile?.firstName} ${donorProfile?.lastName}`;
                                     onClick={() => handleViewNotificationDetails(notification)}
                                   >
                                     <Eye className="h-4 w-4 mr-1.5" />
-                                    <span>View Request</span>
+                                    <span>View Details</span>
                                   </button>
                                 )}
 
@@ -6759,6 +6966,16 @@ ${donorProfile?.firstName} ${donorProfile?.lastName}`;
               </div>
             </div>
           </div>
+        )}
+        {/* Notification Details Modal */}
+        {showNotificationDetails && selectedNotificationForDetails && (
+          <NotificationDetailsModal
+            notification={selectedNotificationForDetails}
+            onClose={() => {
+              setShowNotificationDetails(false);
+              setSelectedNotificationForDetails(null);
+            }}
+          />
         )}
 
         {showRequestsModal && <DonationRequestsModal />}

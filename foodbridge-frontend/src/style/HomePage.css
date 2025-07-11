@@ -492,6 +492,21 @@ button:active {
   }
 }
 
+/* Mobile background optimization */
+@media (max-width: 768px) {
+  .hero-mobile-bg {
+    background-attachment: scroll !important;
+    min-height: 100vh !important;
+  }
+}
+
+/* Mobile stats cards optimization */
+@media (max-width: 1024px) {
+  .mobile-stats-container {
+    width: 120px;
+  }
+}
+
 /* How It Works Steps */
 .absolute {
   position: absolute;

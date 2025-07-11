@@ -347,4 +347,34 @@ public class Receiver_ActiveFood_Request_Controller {
         return updateRequestStatus(requestId, statusDTO, merchantId);
     }
 
+    /**
+     * Delete rejected requests for a donation (used by donor from rejected section)
+     */
+    @DeleteMapping("/donor/donations/{donationId}/rejected-requests")
+    public ResponseEntity<?> deleteRejectedRequests(
+            @PathVariable Long donationId,
+            @RequestParam Long donorId) {
+
+        logger.info("Deleting rejected requests for donation ID: {} by donor ID: {}", donationId, donorId);
+
+        try {
+            // Verify the donor exists
+            Optional<User> donorOpt = userRepository.findById(donorId);
+            if (donorOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("success", false, "message", "Donor not found"));
+            }
+
+            requestService.deleteRejectedRequestsForDonation(donationId, donorId);
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Rejected requests deleted successfully"
+            ));
+        } catch (Exception e) {
+            logger.error("Error deleting rejected requests: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
 }

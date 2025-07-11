@@ -378,80 +378,171 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-all duration-300">
-      <div
-        className="relative px-6 py-16 max-w-7xl mx-auto transition-all duration-300 min-h-screen flex items-center"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/4.png')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed'
-        }}
-      >
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          <div className="lg:w-1/2">
-            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-4 py-1 mb-6 shadow-sm border border-white/30">
-              <Star className="w-4 h-4 mr-2 text-yellow-300" />
-              <span className="text-sm font-medium text-white">
-                Fighting hunger in Bangladesh
-              </span>
-            </div>
+     <div
+  className="relative px-4 md:px-6 py-8 md:py-16 max-w-7xl mx-auto transition-all duration-300 min-h-screen hero-mobile-bg flex items-center"
+  style={{
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/4.png')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundAttachment: 'fixed'
+  }}
+>
+  <div className="w-full">
+    {/* Mobile Layout */}
+    <div className="flex flex-row lg:hidden items-start gap-4">
+      {/* Left side content for mobile */}
+      <div className="flex-1">
+        <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 mb-4 shadow-sm border border-white/30">
+          <Star className="w-3 h-3 mr-2 text-yellow-300" />
+          <span className="text-xs font-medium text-white">
+            Fighting hunger in Bangladesh
+          </span>
+        </div>
 
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white drop-shadow-lg">
-              Bridging Food Surplus
-              <span className="block text-emerald-300 drop-shadow-lg">
-                With Those in Need
-              </span>
-            </h1>
+        <h1 className="text-2xl md:text-3xl font-bold mb-4 leading-tight text-white drop-shadow-lg">
+          Bridging Food Surplus
+          <span className="block text-emerald-300 drop-shadow-lg">
+            With Those in Need
+          </span>
+        </h1>
 
-            <p className="text-lg mb-8 text-white/90 drop-shadow-md">
-              FoodBridge connects food donors with people in need, reduces waste and hunger
-              throughout Bangladesh. <span className="font-semibold text-emerald-300">Donate freely or sell affordably</span> - One meal at a time.
-            </p>
+        <p className="text-sm mb-6 text-white/90 drop-shadow-md">
+          FoodBridge connects food donors with people in need, reduces waste and hunger
+          throughout Bangladesh. <span className="font-semibold text-emerald-300">Donate freely or sell affordably</span> - One meal at a time.
+        </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                onClick={() => navigate('/login')}
-                className="group bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 backdrop-blur-sm border border-white/20"
-              >
-                <LogIn className="w-5 h-5 mr-2" />
-                Join Now
-              </button>
-            </div>
-          </div>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={() => navigate('/login')}
+            className="group bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 backdrop-blur-sm border border-white/20 text-sm"
+          >
+            <LogIn className="w-4 h-4 mr-2" />
+            Join Now
+          </button>
+        </div>
+      </div>
 
-          <div className="lg:w-1/2">
-            <div className="relative">
-              {/* Enhanced decoration - removed for cleaner background image look */}
-
-              {/* Enhanced stats grid with background image optimization */}
-              <div className="relative grid grid-cols-2 gap-4">
-                {stats.map((stat, index) => (
-                  <div
-                    key={stat.label}
-                    className={`bg-white/5 dark:bg-gray-900/8 backdrop-blur-3xl rounded-2xl p-6 transition-all duration-500 border border-white/10 dark:border-gray-700/15 hover:border-emerald-400/20 dark:hover:border-emerald-500/25 transform hover:-translate-y-2 hover:scale-[1.02] ${activeIndex === index ? 'ring-1 ring-emerald-400/20 dark:ring-emerald-500/25 scale-105 bg-white/8 dark:bg-gray-800/12' : ''
-                      } group`}
-                  >
-                    <div className={`inline-flex items-center justify-center w-14 h-14 mb-4 rounded-2xl backdrop-blur-lg border border-white/8 dark:border-gray-600/12 group-hover:scale-110 transition-all duration-300 bg-white/5 dark:bg-gray-800/8`}>
-                      <stat.icon className={`w-7 h-7 ${stat.color.split(' ')[0]}`} />
-                    </div>
-
-                    <h3 className="text-3xl font-bold text-white dark:text-gray-100 mb-2 drop-shadow-lg">
-                      {statsLoading ? (
-                        <div className="animate-pulse bg-gray-300/30 dark:bg-gray-600/30 h-8 w-16 rounded-lg"></div>
-                      ) : (
-                        stat.number
-                      )}
-                    </h3>
-
-                    <p className="text-sm font-semibold text-white/95 dark:text-gray-200 mb-2 drop-shadow-md">{stat.label}</p>
-                    <p className="text-xs text-white/85 dark:text-gray-300 leading-relaxed drop-shadow-sm">{stat.description}</p>                  </div>
-                ))}
+      {/* Right side mini stats for mobile */}
+      <div className="w-32 flex-shrink-0">
+        <div className="grid grid-cols-1 gap-2">
+          {stats.slice(0, 2).map((stat, index) => (
+            <div
+              key={stat.label}
+              className={`bg-white/5 backdrop-blur-3xl rounded-lg p-2 transition-all duration-500 border border-white/10 ${
+                activeIndex === index ? 'ring-1 ring-emerald-400/20 scale-105 bg-white/8' : ''
+              }`}
+            >
+              <div className="inline-flex items-center justify-center w-6 h-6 mb-1 rounded-lg backdrop-blur-lg border border-white/8 bg-white/5">
+                <stat.icon className={`w-3 h-3 ${stat.color.split(' ')[0]}`} />
               </div>
+
+              <h3 className="text-lg font-bold text-white mb-1 drop-shadow-lg">
+                {statsLoading ? (
+                  <div className="animate-pulse bg-gray-300/30 h-4 w-8 rounded"></div>
+                ) : (
+                  stat.number
+                )}
+              </h3>
+
+              <p className="text-xs font-semibold text-white/95 mb-1 drop-shadow-md">{stat.label}</p>
             </div>
+          ))}
+        </div>
+        
+        {/* Bottom mini stats */}
+        <div className="grid grid-cols-1 gap-2 mt-2">
+          {stats.slice(2, 4).map((stat, index) => (
+            <div
+              key={stat.label}
+              className={`bg-white/5 backdrop-blur-3xl rounded-lg p-2 transition-all duration-500 border border-white/10 ${
+                activeIndex === index + 2 ? 'ring-1 ring-emerald-400/20 scale-105 bg-white/8' : ''
+              }`}
+            >
+              <div className="inline-flex items-center justify-center w-6 h-6 mb-1 rounded-lg backdrop-blur-lg border border-white/8 bg-white/5">
+                <stat.icon className={`w-3 h-3 ${stat.color.split(' ')[0]}`} />
+              </div>
+
+              <h3 className="text-lg font-bold text-white mb-1 drop-shadow-lg">
+                {statsLoading ? (
+                  <div className="animate-pulse bg-gray-300/30 h-4 w-8 rounded"></div>
+                ) : (
+                  stat.number
+                )}
+              </h3>
+
+              <p className="text-xs font-semibold text-white/95 mb-1 drop-shadow-md">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* Desktop Layout - Same as before */}
+    <div className="hidden lg:flex flex-row items-center gap-10">
+      <div className="lg:w-1/2">
+        <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-4 py-1 mb-6 shadow-sm border border-white/30">
+          <Star className="w-4 h-4 mr-2 text-yellow-300" />
+          <span className="text-sm font-medium text-white">
+            Fighting hunger in Bangladesh
+          </span>
+        </div>
+
+        <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight text-white drop-shadow-lg">
+          Bridging Food Surplus
+          <span className="block text-emerald-300 drop-shadow-lg">
+            With Those in Need
+          </span>
+        </h1>
+
+        <p className="text-lg mb-8 text-white/90 drop-shadow-md">
+          FoodBridge connects food donors with people in need, reduces waste and hunger
+          throughout Bangladesh. <span className="font-semibold text-emerald-300">Donate freely or sell affordably</span> - One meal at a time.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button
+            onClick={() => navigate('/login')}
+            className="group bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 backdrop-blur-sm border border-white/20"
+          >
+            <LogIn className="w-5 h-5 mr-2" />
+            Join Now
+          </button>
+        </div>
+      </div>
+
+      <div className="lg:w-1/2">
+        <div className="relative">
+          <div className="relative grid grid-cols-2 gap-4">
+            {stats.map((stat, index) => (
+              <div
+                key={stat.label}
+                className={`bg-white/5 dark:bg-gray-900/8 backdrop-blur-3xl rounded-xl p-5 transition-all duration-500 border border-white/10 dark:border-gray-700/15 hover:border-emerald-400/20 dark:hover:border-emerald-500/25 transform hover:-translate-y-2 hover:scale-[1.02] ${
+                  activeIndex === index ? 'ring-1 ring-emerald-400/20 dark:ring-emerald-500/25 scale-105 bg-white/8 dark:bg-gray-800/12' : ''
+                } group`}
+              >
+                <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-xl backdrop-blur-lg border border-white/8 dark:border-gray-600/12 group-hover:scale-110 transition-all duration-300 bg-white/5 dark:bg-gray-800/8">
+                  <stat.icon className={`w-6 h-6 ${stat.color.split(' ')[0]}`} />
+                </div>
+
+                <h3 className="text-2xl font-bold text-white dark:text-gray-100 mb-2 drop-shadow-lg">
+                  {statsLoading ? (
+                    <div className="animate-pulse bg-gray-300/30 dark:bg-gray-600/30 h-7 w-14 rounded-lg"></div>
+                  ) : (
+                    stat.number
+                  )}
+                </h3>
+
+                <p className="text-sm font-semibold text-white/95 dark:text-gray-200 mb-2 drop-shadow-md">{stat.label}</p>
+                <p className="text-xs text-white/85 dark:text-gray-300 leading-relaxed drop-shadow-sm">{stat.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
       {/* Main content area */}
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-20">
