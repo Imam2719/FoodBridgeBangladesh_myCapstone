@@ -4139,7 +4139,7 @@
   align-items: center;
   gap: 0 !important;        /* Remove gap since no avatar */
   flex: 1;
-}
+}s
 
 /* Premium Admin Avatar with Gradient Rings */
 /* Hide Admin Avatar */
