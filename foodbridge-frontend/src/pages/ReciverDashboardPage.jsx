@@ -126,189 +126,189 @@ const ReceiverDashboard = () => {
     evidenceFile2: null
   });
   const [scrollPosition, setScrollPosition] = useState(0);
-const [showLeftArrow, setShowLeftArrow] = useState(false);
-const [showRightArrow, setShowRightArrow] = useState(false);
-const [scrollProgress, setScrollProgress] = useState(0);
-const categoryContainerRef = useRef(null);
-const [actionScrollPosition, setActionScrollPosition] = useState(0);
-const [showActionLeftArrow, setShowActionLeftArrow] = useState(false);
-const [showActionRightArrow, setShowActionRightArrow] = useState(false);
-const [actionScrollProgress, setActionScrollProgress] = useState(0);
-const actionButtonsContainerRef = useRef(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const categoryContainerRef = useRef(null);
+  const [actionScrollPosition, setActionScrollPosition] = useState(0);
+  const [showActionLeftArrow, setShowActionLeftArrow] = useState(false);
+  const [showActionRightArrow, setShowActionRightArrow] = useState(false);
+  const [actionScrollProgress, setActionScrollProgress] = useState(0);
+  const actionButtonsContainerRef = useRef(null);
 
-useEffect(() => {
-  const container = categoryContainerRef.current;
-  if (!container) return;
+  useEffect(() => {
+    const container = categoryContainerRef.current;
+    if (!container) return;
 
-  const handleScroll = () => {
-    const { scrollLeft, scrollWidth, clientWidth } = container;
-    
-    // Update scroll position
-    setScrollPosition(scrollLeft);
-    
-    // Update arrow visibility
-    setShowLeftArrow(scrollLeft > 0);
-    setShowRightArrow(scrollLeft < scrollWidth - clientWidth);
-    
-    // Update progress bar
-    const progress = scrollWidth > clientWidth 
-      ? (scrollLeft / (scrollWidth - clientWidth)) * 100 
-      : 0;
-    setScrollProgress(progress);
-  };
+    const handleScroll = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
 
-  const handleResize = () => {
-    handleScroll(); // Recalculate on resize
-  };
+      // Update scroll position
+      setScrollPosition(scrollLeft);
 
-  // Initial calculation
-  handleScroll();
+      // Update arrow visibility
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth);
 
-  // Add event listeners
-  container.addEventListener('scroll', handleScroll, { passive: true });
-  window.addEventListener('resize', handleResize);
+      // Update progress bar
+      const progress = scrollWidth > clientWidth
+        ? (scrollLeft / (scrollWidth - clientWidth)) * 100
+        : 0;
+      setScrollProgress(progress);
+    };
 
-  return () => {
-    container.removeEventListener('scroll', handleScroll);
-    window.removeEventListener('resize', handleResize);
-  };
-}, []);
+    const handleResize = () => {
+      handleScroll(); // Recalculate on resize
+    };
 
-useEffect(() => {
-  const container = actionButtonsContainerRef.current;
-  if (!container) return;
+    // Initial calculation
+    handleScroll();
 
-  const handleActionScroll = () => {
-    const { scrollLeft, scrollWidth, clientWidth } = container;
-    
-    // Update scroll position
-    setActionScrollPosition(scrollLeft);
-    
-    // Update arrow visibility (not needed now, but keep for progress bar)
-    setShowActionLeftArrow(scrollLeft > 0);
-    setShowActionRightArrow(scrollLeft < scrollWidth - clientWidth);
-    
-    // Update progress bar
-    const progress = scrollWidth > clientWidth 
-      ? (scrollLeft / (scrollWidth - clientWidth)) * 100 
-      : 0;
-    setActionScrollProgress(progress);
-    
-    // Update gradient indicators
-    if (scrollLeft > 0) {
-      container.classList.add('scrolled-left');
-    } else {
-      container.classList.remove('scrolled-left');
-    }
-    
-    if (scrollLeft < scrollWidth - clientWidth) {
-      container.classList.add('scrolled-right');
-    } else {
-      container.classList.remove('scrolled-right');
-    }
-  };
+    // Add event listeners
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize);
 
-  const handleActionResize = () => {
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const container = actionButtonsContainerRef.current;
+    if (!container) return;
+
+    const handleActionScroll = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+
+      // Update scroll position
+      setActionScrollPosition(scrollLeft);
+
+      // Update arrow visibility (not needed now, but keep for progress bar)
+      setShowActionLeftArrow(scrollLeft > 0);
+      setShowActionRightArrow(scrollLeft < scrollWidth - clientWidth);
+
+      // Update progress bar
+      const progress = scrollWidth > clientWidth
+        ? (scrollLeft / (scrollWidth - clientWidth)) * 100
+        : 0;
+      setActionScrollProgress(progress);
+
+      // Update gradient indicators
+      if (scrollLeft > 0) {
+        container.classList.add('scrolled-left');
+      } else {
+        container.classList.remove('scrolled-left');
+      }
+
+      if (scrollLeft < scrollWidth - clientWidth) {
+        container.classList.add('scrolled-right');
+      } else {
+        container.classList.remove('scrolled-right');
+      }
+    };
+
+    const handleActionResize = () => {
+      handleActionScroll();
+    };
+
+    // Initial calculation
     handleActionScroll();
+
+    // Add event listeners
+    container.addEventListener('scroll', handleActionScroll, { passive: true });
+    window.addEventListener('resize', handleActionResize);
+
+    return () => {
+      container.removeEventListener('scroll', handleActionScroll);
+      window.removeEventListener('resize', handleActionResize);
+    };
+  }, []);
+
+  // Scroll functions
+  const scrollLeft = () => {
+    const container = categoryContainerRef.current;
+    if (container) {
+      const scrollAmount = container.clientWidth * 0.8;
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
   };
 
-  // Initial calculation
-  handleActionScroll();
-
-  // Add event listeners
-  container.addEventListener('scroll', handleActionScroll, { passive: true });
-  window.addEventListener('resize', handleActionResize);
-
-  return () => {
-    container.removeEventListener('scroll', handleActionScroll);
-    window.removeEventListener('resize', handleActionResize);
+  const scrollRight = () => {
+    const container = categoryContainerRef.current;
+    if (container) {
+      const scrollAmount = container.clientWidth * 0.8;
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
   };
-}, []);
 
-// Scroll functions
-const scrollLeft = () => {
-  const container = categoryContainerRef.current;
-  if (container) {
-    const scrollAmount = container.clientWidth * 0.8;
-    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-  }
-};
+  // Action buttons scroll functions
+  const scrollActionLeft = () => {
+    const container = actionButtonsContainerRef.current;
+    if (container) {
+      const scrollAmount = container.clientWidth * 0.8;
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
+  };
 
-const scrollRight = () => {
-  const container = categoryContainerRef.current;
-  if (container) {
-    const scrollAmount = container.clientWidth * 0.8;
-    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-  }
-};
-
-// Action buttons scroll functions
-const scrollActionLeft = () => {
-  const container = actionButtonsContainerRef.current;
-  if (container) {
-    const scrollAmount = container.clientWidth * 0.8;
-    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-  }
-};
-
-const scrollActionRight = () => {
-  const container = actionButtonsContainerRef.current;
-  if (container) {
-    const scrollAmount = container.clientWidth * 0.8;
-    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-  }
-};
+  const scrollActionRight = () => {
+    const container = actionButtonsContainerRef.current;
+    if (container) {
+      const scrollAmount = container.clientWidth * 0.8;
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
 
-const [touchStart, setTouchStart] = useState(0);
-const [touchEnd, setTouchEnd] = useState(0);
-const [actionTouchStart, setActionTouchStart] = useState(0);
-const [actionTouchEnd, setActionTouchEnd] = useState(0);
-const handleTouchStart = (e) => {
-  setTouchStart(e.targetTouches[0].clientX);
-};
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [actionTouchStart, setActionTouchStart] = useState(0);
+  const [actionTouchEnd, setActionTouchEnd] = useState(0);
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
 
-const handleTouchMove = (e) => {
-  setTouchEnd(e.targetTouches[0].clientX);
-};
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
 
-const handleTouchEnd = () => {
-  if (!touchStart || !touchEnd) return;
-  
-  const distance = touchStart - touchEnd;
-  const isLeftSwipe = distance > 50;
-  const isRightSwipe = distance < -50;
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
 
-  if (isLeftSwipe) {
-    scrollRight();
-  }
-  if (isRightSwipe) {
-    scrollLeft();
-  }
-};
-// Action buttons touch handling
-const handleActionTouchStart = (e) => {
-  setActionTouchStart(e.targetTouches[0].clientX);
-};
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
 
-const handleActionTouchMove = (e) => {
-  setActionTouchEnd(e.targetTouches[0].clientX);
-};
+    if (isLeftSwipe) {
+      scrollRight();
+    }
+    if (isRightSwipe) {
+      scrollLeft();
+    }
+  };
+  // Action buttons touch handling
+  const handleActionTouchStart = (e) => {
+    setActionTouchStart(e.targetTouches[0].clientX);
+  };
 
-const handleActionTouchEnd = () => {
-  if (!actionTouchStart || !actionTouchEnd) return;
-  
-  const distance = actionTouchStart - actionTouchEnd;
-  const isLeftSwipe = distance > 50;
-  const isRightSwipe = distance < -50;
+  const handleActionTouchMove = (e) => {
+    setActionTouchEnd(e.targetTouches[0].clientX);
+  };
 
-  if (isLeftSwipe) {
-    scrollActionRight();
-  }
-  if (isRightSwipe) {
-    scrollActionLeft();
-  }
-};
+  const handleActionTouchEnd = () => {
+    if (!actionTouchStart || !actionTouchEnd) return;
+
+    const distance = actionTouchStart - actionTouchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      scrollActionRight();
+    }
+    if (isRightSwipe) {
+      scrollActionLeft();
+    }
+  };
 
   const openReportModal = (food) => {
     setSelectedFoodForReport(food);
@@ -467,13 +467,54 @@ const handleActionTouchEnd = () => {
           if (!notificationSeen) {
             localStorage.setItem(`notification_${notification.id}`, 'true');
             const notificationElement = document.createElement('div');
-            notificationElement.className = 'notification-dropdown';
+            notificationElement.className = 'fixed top-4 right-4 z-[9999] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 max-w-sm transform transition-all duration-300 ease-out';
+            notificationElement.style.opacity = '0';
+            notificationElement.style.transform = 'translateY(-20px) scale(0.95)';
+
+            const statusColor = notification.status === 'ACCEPTED' ? 'green' : 'red';
+            const statusIcon = notification.status === 'ACCEPTED' ?
+              `<svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>` :
+              `<svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>`;
+
             notificationElement.innerHTML = `
-            <div class="flex items-center p-3">
-              <CheckCircle class="h-5 w-5 mr-2 text-green-500" />
-              <span>Your food request for "${notification.foodName}" has been accepted!</span>
-            </div>
-          `;
+  <div class="flex items-start space-x-3">
+    <div class="flex-shrink-0 w-8 h-8 bg-${statusColor}-100 dark:bg-${statusColor}-900/50 rounded-full flex items-center justify-center">
+      ${statusIcon}
+    </div>
+    <div class="flex-1">
+      <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+        ${notification.status === 'ACCEPTED' ? 'Request Accepted!' : 'Request Update'}
+      </p>
+      <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+        Your food request for "${notification.foodName}" has been ${notification.status.toLowerCase()}.
+      </p>
+    </div>
+    <button onclick="this.parentElement.parentElement.remove()" class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+      <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+      </svg>
+    </button>
+  </div>
+`;
+
+            document.body.appendChild(notificationElement);
+
+            // Animate in
+            setTimeout(() => {
+              notificationElement.style.opacity = '1';
+              notificationElement.style.transform = 'translateY(0) scale(1)';
+            }, 100);
+
+            // Auto dismiss
+            setTimeout(() => {
+              notificationElement.style.opacity = '0';
+              notificationElement.style.transform = 'translateY(-20px) scale(0.95)';
+              setTimeout(() => {
+                if (notificationElement.parentElement) {
+                  notificationElement.parentElement.removeChild(notificationElement);
+                }
+              }, 300);
+            }, 5000);
             document.body.appendChild(notificationElement);
             setTimeout(() => {
               notificationElement.classList.add('fade-out');
@@ -544,47 +585,69 @@ const handleActionTouchEnd = () => {
 
   const showSaveNotification = (message, type = 'success') => {
     const notification = document.createElement('div');
-    notification.className = 'notification-dropdown fixed top-20 right-4 z-50 bg-white rounded-lg shadow-xl border-l-4 p-4 flex items-center w-80 transform transition-all duration-500 ease-in-out';
+
+    // Enhanced styling with better visibility
+    const baseClasses = 'notification-popup-enhanced fixed top-20 right-4 z-[9999] rounded-xl shadow-2xl p-4 flex items-start w-96 max-w-[calc(100vw-2rem)] transform transition-all duration-500 ease-out backdrop-blur-sm';
+    const typeStyles = {
+      success: 'bg-white/95 dark:bg-gray-800/95 border-l-4 border-green-500 shadow-green-500/20',
+      error: 'bg-white/95 dark:bg-gray-800/95 border-l-4 border-red-500 shadow-red-500/20'
+    };
+
+    notification.className = `${baseClasses} ${typeStyles[type]}`;
     notification.style.opacity = '0';
-    notification.style.transform = 'translateX(100%)';
+    notification.style.transform = 'translateX(100%) scale(0.95)';
+    notification.style.filter = 'drop-shadow(0 10px 30px rgba(0,0,0,0.2))';
 
-    const borderColor = type === 'success' ? 'border-green-500' : 'border-red-500';
-    const iconColor = type === 'success' ? 'text-green-500' : 'text-red-500';
-    const icon = type === 'success' ? 'CheckCircle' : 'AlertCircle';
-
-    notification.className += ` ${borderColor}`;
+    const iconHTML = {
+      success: `
+      <div class="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mr-3">
+        <svg class="h-5 w-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+        </svg>
+      </div>`,
+      error: `
+      <div class="flex-shrink-0 w-10 h-10 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center mr-3">
+        <svg class="h-5 w-5 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+        </svg>
+      </div>`
+    };
 
     notification.innerHTML = `
-    <div class="flex items-center">
-      <div class="mr-3">
-        ${type === 'success'
-        ? '<svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>'
-        : '<svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>'
-      }
-      </div>
-      <span class="text-gray-800">${message}</span>
+    ${iconHTML[type]}
+    <div class="flex-1 min-w-0">
+      <p class="text-sm font-medium text-gray-900 dark:text-gray-100 leading-5">
+        ${message}
+      </p>
+      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        ${type === 'success' ? 'Action completed successfully' : 'Please try again'}
+      </p>
     </div>
-    <button class="ml-4 text-gray-400 hover:text-gray-600" onclick="this.parentElement.remove()">
-      <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+    <button class="flex-shrink-0 ml-4 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" onclick="this.parentElement.remove()">
+      <svg class="h-4 w-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
       </svg>
     </button>
   `;
 
     document.body.appendChild(notification);
+
+    // Animate in
     setTimeout(() => {
       notification.style.opacity = '1';
-      notification.style.transform = 'translateX(0)';
+      notification.style.transform = 'translateX(0) scale(1)';
     }, 100);
+
+    // Auto dismiss with fade out
     setTimeout(() => {
       notification.style.opacity = '0';
-      notification.style.transform = 'translateX(100%)';
+      notification.style.transform = 'translateX(100%) scale(0.95)';
       setTimeout(() => {
         if (notification.parentElement) {
           notification.parentElement.removeChild(notification);
         }
       }, 500);
-    }, 3000);
+    }, 4000);
   };
 
   useEffect(() => {
@@ -3437,184 +3500,183 @@ const handleActionTouchEnd = () => {
   );
 
   const renderListView = () => (
-  <div className="space-y-6 mt-8">
-    {availableFoods.map((food) => (
-      <div
-        key={food.id}
-        className="premium-donation-card group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-700"
-      >
-        {/* Premium Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50/30 to-purple-50/20 dark:from-gray-800 dark:via-blue-900/10 dark:to-purple-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        
-        <div className="relative flex flex-col md:flex-row">
-          {/* Enhanced Image Section */}
-          <div className="relative md:w-1/3 overflow-hidden">
-            <div className="relative h-64 md:h-56 lg:h-64">
-              <img
-                src={food.imageData
-                  ? `data:${food.imageContentType || 'image/jpeg'};base64,${food.imageData}`
-                  : "/api/placeholder/400/300"}
-                alt={food.foodName}
-                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-                onError={(e) => {
-                  e.target.src = "/api/placeholder/400/300";
-                }}
-              />
-              {/* Image Overlay Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-              
-              {/* Enhanced Category Badge */}
-              <div className="absolute top-4 right-4">
-                <span className="premium-badge px-3 py-1.5 text-xs font-semibold bg-white/90 backdrop-blur-sm text-gray-800 rounded-full shadow-lg border border-white/50">
-                  {food.category}
-                </span>
-              </div>
-              
-              {/* Food Type Indicator */}
-              <div className="absolute top-4 left-4">
-                <div className="w-3 h-3 bg-green-400 rounded-full shadow-lg animate-pulse"></div>
+    <div className="space-y-6 mt-8">
+      {availableFoods.map((food) => (
+        <div
+          key={food.id}
+          className="premium-donation-card group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-700"
+        >
+          {/* Premium Background Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50/30 to-purple-50/20 dark:from-gray-800 dark:via-blue-900/10 dark:to-purple-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+          <div className="relative flex flex-col md:flex-row">
+            {/* Enhanced Image Section */}
+            <div className="relative md:w-1/3 overflow-hidden">
+              <div className="relative h-64 md:h-56 lg:h-64">
+                <img
+                  src={food.imageData
+                    ? `data:${food.imageContentType || 'image/jpeg'};base64,${food.imageData}`
+                    : "/api/placeholder/400/300"}
+                  alt={food.foodName}
+                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                  onError={(e) => {
+                    e.target.src = "/api/placeholder/400/300";
+                  }}
+                />
+                {/* Image Overlay Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+
+                {/* Enhanced Category Badge */}
+                <div className="absolute top-4 right-4">
+                  <span className="premium-badge px-3 py-1.5 text-xs font-semibold bg-white/90 backdrop-blur-sm text-gray-800 rounded-full shadow-lg border border-white/50">
+                    {food.category}
+                  </span>
+                </div>
+
+                {/* Food Type Indicator */}
+                <div className="absolute top-4 left-4">
+                  <div className="w-3 h-3 bg-green-400 rounded-full shadow-lg animate-pulse"></div>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Enhanced Content Section */}
-          <div className="p-6 md:w-2/3 flex flex-col justify-between relative">
-            <div className="flex-grow">
-              {/* Enhanced Header */}
-              <div className="mb-4">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
-                    {food.foodName}
-                  </h3>
-                  <div className="ml-4 flex items-center">
-                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-lg">
-                      {food.quantity || 'N/A'} Meals
-                    </span>
+            {/* Enhanced Content Section */}
+            <div className="p-6 md:w-2/3 flex flex-col justify-between relative">
+              <div className="flex-grow">
+                {/* Enhanced Header */}
+                <div className="mb-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
+                      {food.foodName}
+                    </h3>
+                    <div className="ml-4 flex items-center">
+                      <span className="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-lg">
+                        {food.quantity || 'N/A'} Meals
+                      </span>
+                    </div>
                   </div>
-                </div>
-                
-                {/* Enhanced Description */}
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm">
-                  {food.description || 'Fresh and delicious food ready for pickup.'}
-                </p>
-              </div>
 
-              {/* Enhanced Info Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-                {/* Expiry Info */}
-                <div className="flex items-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-100 dark:border-orange-800/30">
-                  <div className="flex-shrink-0 w-8 h-8 bg-orange-100 dark:bg-orange-800/50 rounded-lg flex items-center justify-center mr-3">
-                    <Clock className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-orange-700 dark:text-orange-300">Expires</p>
-                    <p className="text-sm font-semibold text-orange-800 dark:text-orange-200">{food.expiryDate}</p>
-                  </div>
+                  {/* Enhanced Description */}
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm">
+                    {food.description || 'Fresh and delicious food ready for pickup.'}
+                  </p>
                 </div>
 
-                {/* Location Info */}
-                <div className="flex items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-100 dark:border-green-800/30">
-                  <div className="flex-shrink-0 w-8 h-8 bg-green-100 dark:bg-green-800/50 rounded-lg flex items-center justify-center mr-3">
-                    <Utensils className="h-4 w-4 text-green-600 dark:text-green-400" />
+                {/* Enhanced Info Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                  {/* Expiry Info */}
+                  <div className="flex items-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-100 dark:border-orange-800/30">
+                    <div className="flex-shrink-0 w-8 h-8 bg-orange-100 dark:bg-orange-800/50 rounded-lg flex items-center justify-center mr-3">
+                      <Clock className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-orange-700 dark:text-orange-300">Expires</p>
+                      <p className="text-sm font-semibold text-orange-800 dark:text-orange-200">{food.expiryDate}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-green-700 dark:text-green-300">Location</p>
-                    <p className="text-sm font-semibold text-green-800 dark:text-green-200 truncate">{food.location}</p>
-                  </div>
-                </div>
 
-                {/* Quantity Info */}
-                <div className="flex items-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-100 dark:border-purple-800/30">
-                  <div className="flex-shrink-0 w-8 h-8 bg-purple-100 dark:bg-purple-800/50 rounded-lg flex items-center justify-center mr-3">
-                    <Package className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                  {/* Location Info */}
+                  <div className="flex items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-100 dark:border-green-800/30">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-100 dark:bg-green-800/50 rounded-lg flex items-center justify-center mr-3">
+                      <Utensils className="h-4 w-4 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-green-700 dark:text-green-300">Location</p>
+                      <p className="text-sm font-semibold text-green-800 dark:text-green-200 truncate">{food.location}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-purple-700 dark:text-purple-300">Available</p>
-                    <p className="text-sm font-semibold text-purple-800 dark:text-purple-200">{food.quantity} Portions</p>
-                  </div>
-                </div>
 
-                {/* Dietary Tags */}
-                <div className="flex items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/30">
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-800/50 rounded-lg flex items-center justify-center mr-3">
-                    <svg className="h-4 w-4 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                  {/* Quantity Info */}
+                  <div className="flex items-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-100 dark:border-purple-800/30">
+                    <div className="flex-shrink-0 w-8 h-8 bg-purple-100 dark:bg-purple-800/50 rounded-lg flex items-center justify-center mr-3">
+                      <Package className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-purple-700 dark:text-purple-300">Available</p>
+                      <p className="text-sm font-semibold text-purple-800 dark:text-purple-200">{food.quantity} Portions</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">Dietary Info</p>
-                    <div className="flex flex-wrap gap-1">
-                      {food.dietaryInfo && food.dietaryInfo.length > 0 ? (
-                        food.dietaryInfo.map((tag, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-800/50 text-blue-700 dark:text-blue-300 rounded-md"
-                          >
-                            {tag}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-xs text-blue-600 dark:text-blue-400">Standard</span>
-                      )}
+
+                  {/* Dietary Tags */}
+                  <div className="flex items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/30">
+                    <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-800/50 rounded-lg flex items-center justify-center mr-3">
+                      <svg className="h-4 w-4 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">Dietary Info</p>
+                      <div className="flex flex-wrap gap-1">
+                        {food.dietaryInfo && food.dietaryInfo.length > 0 ? (
+                          food.dietaryInfo.map((tag, index) => (
+                            <span
+                              key={index}
+                              className="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-800/50 text-blue-700 dark:text-blue-300 rounded-md"
+                            >
+                              {tag}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-xs text-blue-600 dark:text-blue-400">Standard</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Enhanced Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
-              {/* Primary Action Button */}
-              <button
-                onClick={() => handleFoodRequest(food.id)}
-                className="premium-btn-primary flex-1 group relative overflow-hidden px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                <div className="relative flex items-center justify-center space-x-2">
-                  <CheckCircle className="h-5 w-5" />
-                  <span>Request Pickup</span>
+              {/* Enhanced Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                {/* Primary Action Button */}
+                <button
+                  onClick={() => handleFoodRequest(food.id)}
+                  className="premium-btn-primary flex-1 group relative overflow-hidden px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                  <div className="relative flex items-center justify-center space-x-2">
+                    <CheckCircle className="h-5 w-5" />
+                    <span>Request Pickup</span>
+                  </div>
+                </button>
+
+                {/* Secondary Action Buttons */}
+                <div className="flex gap-3">
+                  {/* Save Button */}
+                  <button
+                    onClick={() => toggleSaveFood(food.id)}
+                    className={`premium-btn-secondary relative overflow-hidden px-4 py-3 rounded-xl font-medium transition-all duration-300 transform hover:-translate-y-0.5 ${savedFoods.includes(food.id)
+                        ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-white shadow-lg hover:shadow-xl hover:from-yellow-500 hover:to-yellow-600'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-md hover:shadow-lg'
+                      }`}
+                    title={savedFoods.includes(food.id) ? 'Remove from saved' : 'Save for later'}
+                  >
+                    <Bookmark className={`h-5 w-5 ${savedFoods.includes(food.id) ? 'fill-current' : ''}`} />
+                  </button>
+
+                  {/* Report Button */}
+                  <button
+                    onClick={() => openReportModal(food)}
+                    className="premium-btn-danger relative overflow-hidden px-4 py-3 rounded-xl font-medium bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/30 hover:bg-red-100 dark:hover:bg-red-900/30 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
+                    title="Report this food item"
+                  >
+                    <Flag className="h-5 w-5" />
+                  </button>
                 </div>
-              </button>
+              </div>
 
-              {/* Secondary Action Buttons */}
-              <div className="flex gap-3">
-                {/* Save Button */}
-                <button
-                  onClick={() => toggleSaveFood(food.id)}
-                  className={`premium-btn-secondary relative overflow-hidden px-4 py-3 rounded-xl font-medium transition-all duration-300 transform hover:-translate-y-0.5 ${
-                    savedFoods.includes(food.id)
-                      ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-white shadow-lg hover:shadow-xl hover:from-yellow-500 hover:to-yellow-600'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-md hover:shadow-lg'
-                  }`}
-                  title={savedFoods.includes(food.id) ? 'Remove from saved' : 'Save for later'}
-                >
-                  <Bookmark className={`h-5 w-5 ${savedFoods.includes(food.id) ? 'fill-current' : ''}`} />
-                </button>
-
-                {/* Report Button */}
-                <button
-                  onClick={() => openReportModal(food)}
-                  className="premium-btn-danger relative overflow-hidden px-4 py-3 rounded-xl font-medium bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/30 hover:bg-red-100 dark:hover:bg-red-900/30 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
-                  title="Report this food item"
-                >
-                  <Flag className="h-5 w-5" />
-                </button>
+              {/* Premium Status Indicator */}
+              <div className="absolute top-2 right-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full shadow-sm animate-pulse"></div>
               </div>
             </div>
-
-            {/* Premium Status Indicator */}
-            <div className="absolute top-2 right-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full shadow-sm animate-pulse"></div>
-            </div>
           </div>
-        </div>
 
-        {/* Hover Effect Border */}
-        <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-blue-200 dark:group-hover:border-blue-700 transition-colors duration-500 pointer-events-none"></div>
-      </div>
-    ))}
-  </div>
-);
+          {/* Hover Effect Border */}
+          <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-blue-200 dark:group-hover:border-blue-700 transition-colors duration-500 pointer-events-none"></div>
+        </div>
+      ))}
+    </div>
+  );
 
   const renderReportModal = () => {
     if (!showReportModal || !selectedFoodForReport) return null;
@@ -5475,241 +5537,242 @@ const handleActionTouchEnd = () => {
             </div>
           </div>
 
-       <div className="action-buttons-wrapper">
-  <div 
-    ref={actionButtonsContainerRef}
-    className="action-buttons-container"
-    onTouchStart={handleActionTouchStart}
-    onTouchMove={handleActionTouchMove}
-    onTouchEnd={handleActionTouchEnd}
-  >
-    <button
-      onClick={() => setShowFoodRequestForm(true)}
-      className="topbar-btn group"
-    >
-      <div className="topbar-icon-wrapper bg-emerald-50 dark:bg-emerald-900/30 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-800/50">
-        <PlusCircle className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
-      </div>
-      <span className="topbar-label">Need Food</span>
-    </button>
+          <div className="action-buttons-wrapper">
+            <div
+              ref={actionButtonsContainerRef}
+              className="action-buttons-container"
+              onTouchStart={handleActionTouchStart}
+              onTouchMove={handleActionTouchMove}
+              onTouchEnd={handleActionTouchEnd}
+            >
+              <button
+                onClick={() => setShowFoodRequestForm(true)}
+                className="topbar-btn group"
+              >
+                <div className="topbar-icon-wrapper bg-emerald-50 dark:bg-emerald-900/30 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-800/50">
+                  <PlusCircle className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
+                </div>
+                <span className="topbar-label">Need Food</span>
+              </button>
 
-    <button
-      onClick={() => setShowEmergencyForm(true)}
-      className="topbar-btn group"
-    >
-      <div className="topbar-icon-wrapper bg-orange-50 dark:bg-orange-900/30 group-hover:bg-orange-100 dark:group-hover:bg-orange-800/50">
-        <AlertCircle className="h-4 w-4 text-orange-500 dark:text-orange-400" />
-      </div>
-      <span className="topbar-label">Emergency</span>
-    </button>
+              <button
+                onClick={() => setShowEmergencyForm(true)}
+                className="topbar-btn group"
+              >
+                <div className="topbar-icon-wrapper bg-orange-50 dark:bg-orange-900/30 group-hover:bg-orange-100 dark:group-hover:bg-orange-800/50">
+                  <AlertCircle className="h-4 w-4 text-orange-500 dark:text-orange-400" />
+                </div>
+                <span className="topbar-label">Emergency</span>
+              </button>
 
-    <button
-      onClick={handleOpenOverviewModal}
-      className="topbar-btn group"
-    >
-      <div className="topbar-icon-wrapper bg-blue-50 dark:bg-blue-900/30 group-hover:bg-blue-100 dark:group-hover:bg-blue-800/50">
-        <BarChart className="h-4 w-4 text-blue-500 dark:text-blue-400" />
-      </div>
-      <span className="topbar-label">Overview</span>
-    </button>
+              <button
+                onClick={handleOpenOverviewModal}
+                className="topbar-btn group"
+              >
+                <div className="topbar-icon-wrapper bg-blue-50 dark:bg-blue-900/30 group-hover:bg-blue-100 dark:group-hover:bg-blue-800/50">
+                  <BarChart className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                </div>
+                <span className="topbar-label">Overview</span>
+              </button>
 
-    <button
-      onClick={showDedicatedSavedDonationsModal}
-      className="topbar-btn group relative"
-    >
-      <div className="topbar-icon-wrapper bg-purple-50 dark:bg-purple-900/30 group-hover:bg-purple-100 dark:group-hover:bg-purple-800/50">
-        <Bookmark className="h-4 w-4 text-purple-500 dark:text-purple-400" />
-      </div>
-      <span className="topbar-label">Saved</span>
-      {savedFoods.length > 0 && (
-        <span className="notification-badge">
-          {savedFoods.length > 9 ? '9+' : savedFoods.length}
-        </span>
-      )}
-    </button>
+              <button
+                onClick={showDedicatedSavedDonationsModal}
+                className="topbar-btn group relative"
+              >
+                <div className="topbar-icon-wrapper bg-purple-50 dark:bg-purple-900/30 group-hover:bg-purple-100 dark:group-hover:bg-purple-800/50">
+                  <Bookmark className="h-4 w-4 text-purple-500 dark:text-purple-400" />
+                </div>
+                <span className="topbar-label">Saved</span>
+                {savedFoods.length > 0 && (
+                  <div className="absolute -top-1 -right-1 z-10">
+                    <span className="notification-badge-enhanced flex items-center justify-center min-w-[1.25rem] h-5 bg-blue-500 text-white text-xs font-bold rounded-full border-2 border-white shadow-lg">
+                      {savedFoods.length > 9 ? '9+' : savedFoods.length}
+                    </span>
+                  </div>
+                )}
+              </button>
 
-    <button
-      onClick={() => setShowAcceptedNotificationsModal(true)}
-      className="topbar-btn group"
-    >
-      <div className="topbar-icon-wrapper bg-purple-50 dark:bg-purple-900/30 group-hover:bg-purple-100 dark:group-hover:bg-purple-800/50">
-        <Bell className="h-4 w-4 text-purple-500 dark:text-purple-400" />
-      </div>
-      <span className="topbar-label">Notifications</span>
-      {acceptedRequestNotifications.length > 0 && (
-        <span className="notification-badge">
-          {acceptedRequestNotifications.length > 9 ? '9+' : acceptedRequestNotifications.length}
-        </span>
-      )}
-    </button>
+              <button
+                onClick={() => setShowAcceptedNotificationsModal(true)}
+                className="topbar-btn group"
+              >
+                <div className="topbar-icon-wrapper bg-purple-50 dark:bg-purple-900/30 group-hover:bg-purple-100 dark:group-hover:bg-purple-800/50">
+                  <Bell className="h-4 w-4 text-purple-500 dark:text-purple-400" />
+                </div>
+                <span className="topbar-label">Notifications</span>
+                {acceptedRequestNotifications.length > 0 && (
+                  <div className="absolute -top-1 -right-1 z-10">
+                    <span className="notification-badge-enhanced flex items-center justify-center min-w-[1.25rem] h-5 bg-red-500 text-white text-xs font-bold rounded-full border-2 border-white shadow-lg animate-pulse">
+                      {acceptedRequestNotifications.length > 9 ? '9+' : acceptedRequestNotifications.length}
+                    </span>
+                  </div>
+                )}
+              </button>
 
-    <button
-      onClick={() => setShowProfileMenu(!showProfileMenu)}
-      className="topbar-btn group"
-    >
-      <div className="topbar-icon-wrapper bg-sky-50 dark:bg-sky-900/30 group-hover:bg-sky-100 dark:group-hover:bg-sky-800/50">
-        <User className="h-4 w-4 text-sky-500 dark:text-sky-400" />
-      </div>
-      <span className="topbar-label">Profile</span>
-    </button>
-  </div>
+              <button
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className="topbar-btn group"
+              >
+                <div className="topbar-icon-wrapper bg-sky-50 dark:bg-sky-900/30 group-hover:bg-sky-100 dark:group-hover:bg-sky-800/50">
+                  <User className="h-4 w-4 text-sky-500 dark:text-sky-400" />
+                </div>
+                <span className="topbar-label">Profile</span>
+              </button>
+            </div>
 
-  {/* Progress Bar (Optional - shows scroll position) */}
-  <div className="category-scroll-progress">
-    <div 
-      className="category-scroll-progress-bar animated"
-      style={{ width: `${actionScrollProgress}%` }}
-    />
-  </div>
+            {/* Progress Bar (Optional - shows scroll position) */}
+            <div className="category-scroll-progress">
+              <div
+                className="category-scroll-progress-bar animated"
+                style={{ width: `${actionScrollProgress}%` }}
+              />
+            </div>
 
-  {/* Mobile Scroll Hint */}
-  <div className="mobile-scroll-hint">
-    ← Swipe to see more actions →
-  </div>
+            {/* Mobile Scroll Hint */}
+            <div className="mobile-scroll-hint">
+              ← Swipe to see more actions →
+            </div>
 
-  {/* Scroll Indicators (Dots) */}
-  <div className="category-scroll-indicator">
-    {[...Array(Math.ceil(6 / 3))].map((_, index) => (
-      <div
-        key={index}
-        className={`scroll-indicator-dot ${
-          Math.floor(actionScrollPosition / (actionButtonsContainerRef.current?.clientWidth || 1)) === index ? 'active' : ''
-        }`}
-        onClick={() => {
-          const container = actionButtonsContainerRef.current;
-          if (container) {
-            container.scrollTo({
-              left: index * container.clientWidth,
-              behavior: 'smooth'
-            });
-          }
-        }}
-      />
-    ))}
-  </div>
-</div>
+            {/* Scroll Indicators (Dots) */}
+            <div className="category-scroll-indicator">
+              {[...Array(Math.ceil(6 / 3))].map((_, index) => (
+                <div
+                  key={index}
+                  className={`scroll-indicator-dot ${Math.floor(actionScrollPosition / (actionButtonsContainerRef.current?.clientWidth || 1)) === index ? 'active' : ''
+                    }`}
+                  onClick={() => {
+                    const container = actionButtonsContainerRef.current;
+                    if (container) {
+                      container.scrollTo({
+                        left: index * container.clientWidth,
+                        behavior: 'smooth'
+                      });
+                    }
+                  }}
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
-    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      
-      {/* Category Section with Scrolling */}
-      <div className="category-section-wrapper w-full">
-        {/* Scroll Arrows */}
-        <div className={`category-scroll-arrows left ${showLeftArrow ? 'visible' : 'hidden'}`}>
-          <button
-            onClick={scrollLeft}
-            className="scroll-arrow-btn"
-            aria-label="Scroll categories left"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-        </div>
-        
-        <div className={`category-scroll-arrows right ${showRightArrow ? 'visible' : 'hidden'}`}>
-          <button
-            onClick={scrollRight}
-            className="scroll-arrow-btn"
-            aria-label="Scroll categories right"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 
-        {/* Category Container */}
-        <div 
-          ref={categoryContainerRef}
-          className="category-container"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {[
-            { name: 'All', icon: <Globe className="h-4 w-4" /> },
-            { name: 'Restaurant', icon: <Utensils className="h-4 w-4" /> },
-            { name: 'Homemade', icon: <Coffee className="h-4 w-4" /> },
-            { name: 'Bakery', icon: <Zap className="h-4 w-4" /> },
-            { name: 'Grocery', icon: <ShoppingBag className="h-4 w-4" /> },
-            { name: 'Event', icon: <Calendar className="h-4 w-4" /> },
-            { name: 'Corporate', icon: <Award className="h-4 w-4" /> },
-          ].map(category => (
-            <button
-              key={category.name}
-              onClick={() => handleCategoryChange(category.name)}
-              className={`category-pill flex items-center whitespace-nowrap transition-all ${
-                selectedCategory === category.name
-                  ? 'active bg-blue-500 dark:bg-blue-600 text-white border-blue-500 dark:border-blue-600'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600'
-              }`}
-              onTouchStart={(e) => e.currentTarget.classList.add('touch-active')}
-              onTouchEnd={(e) => e.currentTarget.classList.remove('touch-active')}
-            >
-              {category.icon}
-              <span className="category-pill-text">{category.name}</span>
-            </button>
-          ))}
-        </div>
+            {/* Category Section with Scrolling */}
+            <div className="category-section-wrapper w-full">
+              {/* Scroll Arrows */}
+              <div className={`category-scroll-arrows left ${showLeftArrow ? 'visible' : 'hidden'}`}>
+                <button
+                  onClick={scrollLeft}
+                  className="scroll-arrow-btn"
+                  aria-label="Scroll categories left"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+              </div>
 
-        {/* Progress Bar */}
-        <div className="category-scroll-progress">
-          <div 
-            className="category-scroll-progress-bar animated"
-            style={{ width: `${scrollProgress}%` }}
-          />
-        </div>
+              <div className={`category-scroll-arrows right ${showRightArrow ? 'visible' : 'hidden'}`}>
+                <button
+                  onClick={scrollRight}
+                  className="scroll-arrow-btn"
+                  aria-label="Scroll categories right"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
 
-        {/* Mobile Scroll Hint */}
-        <div className="mobile-scroll-hint">
-          ← Swipe to see more categories →
-        </div>
+              {/* Category Container */}
+              <div
+                ref={categoryContainerRef}
+                className="category-container"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                {[
+                  { name: 'All', icon: <Globe className="h-4 w-4" /> },
+                  { name: 'Restaurant', icon: <Utensils className="h-4 w-4" /> },
+                  { name: 'Homemade', icon: <Coffee className="h-4 w-4" /> },
+                  { name: 'Bakery', icon: <Zap className="h-4 w-4" /> },
+                  { name: 'Grocery', icon: <ShoppingBag className="h-4 w-4" /> },
+                  { name: 'Event', icon: <Calendar className="h-4 w-4" /> },
+                  { name: 'Corporate', icon: <Award className="h-4 w-4" /> },
+                ].map(category => (
+                  <button
+                    key={category.name}
+                    onClick={() => handleCategoryChange(category.name)}
+                    className={`category-pill flex items-center whitespace-nowrap transition-all ${selectedCategory === category.name
+                        ? 'active bg-blue-500 dark:bg-blue-600 text-white border-blue-500 dark:border-blue-600'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600'
+                      }`}
+                    onTouchStart={(e) => e.currentTarget.classList.add('touch-active')}
+                    onTouchEnd={(e) => e.currentTarget.classList.remove('touch-active')}
+                  >
+                    {category.icon}
+                    <span className="category-pill-text">{category.name}</span>
+                  </button>
+                ))}
+              </div>
 
-        {/* Scroll Indicators (Dots) */}
-        <div className="category-scroll-indicator">
-          {[...Array(Math.ceil(7 / 3))].map((_, index) => (
-            <div
-              key={index}
-              className={`scroll-indicator-dot ${
-                Math.floor(scrollPosition / (categoryContainerRef.current?.clientWidth || 1)) === index ? 'active' : ''
-              }`}
-              onClick={() => {
-                const container = categoryContainerRef.current;
-                if (container) {
-                  container.scrollTo({
-                    left: index * container.clientWidth,
-                    behavior: 'smooth'
-                  });
-                }
-              }}
-            />
-          ))}
-        </div>
-      </div>
+              {/* Progress Bar */}
+              <div className="category-scroll-progress">
+                <div
+                  className="category-scroll-progress-bar animated"
+                  style={{ width: `${scrollProgress}%` }}
+                />
+              </div>
 
-      {/* View Controls */}
-      <div className="flex items-center space-x-2 mt-3 sm:mt-0 flex-shrink-0">
-        <div className="flex items-center border dark:border-gray-700 rounded-lg overflow-hidden">
-          <button
-            type="button"
-            onClick={() => setViewMode('grid')}
-            className={`p-2 ${viewMode === 'grid'
-              ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
-              : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400'}`}
-          >
-            <Grid className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode('list')}
-            className={`p-2 ${viewMode === 'list'
-              ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
-              : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400'}`}
-          >
-            <List className="h-5 w-5" />
-          </button>
+              {/* Mobile Scroll Hint */}
+              <div className="mobile-scroll-hint">
+                ← Swipe to see more categories →
+              </div>
+
+              {/* Scroll Indicators (Dots) */}
+              <div className="category-scroll-indicator">
+                {[...Array(Math.ceil(7 / 3))].map((_, index) => (
+                  <div
+                    key={index}
+                    className={`scroll-indicator-dot ${Math.floor(scrollPosition / (categoryContainerRef.current?.clientWidth || 1)) === index ? 'active' : ''
+                      }`}
+                    onClick={() => {
+                      const container = categoryContainerRef.current;
+                      if (container) {
+                        container.scrollTo({
+                          left: index * container.clientWidth,
+                          behavior: 'smooth'
+                        });
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* View Controls */}
+            <div className="flex items-center space-x-2 mt-3 sm:mt-0 flex-shrink-0">
+              <div className="flex items-center border dark:border-gray-700 rounded-lg overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 ${viewMode === 'grid'
+                    ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
+                    : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400'}`}
+                >
+                  <Grid className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 ${viewMode === 'list'
+                    ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
+                    : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400'}`}
+                >
+                  <List className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
 
         {availableFoods.length > 0 ? (
           <>

@@ -26,6 +26,7 @@ C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBanglad
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Controller\MessageBoardController.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Controller\navigationControllelr.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Controller\PasswordResetController.java
+C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Controller\receiver\EmergencyFoodRequestController.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Controller\receiver\FoodReportController.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Controller\receiver\NeedFoodRequestController.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Controller\receiver\Receiver_ActiveFood_Request_Controller.java
@@ -60,6 +61,7 @@ C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBanglad
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Model\merchant\MerchantSale.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Model\MessageBoard.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Model\OTPEntity.java
+C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Model\receiver\EmergencyFoodRequest.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Model\receiver\FoodReport.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Model\receiver\NeedFoodRequestModel.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Model\receiver\Receiver_ActiveFood_Request_Model.java
@@ -76,6 +78,7 @@ C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBanglad
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Repository\merchant\MerchantSaleRepository.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Repository\MessageBoardRepository.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Repository\OTPRepository.java
+C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Repository\receiver\EmergencyFoodRequestRepository.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Repository\receiver\FoodReportRepository.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Repository\receiver\NeedFoodRequestInterface.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Repository\receiver\Receiver_ActiveFood_Request_Repository.java
@@ -100,6 +103,7 @@ C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBanglad
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Service\merchant\PaymentFeeService.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Service\MessageBoardService.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Service\PasswordResetService.java
+C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Service\receiver\EmergencyFoodRequestService.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Service\receiver\FoodReportService.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Service\receiver\NeedFoodRequestService.java
 C:\Users\USER\Downloads\FoodBridgeBangladesh\src\main\java\com\FoodBridgeBangladesh\Service\receiver\Receiver_ActiveFood_Request_Service.java

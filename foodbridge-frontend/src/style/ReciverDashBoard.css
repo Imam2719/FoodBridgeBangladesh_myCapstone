@@ -1,5 +1,3 @@
-
-
 /* ==========================================================================
    1. ROOT VARIABLES & BASE STYLES
 ========================================================================== */
@@ -7,18 +5,18 @@
   /* ==========================================================================
      1.1 COLOR SYSTEM - LIGHT THEME
   ========================================================================== */
-  
+
   /* Primary Colors */
   --primary-color: #4563F6;
   --primary-hover: #2E4DE0;
   --primary-light: #E7ECFF;
   --primary-dark: #1D4ED8;
-  
+
   /* Secondary Colors */
   --secondary-color: #F3F4F6;
   --secondary-hover: #E5E7EB;
   --secondary-dark: #D1D5DB;
-  
+
   /* Status Colors */
   --success-color: #10B981;
   --success-light: #D1FAE5;
@@ -32,7 +30,7 @@
   --info-color: #3B82F6;
   --info-light: #DBEAFE;
   --info-dark: #2563EB;
-  
+
   /* Enhanced Color Palette */
   --emerald-50: #ECFDF5;
   --emerald-500: #10B981;
@@ -66,7 +64,7 @@
   --cyan-500: #06B6D4;
   --cyan-600: #0891B2;
   --cyan-700: #0E7490;
-  
+
   /* Neutral Gray Scale */
   --gray-50: #F9FAFB;
   --gray-100: #F3F4F6;
@@ -78,7 +76,7 @@
   --gray-700: #374151;
   --gray-800: #1F2937;
   --gray-900: #111827;
-  
+
   /* ==========================================================================
      1.2 SHADOWS & EFFECTS
   ========================================================================== */
@@ -93,7 +91,7 @@
   --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
   --shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.12);
   --shadow-focus: 0 0 0 3px rgba(59, 130, 246, 0.5);
-  
+
   /* ==========================================================================
      1.3 BORDER RADIUS
   ========================================================================== */
@@ -106,7 +104,7 @@
   --border-radius-2xl: 1.5rem;
   --border-radius-3xl: 2rem;
   --border-radius-full: 9999px;
-  
+
   /* ==========================================================================
      1.4 TRANSITIONS & ANIMATIONS
   ========================================================================== */
@@ -115,7 +113,7 @@
   --transition-slow: all 0.3s ease;
   --transition-bounce: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --transition-spring: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  
+
   /* ==========================================================================
      1.5 LAYOUT DIMENSIONS
   ========================================================================== */
@@ -124,7 +122,7 @@
   --content-padding: 1.5rem;
   --sidebar-width: 280px;
   --topbar-height: 120px;
-  
+
   /* ==========================================================================
      1.6 TYPOGRAPHY
   ========================================================================== */
@@ -136,17 +134,17 @@
   --font-size-2xl: 1.5rem;
   --font-size-3xl: 1.875rem;
   --font-size-4xl: 2.25rem;
-  
+
   --line-height-tight: 1.25;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
-  
+
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
-  
+
   /* ==========================================================================
      1.7 GRADIENT DEFINITIONS
   ========================================================================== */
@@ -160,7 +158,7 @@
   --gradient-cyan: linear-gradient(135deg, #06B6D4, #0891B2);
   --gradient-orange: linear-gradient(135deg, #F97316, #EA580C);
   --gradient-yellow: linear-gradient(135deg, #EAB308, #CA8A04);
-  
+
   /* ==========================================================================
      1.8 Z-INDEX SCALE
   ========================================================================== */
@@ -184,18 +182,18 @@
   --bg-tertiary: #374151;
   --bg-card: #1F2937;
   --bg-modal: #111827;
-  
+
   /* Text Colors */
   --text-primary: #F9FAFB;
   --text-secondary: #D1D5DB;
   --text-tertiary: #9CA3AF;
   --text-muted: #6B7280;
-  
+
   /* Border Colors */
   --border-primary: #374151;
   --border-secondary: #4B5563;
   --border-tertiary: #6B7280;
-  
+
   /* Enhanced Dark Shadows */
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
@@ -328,7 +326,7 @@ body {
   margin-bottom: 2rem;
   position: relative;
   width: 100%;
-  background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0));
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
   border-radius: var(--border-radius-xl);
   overflow: hidden;
   padding: 1.5rem;
@@ -368,7 +366,7 @@ body {
   font-weight: var(--font-weight-extrabold);
   color: var(--gray-800);
   margin-bottom: 0.25rem;
-  text-shadow: 0 1px 1px rgba(255,255,255,0.8);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
   position: relative;
   z-index: 1;
   transition: var(--transition);
@@ -376,7 +374,7 @@ body {
 
 .dark .welcome-user h2 {
   color: var(--text-primary);
-  text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
 }
 
 .welcome-user p {
@@ -422,9 +420,11 @@ body {
   0% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.3);
   }
+
   70% {
     box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
   }
@@ -443,7 +443,8 @@ body {
 /* Action Buttons Wrapper - Enhanced Structure */
 .action-buttons-wrapper {
   display: flex;
-  flex-direction: column; /* Changed to column for better organization */
+  flex-direction: column;
+  /* Changed to column for better organization */
   align-items: center;
   gap: 0.75rem;
   position: relative;
@@ -461,7 +462,7 @@ body {
   border: 1px solid var(--gray-200);
   box-shadow: var(--shadow-lg);
   transition: var(--transition-spring);
-  
+
   /* Natural scrolling properties */
   overflow-x: auto;
   overflow-y: hidden;
@@ -470,7 +471,7 @@ body {
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-snap-type: x mandatory;
-  
+
   /* Ensure full width usage */
   width: 100%;
   justify-content: flex-start;
@@ -493,7 +494,8 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 80px; /* Ensure consistent minimum width */
+  min-width: 80px;
+  /* Ensure consistent minimum width */
   padding: 0.75rem 0.5rem;
   border-radius: var(--border-radius-lg);
   background: transparent;
@@ -573,8 +575,10 @@ body {
   border: 1px solid var(--gray-200);
   backdrop-filter: blur(4px);
   animation: fade-in-out 4s ease-in-out;
-  margin-top: 0.5rem; /* Space from buttons */
-  order: 2; /* Ensure it comes after buttons */
+  margin-top: 0.5rem;
+  /* Space from buttons */
+  order: 2;
+  /* Ensure it comes after buttons */
 }
 
 .dark .mobile-scroll-hint {
@@ -592,7 +596,8 @@ body {
   border-radius: 1px;
   margin-top: 0.25rem;
   overflow: hidden;
-  order: 3; /* After hint */
+  order: 3;
+  /* After hint */
 }
 
 .dark .category-scroll-progress {
@@ -614,7 +619,8 @@ body {
   align-items: center;
   margin-top: 0.25rem;
   gap: 0.5rem;
-  order: 4; /* Last element */
+  order: 4;
+  /* Last element */
 }
 
 .scroll-indicator-dot {
@@ -649,39 +655,48 @@ body {
     align-self: stretch;
     width: 100%;
     justify-content: center;
-    flex-direction: column; /* Ensure column layout */
-    gap: 0.5rem; /* Reduce gap for mobile */
+    flex-direction: column;
+    /* Ensure column layout */
+    gap: 0.5rem;
+    /* Reduce gap for mobile */
   }
-  
+
   .action-buttons-container {
     width: 100%;
     justify-content: flex-start;
-    padding: 0.625rem; /* Slightly larger padding */
-    gap: 0.625rem; /* Slightly larger gap between buttons */
-    margin-bottom: 0; /* Remove bottom margin */
-    
+    padding: 0.625rem;
+    /* Slightly larger padding */
+    gap: 0.625rem;
+    /* Slightly larger gap between buttons */
+    margin-bottom: 0;
+    /* Remove bottom margin */
+
     /* Enhanced mobile scrolling */
     overscroll-behavior-x: contain;
     scroll-padding: 0.5rem;
   }
-  
+
   .topbar-btn {
-    min-width: 70px; /* Increased from 65px for better visibility */
+    min-width: 70px;
+    /* Increased from 65px for better visibility */
     flex-shrink: 0;
-    padding: 0.625rem 0.5rem; /* Slightly more padding */
+    padding: 0.625rem 0.5rem;
+    /* Slightly more padding */
   }
-  
+
   .topbar-icon-wrapper {
-    width: 2.75rem; /* Slightly larger */
+    width: 2.75rem;
+    /* Slightly larger */
     height: 2.75rem;
     margin-bottom: 0.4rem;
   }
-  
+
   .topbar-label {
-    font-size: 0.75rem; /* Slightly larger text */
+    font-size: 0.75rem;
+    /* Slightly larger text */
     line-height: 1.2;
   }
-  
+
   /* Show mobile scroll indicators - PROPERLY POSITIONED */
   .mobile-scroll-hint {
     display: block !important;
@@ -689,13 +704,13 @@ body {
     max-width: 200px;
     margin: 0.5rem auto 0;
   }
-  
+
   .category-scroll-progress {
     display: block !important;
     max-width: 200px;
     margin: 0.25rem auto 0;
   }
-  
+
   .category-scroll-indicator {
     display: flex !important;
     margin: 0.25rem auto 0;
@@ -708,22 +723,22 @@ body {
     gap: 0.5rem;
     padding: 0.5rem;
   }
-  
+
   .topbar-btn {
     min-width: 65px;
     padding: 0.5rem 0.375rem;
   }
-  
+
   .topbar-icon-wrapper {
     width: 2.5rem;
     height: 2.5rem;
     margin-bottom: 0.35rem;
   }
-  
+
   .topbar-label {
     font-size: 0.7rem;
   }
-  
+
   .mobile-scroll-hint {
     font-size: 0.65rem;
     padding: 0.2rem 0.4rem;
@@ -740,27 +755,29 @@ body {
   .dashboard-topbar {
     flex-direction: column;
     padding: 1.25rem;
-    gap: 1.25rem; /* Consistent gap */
+    gap: 1.25rem;
+    /* Consistent gap */
     align-items: flex-start;
   }
-  
+
   .welcome-container {
     max-width: 100%;
     padding-right: 0;
-    margin-bottom: 0.5rem; /* Small margin to separate from buttons */
+    margin-bottom: 0.5rem;
+    /* Small margin to separate from buttons */
   }
-  
+
   .welcome-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .welcome-user h2 {
     font-size: var(--font-size-2xl);
     margin-bottom: 0.25rem;
   }
-  
+
   .welcome-user p {
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
@@ -769,8 +786,16 @@ body {
 
 /* Fade in animation for mobile hints */
 @keyframes fade-in-out {
-  0%, 100% { opacity: 0; }
-  15%, 85% { opacity: 0.8; }
+
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  15%,
+  85% {
+    opacity: 0.8;
+  }
 }
 
 /* High contrast mode support */
@@ -780,7 +805,7 @@ body {
     background: white;
     color: black;
   }
-  
+
   .dark .mobile-scroll-hint {
     background: var(--bg-primary);
     color: white;
@@ -794,20 +819,370 @@ body {
     animation: none;
     opacity: 0.8;
   }
-  
+
   .topbar-btn,
   .topbar-icon-wrapper {
     transition: none;
   }
 }
+
 /* ==========================================================================
    7. CATEGORY FILTERING SECTION - COMPLETE RESPONSIVE SOLUTION
 ========================================================================== */
+
+
+.notification-badge-enhanced {
+  /* High contrast and visibility */
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.025em;
+
+  /* Perfect circle */
+  min-width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+
+  /* Enhanced visibility */
+  border: 2px solid white;
+  box-shadow:
+    0 2px 8px rgba(239, 68, 68, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+
+  /* Animation */
+  animation: notification-pulse 2s infinite;
+
+  /* Positioning */
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  z-index: 20;
+
+  /* Flexbox centering */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Prevent text selection */
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Different colors for different badge types */
+.notification-badge-enhanced.saved {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow:
+    0 2px 8px rgba(59, 130, 246, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  animation: none;
+  /* No pulse for saved items */
+}
+
+.notification-badge-enhanced.info {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  box-shadow:
+    0 2px 8px rgba(139, 92, 246, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+/* Dark mode variations */
+.dark .notification-badge-enhanced {
+  border-color: #374151;
+  box-shadow:
+    0 2px 8px rgba(239, 68, 68, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.dark .notification-badge-enhanced.saved {
+  box-shadow:
+    0 2px 8px rgba(59, 130, 246, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+/* Pulse animation for active notifications */
+@keyframes notification-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 2px 8px rgba(239, 68, 68, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  50% {
+    transform: scale(1.1);
+    box-shadow:
+      0 4px 12px rgba(239, 68, 68, 0.6),
+      0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+      0 0 0 4px rgba(239, 68, 68, 0.1);
+  }
+}
+
 /* ==========================================================================
-   CATEGORY FILTERING SECTION - CLEANED & SIMPLIFIED
-   Removed: Arrow buttons, dots indicators, swipe hints
-   Kept: Natural horizontal scrolling with touch support
+   ENHANCED NOTIFICATION POPUP STYLING
 ========================================================================== */
+
+.notification-popup-enhanced {
+  /* Base styling */
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  /* Enhanced shadow */
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+
+  /* Border and radius */
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 1rem;
+
+  /* Typography */
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Animation */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark mode popup */
+.dark .notification-popup-enhanced {
+  background: rgba(31, 41, 55, 0.98);
+  border-color: rgba(75, 85, 99, 0.3);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.4),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+/* Success variant */
+.notification-popup-enhanced.success {
+  border-left: 4px solid #10b981;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 4px 20px rgba(16, 185, 129, 0.15);
+}
+
+/* Error variant */
+.notification-popup-enhanced.error {
+  border-left: 4px solid #ef4444;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 4px 20px rgba(239, 68, 68, 0.15);
+}
+
+/* Icon container styling */
+.notification-popup-enhanced .icon-container {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+}
+
+.notification-popup-enhanced .icon-container.success {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #059669;
+}
+
+.notification-popup-enhanced .icon-container.error {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #dc2626;
+}
+
+.dark .notification-popup-enhanced .icon-container.success {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.dark .notification-popup-enhanced .icon-container.error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+/* Close button styling */
+.notification-popup-enhanced .close-btn {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-left: 1rem;
+}
+
+.notification-popup-enhanced .close-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: scale(1.05);
+}
+
+.dark .notification-popup-enhanced .close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE NOTIFICATION STYLING
+========================================================================== */
+
+@media (max-width: 640px) {
+  .notification-popup-enhanced {
+    max-width: calc(100vw - 1rem);
+    right: 0.5rem;
+    left: 0.5rem;
+    width: auto;
+  }
+
+  .notification-badge-enhanced {
+    min-width: 1rem;
+    height: 1rem;
+    font-size: 0.6rem;
+    top: -0.125rem;
+    right: -0.125rem;
+  }
+}
+
+/* ==========================================================================
+   NOTIFICATION CONTAINER IMPROVEMENTS
+========================================================================== */
+
+/* Action button container positioning fix */
+.topbar-btn {
+  position: relative;
+  overflow: visible;
+}
+
+/* Ensure badges are always visible */
+.topbar-btn .absolute {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  z-index: 30;
+}
+
+/* Fix for notification dropdown positioning */
+.notifications-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+/* Enhanced notification item styling in modal */
+.notification-item {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.notification-item:hover {
+  background: rgba(0, 0, 0, 0.02);
+  transform: translateX(4px);
+}
+
+.dark .notification-item {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .notification-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================================================
+   HIGH CONTRAST & ACCESSIBILITY IMPROVEMENTS
+========================================================================== */
+
+@media (prefers-contrast: high) {
+  .notification-badge-enhanced {
+    border-width: 3px;
+    font-weight: 900;
+  }
+
+  .notification-popup-enhanced {
+    border-width: 2px;
+    box-shadow:
+      0 0 0 2px rgba(0, 0, 0, 0.8),
+      0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .notification-badge-enhanced {
+    animation: none;
+  }
+
+  .notification-popup-enhanced {
+    transition: opacity 0.1s ease;
+  }
+}
+
+/* Print styles */
+@media print {
+
+  .notification-badge-enhanced,
+  .notification-popup-enhanced {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   FOCUS MANAGEMENT FOR ACCESSIBILITY
+========================================================================== */
+
+.notification-popup-enhanced .close-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Screen reader enhancements */
+.notification-badge-enhanced::before {
+  content: attr(aria-label);
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   NOTIFICATION STACKING
+========================================================================== */
+
+/* When multiple notifications appear, stack them properly */
+.notification-popup-enhanced:nth-of-type(1) {
+  top: 1rem;
+}
+
+.notification-popup-enhanced:nth-of-type(2) {
+  top: 6rem;
+}
+
+.notification-popup-enhanced:nth-of-type(3) {
+  top: 11rem;
+}
+
+.notification-popup-enhanced:nth-of-type(4) {
+  top: 16rem;
+}
+
+/* Fade out older notifications when new ones appear */
+.notification-popup-enhanced.stacked {
+  opacity: 0.8;
+  transform: scale(0.95);
+}
 
 /* Main Category Wrapper - Simplified */
 .category-section-wrapper {
@@ -831,7 +1206,7 @@ body {
   position: relative;
   width: 100%;
   box-sizing: border-box;
-  
+
   /* Enhanced scrolling behavior */
   scroll-snap-type: x proximity;
   overscroll-behavior-x: contain;
@@ -859,7 +1234,7 @@ body {
   flex-shrink: 0;
   min-width: max-content;
   position: relative;
-  
+
   /* Scroll snap for smooth experience */
   scroll-snap-align: start;
 }
@@ -953,23 +1328,23 @@ body {
     margin-bottom: 1rem;
     width: 100%;
   }
-  
+
   .category-container {
     padding: 0.625rem 1rem;
     gap: 0.625rem;
     justify-content: flex-start;
     margin-bottom: 0;
-    
+
     /* Enhanced mobile scrolling */
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
     overscroll-behavior-x: contain;
-    
+
     /* Ensure proper containment */
     width: 100%;
     box-sizing: border-box;
   }
-  
+
   .category-pill {
     padding: 0.625rem 1rem;
     font-size: 0.8rem;
@@ -977,7 +1352,7 @@ body {
     min-width: max-content;
     flex-shrink: 0;
   }
-  
+
   .category-pill svg {
     width: 0.875rem;
     height: 0.875rem;
@@ -993,13 +1368,13 @@ body {
     width: 100%;
     box-sizing: border-box;
   }
-  
+
   .category-pill {
     padding: 0.5rem 0.875rem;
     font-size: 0.75rem;
     border-width: 1.5px;
   }
-  
+
   .category-pill svg {
     width: 0.875rem;
     height: 0.875rem;
@@ -1015,20 +1390,20 @@ body {
     padding-left: 0;
     padding-right: 0;
   }
-  
+
   .category-container {
     padding: 0.5rem 0.75rem;
     gap: 0.5rem;
     width: 100%;
     box-sizing: border-box;
   }
-  
+
   .category-pill {
     padding: 0.5rem 0.75rem;
     font-size: 0.75rem;
     border-width: 1px;
   }
-  
+
   .category-pill svg {
     width: 0.875rem;
     height: 0.875rem;
@@ -1073,7 +1448,7 @@ body {
   .category-pill {
     border-width: 3px;
   }
-  
+
   .category-pill.active {
     border-width: 4px;
   }
@@ -1084,11 +1459,11 @@ body {
   .category-container {
     scroll-behavior: auto;
   }
-  
+
   .category-pill {
     transition: none;
   }
-  
+
   .category-pill:hover,
   .category-pill:active {
     transform: none;
@@ -1102,7 +1477,7 @@ body {
     flex-wrap: wrap;
     gap: 0.5rem;
   }
-  
+
   .category-pill {
     break-inside: avoid;
   }
@@ -1161,6 +1536,7 @@ body {
   content: none !important;
   visibility: hidden !important;
 }
+
 /* ==========================================================================
    2. SPECIFIC MODAL TYPES - REMOVE INVALID :has-text() SELECTORS
 ========================================================================== */
@@ -1196,6 +1572,7 @@ body {
   display: none !important;
   content: none !important;
 }
+
 /* ==========================================================================
    3. GENERAL PSEUDO-ELEMENT RESET FOR RECEIVER DASHBOARD
 ========================================================================== */
@@ -1352,6 +1729,7 @@ svg::after {
 
 /* Mobile devices */
 @media (max-width: 768px) {
+
   .modal-overlay::before,
   .modal-container::before,
   .modal-header::before,
@@ -1363,6 +1741,7 @@ svg::after {
 
 /* Tablet devices */
 @media (min-width: 769px) and (max-width: 1024px) {
+
   .modal-overlay::before,
   .modal-container::before,
   .modal-header::before,
@@ -1374,6 +1753,7 @@ svg::after {
 
 /* Desktop devices */
 @media (min-width: 1025px) {
+
   .modal-overlay::before,
   .modal-container::before,
   .modal-header::before,
@@ -1388,6 +1768,7 @@ svg::after {
 ========================================================================== */
 
 @media print {
+
   *::before,
   *::after {
     display: none !important;
@@ -1410,7 +1791,7 @@ svg::after {
   border: 1px solid rgba(226, 232, 240, 0.8);
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 
+  box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06),
     0 0 0 1px rgba(255, 255, 255, 0.05) inset;
@@ -1421,7 +1802,7 @@ svg::after {
 .dark .premium-donation-card {
   background: linear-gradient(145deg, #1f2937 0%, #111827 100%);
   border-color: rgba(75, 85, 99, 0.8);
-  box-shadow: 
+  box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.4),
     0 2px 4px -1px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.05) inset;
@@ -1430,7 +1811,7 @@ svg::after {
 /* Hover Effects */
 .premium-donation-card:hover {
   transform: translateY(-4px);
-  box-shadow: 
+  box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04),
     0 0 0 1px rgba(59, 130, 246, 0.1) inset;
@@ -1438,7 +1819,7 @@ svg::after {
 }
 
 .dark .premium-donation-card:hover {
-  box-shadow: 
+  box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.5),
     0 10px 10px -5px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(59, 130, 246, 0.2) inset;
@@ -1453,7 +1834,7 @@ svg::after {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 
+  box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
   font-weight: 600;
@@ -1481,7 +1862,7 @@ svg::after {
   position: relative;
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   border: none;
-  box-shadow: 
+  box-shadow:
     0 4px 14px 0 rgba(59, 130, 246, 0.35),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   font-weight: 600;
@@ -1491,7 +1872,7 @@ svg::after {
 
 .premium-btn-primary:hover {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  box-shadow: 
+  box-shadow:
     0 8px 25px 0 rgba(59, 130, 246, 0.45),
     0 0 0 1px rgba(255, 255, 255, 0.2) inset;
   transform: translateY(-2px);
@@ -1507,7 +1888,7 @@ svg::after {
   position: relative;
   background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
   border: 1px solid rgba(209, 213, 219, 0.8);
-  box-shadow: 
+  box-shadow:
     0 2px 4px 0 rgba(0, 0, 0, 0.05),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1515,7 +1896,7 @@ svg::after {
 
 .premium-btn-secondary:hover {
   background: linear-gradient(135deg, #e5e7eb, #d1d5db);
-  box-shadow: 
+  box-shadow:
     0 4px 8px 0 rgba(0, 0, 0, 0.1),
     0 0 0 1px rgba(255, 255, 255, 0.7) inset;
 }
@@ -1535,7 +1916,7 @@ svg::after {
   position: relative;
   background: linear-gradient(135deg, #fef2f2, #fee2e2);
   border: 1px solid rgba(239, 68, 68, 0.2);
-  box-shadow: 
+  box-shadow:
     0 2px 4px 0 rgba(239, 68, 68, 0.1),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1544,7 +1925,7 @@ svg::after {
 .premium-btn-danger:hover {
   background: linear-gradient(135deg, #fee2e2, #fecaca);
   border-color: rgba(239, 68, 68, 0.3);
-  box-shadow: 
+  box-shadow:
     0 4px 8px 0 rgba(239, 68, 68, 0.15),
     0 0 0 1px rgba(255, 255, 255, 0.7) inset;
 }
@@ -1563,14 +1944,14 @@ svg::after {
 ========================================================================== */
 
 /* Info Grid Items */
-.premium-donation-card .grid > div {
+.premium-donation-card .grid>div {
   backdrop-filter: blur(8px);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
 
-.premium-donation-card .grid > div::before {
+.premium-donation-card .grid>div::before {
   content: '';
   position: absolute;
   top: 0;
@@ -1581,12 +1962,12 @@ svg::after {
   transition: left 0.5s ease;
 }
 
-.premium-donation-card:hover .grid > div::before {
+.premium-donation-card:hover .grid>div::before {
   left: 100%;
 }
 
 /* Icon Containers */
-.premium-donation-card .grid > div > div:first-child {
+.premium-donation-card .grid>div>div:first-child {
   background: linear-gradient(135deg, currentColor, currentColor);
   opacity: 0.1;
   backdrop-filter: blur(4px);
@@ -1633,10 +2014,13 @@ svg::after {
 
 /* Pulse Animation for Status Indicators */
 @keyframes premium-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.7;
     transform: scale(1.1);
@@ -1652,6 +2036,7 @@ svg::after {
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -1675,17 +2060,17 @@ svg::after {
     border-radius: 1.25rem;
     margin: 0 0.5rem;
   }
-  
+
   .premium-donation-card .grid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
   }
-  
+
   /* FIXED - Remove the problematic Tailwind selector completely */
   .premium-donation-card .responsive-flex {
     flex-direction: column;
   }
-  
+
   .premium-btn-primary {
     padding: 0.875rem 1.5rem;
     font-size: 0.875rem;
@@ -1717,7 +2102,7 @@ svg::after {
     border-width: 2px;
     border-color: #000;
   }
-  
+
   .dark .premium-donation-card {
     border-color: #fff;
   }
@@ -1725,6 +2110,7 @@ svg::after {
 
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
+
   .premium-donation-card,
   .premium-donation-card *,
   .premium-btn-primary,
@@ -1733,7 +2119,7 @@ svg::after {
     transition: none;
     animation: none;
   }
-  
+
   .premium-donation-card:hover {
     transform: none;
   }
@@ -1743,11 +2129,11 @@ svg::after {
    10. DARK MODE SPECIFIC ENHANCEMENTS
 ========================================================================== */
 
-.dark .premium-donation-card .grid > div {
+.dark .premium-donation-card .grid>div {
   border-color: rgba(75, 85, 99, 0.3);
 }
 
-.dark .premium-donation-card .grid > div::before {
+.dark .premium-donation-card .grid>div::before {
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
 }
 
@@ -1762,7 +2148,7 @@ svg::after {
     border: 1px solid #ddd;
     background: white;
   }
-  
+
   .premium-btn-primary,
   .premium-btn-secondary,
   .premium-btn-danger {
@@ -1779,7 +2165,8 @@ svg::after {
 /* Subtle gradient overlays for better visual flow */
 .category-container::before,
 .category-container::after {
-  display: none; /* Remove gradient overlays as well */
+  display: none;
+  /* Remove gradient overlays as well */
 }
 
 /* Clean category text visibility */
@@ -1811,7 +2198,7 @@ svg::after {
   .category-pill:hover {
     transform: translateY(-2px);
   }
-  
+
   .category-pill.active:hover {
     transform: translateY(-1px);
   }
@@ -1886,7 +2273,7 @@ svg::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 40%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 40%);
   pointer-events: none;
 }
 
@@ -2319,6 +2706,7 @@ svg::after {
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -2493,6 +2881,7 @@ svg::after {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -2733,7 +3122,9 @@ svg::after {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .fade-out {
@@ -2758,6 +3149,7 @@ svg::after {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -2817,7 +3209,7 @@ svg::after {
     padding-left: max(1rem, calc(50vw - 50%));
     padding-right: max(1rem, calc(50vw - 50%));
   }
-  
+
   /* Alternative approach - ensure full width */
   .category-section-mobile {
     width: 100vw;
@@ -2827,7 +3219,7 @@ svg::after {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   /* Ensure all categories are scrollable */
   .category-pills-wrapper {
     display: flex;
@@ -2856,7 +3248,7 @@ svg::after {
   .category-scroll-hint {
     position: relative;
   }
-  
+
   .category-scroll-hint::after {
     content: '→';
     position: absolute;
@@ -2869,10 +3261,17 @@ svg::after {
     animation: pulse-arrow 2s infinite;
     pointer-events: none;
   }
-  
+
   @keyframes pulse-arrow {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 0.3; }
+
+    0%,
+    100% {
+      opacity: 0.7;
+    }
+
+    50% {
+      opacity: 0.3;
+    }
   }
 }
 
@@ -2954,16 +3353,16 @@ svg::after {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
   }
-  
+
   .topbar-btn {
     min-width: 85px;
   }
-  
+
   .topbar-icon-wrapper {
     width: 3.25rem;
     height: 3.25rem;
   }
-  
+
   .welcome-user h2 {
     font-size: var(--font-size-4xl);
   }
@@ -2977,27 +3376,27 @@ svg::after {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.25rem;
   }
-  
+
   .food-image-container {
     height: 160px;
   }
-  
+
   .topbar-btn {
     min-width: 75px;
   }
-  
+
   .topbar-icon-wrapper {
     width: 2.875rem;
     height: 2.875rem;
   }
-  
+
   /* Enhanced Category Container for Tablet */
   .category-container {
     padding: 0.625rem 0;
     margin-bottom: 1.25rem;
     gap: 0.625rem;
   }
-  
+
   .category-pill {
     padding: 0.625rem 1rem;
     font-size: 0.8rem;
@@ -3013,37 +3412,37 @@ svg::after {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
-  
+
   .food-image-container {
     height: 150px;
   }
-  
+
   .card-actions {
     gap: 0.5rem;
     padding: 0.875rem;
   }
-  
+
   .btn-request {
     height: 38px;
     font-size: 0.8rem;
   }
-  
+
   .btn-save,
   .btn-report {
     min-width: 38px;
     width: 38px;
     height: 38px;
   }
-  
+
   .topbar-btn {
     min-width: 70px;
   }
-  
+
   .topbar-icon-wrapper {
     width: 2.75rem;
     height: 2.75rem;
   }
-  
+
   /* Enhanced Category Container for Small Tablet */
   .category-container {
     padding: 0.5rem 0;
@@ -3052,7 +3451,7 @@ svg::after {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
   }
-  
+
   .category-pill {
     padding: 0.5rem 0.875rem;
     font-size: 0.8rem;
@@ -3069,37 +3468,37 @@ svg::after {
     grid-template-columns: 1fr;
     gap: 0.875rem;
   }
-  
+
   .food-image-container {
     height: 140px;
   }
-  
+
   .card-content {
     padding: 1rem;
   }
-  
+
   .card-actions {
     gap: 0.375rem;
     padding: 0.75rem;
   }
-  
+
   .btn-request {
     height: 36px;
     font-size: 0.75rem;
     min-width: 0;
   }
-  
+
   .btn-save,
   .btn-report {
     min-width: 36px;
     width: 36px;
     height: 36px;
   }
-  
+
   .btn-report span {
     display: none;
   }
-  
+
   /* Dashboard Topbar Mobile */
   .dashboard-topbar {
     flex-direction: column;
@@ -3107,32 +3506,32 @@ svg::after {
     gap: 1.5rem;
     align-items: flex-start;
   }
-  
+
   .welcome-container {
     max-width: 100%;
     padding-right: 0;
   }
-  
+
   .welcome-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .welcome-user h2 {
     font-size: var(--font-size-2xl);
   }
-  
+
   .welcome-user p {
     font-size: 0.9rem;
   }
-  
+
   .action-buttons-wrapper {
     align-self: stretch;
     width: 100%;
     justify-content: center;
   }
-  
+
   .action-buttons-container {
     width: 100%;
     justify-content: flex-start;
@@ -3141,24 +3540,24 @@ svg::after {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   .topbar-btn {
     min-width: 65px;
     flex-shrink: 0;
   }
-  
+
   .topbar-icon-wrapper {
     width: 2.5rem;
     height: 2.5rem;
     margin-bottom: 0.35rem;
   }
-  
+
   .topbar-label {
     font-size: 0.7rem;
   }
-  
+
   /* === ENHANCED CATEGORY SECTION FOR MOBILE === */
-  
+
   /* Category Section Full Width */
   .category-section-wrapper {
     margin-left: -1rem;
@@ -3167,7 +3566,7 @@ svg::after {
     padding-right: 1rem;
     margin-bottom: 1rem;
   }
-  
+
   /* Category Container Mobile */
   .category-container {
     padding: 0.5rem 0;
@@ -3175,7 +3574,7 @@ svg::after {
     justify-content: flex-start;
     margin-bottom: 0;
   }
-  
+
   /* Category Pills Mobile */
   .category-pill {
     padding: 0.5rem 0.875rem;
@@ -3184,66 +3583,66 @@ svg::after {
     min-width: max-content;
     flex-shrink: 0;
   }
-  
+
   .category-pill svg {
     width: 1rem;
     height: 1rem;
     margin-right: 0.5rem;
   }
-  
+
   /* Show Scroll Indicators on Mobile */
   .category-scroll-indicator {
     display: flex !important;
   }
-  
+
   /* Show Progress Bar on Mobile */
   .category-scroll-progress {
     display: block !important;
   }
-  
+
   /* Show Mobile Scroll Hint */
   .mobile-scroll-hint {
     display: block !important;
   }
-  
+
   /* Show Scroll Arrows on Mobile */
   .category-scroll-arrows {
     display: block !important;
   }
-  
+
   /* Adjust Arrow Size for Mobile */
   .scroll-arrow-btn {
     width: 28px;
     height: 28px;
   }
-  
+
   .category-scroll-arrows.left {
     left: 0.5rem;
     background: linear-gradient(to right, #F5F7FA 70%, transparent);
     padding-right: 1.5rem;
   }
-  
+
   .category-scroll-arrows.right {
     right: 0.5rem;
     background: linear-gradient(to left, #F5F7FA 70%, transparent);
     padding-left: 1.5rem;
   }
-  
+
   .dark .category-scroll-arrows.left {
     background: linear-gradient(to right, var(--bg-primary) 70%, transparent);
   }
-  
+
   .dark .category-scroll-arrows.right {
     background: linear-gradient(to left, var(--bg-primary) 70%, transparent);
   }
-  
+
   /* Modal Adjustments */
   .modal-container {
     max-width: calc(100vw - 2rem);
     margin: 1rem;
     max-height: calc(100vh - 2rem);
   }
-  
+
   .notification-dropdown {
     width: calc(100vw - 2rem);
     right: 1rem;
@@ -3258,84 +3657,84 @@ svg::after {
     gap: 0.25rem;
     padding: 0.625rem;
   }
-  
+
   .btn-request {
     font-size: 0.7rem;
     height: 34px;
   }
-  
+
   .btn-save,
   .btn-report {
     min-width: 34px;
     width: 34px;
     height: 34px;
   }
-  
+
   .topbar-btn {
     min-width: 60px;
   }
-  
+
   .topbar-icon-wrapper {
     width: 2.25rem;
     height: 2.25rem;
   }
-  
+
   .topbar-label {
     font-size: 0.65rem;
   }
-  
+
   .action-buttons-container {
     gap: 0.375rem;
     padding: 0.375rem;
   }
-  
+
   .welcome-user h2 {
     font-size: var(--font-size-xl);
   }
-  
+
   /* === ENHANCED CATEGORY FOR EXTRA SMALL MOBILE === */
-  
+
   .category-section-wrapper {
     margin-left: -0.75rem;
     margin-right: -0.75rem;
     padding-left: 0.75rem;
     padding-right: 0.75rem;
   }
-  
+
   .category-container {
     padding: 0.375rem 0;
     gap: 0.375rem;
   }
-  
+
   .category-pill {
     padding: 0.375rem 0.75rem;
     font-size: 0.7rem;
     border-width: 1px;
   }
-  
+
   .category-pill svg {
     width: 0.875rem;
     height: 0.875rem;
     margin-right: 0.375rem;
   }
-  
+
   /* Smaller Scroll Elements */
   .scroll-arrow-btn {
     width: 24px;
     height: 24px;
   }
-  
+
   .scroll-indicator-dot {
     width: 4px;
     height: 4px;
   }
-  
+
   .category-scroll-arrows.left,
   .category-scroll-arrows.right {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   .mobile-scroll-hint {
     font-size: 0.65rem;
   }
@@ -3348,12 +3747,12 @@ svg::after {
   .category-container {
     gap: 0.625rem;
   }
-  
+
   .category-pill {
     padding: 0.625rem 1rem;
     font-size: 0.8rem;
   }
-  
+
   /* Show scroll arrows on tablet if content overflows */
   .category-scroll-arrows {
     display: block;
@@ -3364,18 +3763,18 @@ svg::after {
   .category-container {
     gap: 0.5rem;
   }
-  
+
   .category-pill {
     padding: 0.5rem 0.875rem;
     font-size: 0.75rem;
     border-width: 1.5px;
   }
-  
+
   /* Show scroll indicators on small tablet */
   .category-scroll-indicator {
     display: flex;
   }
-  
+
   .category-scroll-progress {
     display: block;
   }
@@ -3385,6 +3784,7 @@ svg::after {
    20. PRINT STYLES
 ========================================================================== */
 @media print {
+
   .topbar-btn,
   .action-buttons-container,
   .modal-overlay,
@@ -3392,13 +3792,13 @@ svg::after {
   .profile-dropdown {
     display: none !important;
   }
-  
+
   .donation-card {
     break-inside: avoid;
     box-shadow: none;
     border: 1px solid #ddd;
   }
-  
+
   .donation-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
@@ -3409,6 +3809,7 @@ svg::after {
    21. REDUCED MOTION PREFERENCES
 ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -3416,15 +3817,15 @@ svg::after {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   .topbar-btn:hover {
     transform: none;
   }
-  
+
   .donation-card:hover {
     transform: translateY(-2px);
   }
-  
+
   .btn-save:hover,
   .btn-report:hover {
     transform: translateY(-1px);
@@ -3443,15 +3844,15 @@ svg::after {
     --gray-700: #202020;
     --gray-800: #101010;
   }
-  
+
   .donation-card {
     border-width: 2px;
   }
-  
+
   .btn-save:not(.saved) {
     border-width: 3px;
   }
-  
+
   .category-pill {
     border-width: 2px;
   }
@@ -3463,13 +3864,14 @@ svg::after {
 
 /* Force proper category display on all mobile devices */
 @media (max-width: 768px) {
+
   /* Override any parent container overflow settings */
   .main-content,
   .dashboard-content,
   .category-section {
     overflow-x: visible !important;
   }
-  
+
   /* Category container mobile optimization */
   .category-container {
     /* Full width approach */
@@ -3478,25 +3880,25 @@ svg::after {
     margin-right: calc(-50vw + 50% + 1rem) !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
-    
+
     /* Scrolling behavior */
     overflow-x: auto !important;
     overflow-y: hidden !important;
     -webkit-overflow-scrolling: touch !important;
     scroll-behavior: smooth !important;
-    
+
     /* Gap and spacing */
     gap: 0.75rem !important;
-    
+
     /* Remove fade indicators on mobile */
     position: static !important;
   }
-  
+
   .category-container::before,
   .category-container::after {
     display: none !important;
   }
-  
+
   /* Ensure category pills are fully visible */
   .category-pill {
     flex-shrink: 0 !important;
@@ -3506,7 +3908,7 @@ svg::after {
     font-size: 0.8rem !important;
     border-width: 1.5px !important;
   }
-  
+
   /* Category icon adjustments */
   .category-pill svg {
     width: 1rem !important;
@@ -3514,7 +3916,7 @@ svg::after {
     margin-right: 0.5rem !important;
     flex-shrink: 0 !important;
   }
-  
+
   /* Category text should never be clipped */
   .category-pill span {
     white-space: nowrap !important;
@@ -3533,12 +3935,12 @@ svg::after {
     padding-right: 0.75rem !important;
     gap: 0.5rem !important;
   }
-  
+
   .category-pill {
     padding: 0.375rem 0.75rem !important;
     font-size: 0.75rem !important;
   }
-  
+
   .category-pill svg {
     width: 0.875rem !important;
     height: 0.875rem !important;
@@ -3577,12 +3979,10 @@ svg::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    45deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(45deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%);
   opacity: 0;
   transition: opacity 0.5s ease;
 }
@@ -3676,13 +4076,31 @@ svg::after {
 }
 
 @keyframes pulse-left {
-  0%, 100% { opacity: 0; transform: translateY(-50%) translateX(-10px); }
-  50% { opacity: 1; transform: translateY(-50%) translateX(0); }
+
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-10px);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
 }
 
 @keyframes pulse-right {
-  0%, 100% { opacity: 0; transform: translateY(-50%) translateX(10px); }
-  50% { opacity: 1; transform: translateY(-50%) translateX(0); }
+
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(10px);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
 }
 
 /* Accessibility Focus States */
@@ -3702,15 +4120,15 @@ svg::after {
   .category-pill {
     border-width: 3px;
   }
-  
+
   .category-pill.active {
     border-width: 4px;
   }
-  
+
   .scroll-indicator-dot {
     border: 2px solid currentColor;
   }
-  
+
   .scroll-arrow-btn {
     border-width: 2px;
   }
@@ -3721,13 +4139,13 @@ svg::after {
   .category-container {
     scroll-behavior: auto;
   }
-  
+
   .category-pill,
   .scroll-arrow-btn,
   .scroll-indicator-dot {
     transition: none;
   }
-  
+
   .category-container.has-overflow::before,
   .category-container.has-overflow::after {
     animation: none;
@@ -3737,19 +4155,20 @@ svg::after {
 
 /* Print Styles */
 @media print {
+
   .category-scroll-arrows,
   .category-scroll-indicator,
   .category-scroll-progress,
   .mobile-scroll-hint {
     display: none !important;
   }
-  
+
   .category-container {
     overflow: visible !important;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
-  
+
   .category-pill {
     break-inside: avoid;
   }
