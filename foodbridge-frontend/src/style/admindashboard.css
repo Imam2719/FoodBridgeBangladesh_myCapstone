@@ -4137,20 +4137,14 @@
 .admin-main-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0 !important;        /* Remove gap since no avatar */
   flex: 1;
 }
 
 /* Premium Admin Avatar with Gradient Rings */
+/* Hide Admin Avatar */
 .admin-avatar {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  position: relative;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  padding: 3px;
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
-  transition: all 0.3s ease;
+  display: none !important;
 }
 
 .admin-avatar:hover {
