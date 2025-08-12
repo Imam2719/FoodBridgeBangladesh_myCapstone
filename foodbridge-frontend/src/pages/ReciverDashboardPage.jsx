@@ -135,6 +135,8 @@ const ReceiverDashboard = () => {
   const [showActionRightArrow, setShowActionRightArrow] = useState(false);
   const [actionScrollProgress, setActionScrollProgress] = useState(0);
   const actionButtonsContainerRef = useRef(null);
+  const [reportFormStep, setReportFormStep] = useState(1); 
+
 
   useEffect(() => {
     const container = categoryContainerRef.current;
